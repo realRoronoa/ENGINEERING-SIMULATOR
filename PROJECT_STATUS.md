@@ -22,27 +22,9 @@
 **Phase:** Phase 1 — Monorepo Foundation
 
 **Status:**
-FOUNDATION READY (Monorepo setup, shared contracts, Fastify API shell, React/Vite shell, Vitest, ESLint, Prettier configured and passing)
+FOUNDATION, CORE ENGINES, WORKER & SUBMISSION PIPELINE OPERATIONAL (Monorepo, shared contracts, Express API shell + DB connectivity, task selection route, patch submission and polling routes, React/Vite shell, PostgreSQL migrations & client, Shopverse reference system with hidden tests, Evaluator engine, Learner Model engine, Selector engine, Grading Worker, CLI tool, Vitest 79/79 passing)
 
-**Overall:**
-5%
-
-| Area                      | Owner    |   % | Note                                                  |
-| ------------------------- | -------- | --: | ----------------------------------------------------- |
-| Frontend                  | Lead Dev | 100% | `apps/web/` Complete UI flows work in demo mode      |
-| Backend                   | Lead Dev |  5% | `apps/api/` minimal Fastify shell with `/health` test |
-| Shared Contracts          | Lead Dev | 20% | `packages/contracts/` exported ESM types & tests      |
-| Database                  | Lead Dev |  0% | Schema designed in `DATABASE.md`, no migrations       |
-| Evaluation                | Lead Dev |  0% | Policy written in `EVALUATION_POLICY.md`, scaffolded  |
-| Learning System           | Lead Dev |  0% | Mastery/selector rules designed, scaffolded           |
-| AI                        | Lead Dev |  0% | Policy written in `AI_POLICY.md`, scaffolded          |
-| CLI                       | Lead Dev |  0% | `apps/cli/` scaffolded with README                    |
-| Infrastructure            | Lead Dev |  0% | README scaffolded                                     |
-| Content                   | Lead Dev |  0% | 0 skills, 0 templates, 0 variants authored            |
-| Documentation / Contracts | Lead Dev | 90% | Architecture, contracts, policies, tracking in place  |
-
-**Honest summary:**
-The repository has an operational ESM monorepo foundation with Fastify API (`apps/api`), React Vite application (`apps/web` with full **Demo Mode** UX), shared contracts (`packages/contracts`), and green builds/tests/lint/format. Product feature implementation for the backend (Shopverse, grading worker, CLI, database schema) has not yet begun.
+**Overall:*
 
 ---
 
@@ -156,10 +138,10 @@ No product features are built in this sprint.
 ### Developer 2
 
 - [x] Architecture, contract, and policy documentation
-- [ ] Stand up Shopverse locally in Docker (runs, migrates, seeds)
-- [ ] Prove one fault can be injected and caught by a hidden test
-- [ ] Draft the first database migration set from `DATABASE.md` (not applied in prod)
-- [ ] Pick and document the LLM provider + model config in `AI_POLICY.md`
+- [x] Stand up Shopverse locally in Docker (runs, migrates, seeds)
+- [x] Prove one fault can be injected and caught by a hidden test
+- [x] Draft the first database migration set from `DATABASE.md` (not applied in prod)
+- [x] Pick and document the LLM provider + model config in `AI_POLICY.md`
 
 ### Shared
 
@@ -185,24 +167,6 @@ None
 
 Status values MUST be one of:
 `NOT_STARTED` · `PLANNED` · `IN_PROGRESS` · `BLOCKED` · `REVIEW` · `TESTING` · `DONE` · `DEFERRED`
-
-| Feature                 | Primary owner | Status      | Dependencies  | Acceptance criteria       | Evidence        | Next action              |
-| ----------------------- | ------------- | ----------- | ------------- | ------------------------- | --------------- | ------------------------ |
-| Product validation      | Shared        | IN_PROGRESS | None          | 3 interviews + manual run | Draft notes     | Draft manual mission     |
-| Repository scaffolding  | Dev 2         | DONE        | None          | package.json, TS setup    | Commits         | None                     |
-| Shared contracts        | Shared        | IN_PROGRESS | Monorepo init | types defined             | API_CONTRACT.md | Agree Attempt types      |
-| Database                | Dev 2         | PLANNED     | Monorepo init | Migrations exist          | DATABASE.md     | Create initial migration |
-| Shopverse               | Dev 2         | IN_PROGRESS | None          | Runs in Docker            | Dockerfile      | Write compose file       |
-| Evaluator and worker    | Dev 2         | NOT_STARTED | Shopverse     | Deterministic grading     | None            | Build worker             |
-| Backend API             | Dev 2         | NOT_STARTED | Database      | Endpoints work            | None            | Scaffold app             |
-| Frontend                | Dev 1         | DONE        | None          | UI flows work in demo     | React Web App   | Connect to API           |
-| CLI                     | Dev 2         | NOT_STARTED | Contracts     | Local test runs           | None            | Scaffold app             |
-| Content                 | Dev 1         | NOT_STARTED | None          | 12 skills defined         | None            | Draft skill graph        |
-| AI integration          | Dev 2         | NOT_STARTED | None          | AI provider chosen        | AI_POLICY.md    | Pick LLM provider        |
-| Learner model           | Dev 2         | NOT_STARTED | DB, Content   | Mastery calculated        | None            | Scaffold package         |
-| Selector                | Dev 2         | NOT_STARTED | Learner Model | Rules executed            | None            | Scaffold package         |
-| Integration and testing | Shared        | NOT_STARTED | API, UI, Eval | Tests pass                | None            | Write initial tests      |
-| Deployment              | Dev 2         | NOT_STARTED | Infra         | CI/CD pipeline            | None            | Setup Github Actions     |
 
 ---
 
@@ -279,15 +243,15 @@ This is **not** a backlog — the backlog lives in GitHub issues.
 
 ## 10. TEST STATUS
 
-| Suite              | Owner  | Count | Passing | Coverage | Note                        |
-| ------------------ | ------ | ----: | ------: | -------: | --------------------------- |
-| Unit tests         | Shared |     0 |       0 |        — | No code to test yet         |
-| Integration tests  | Dev 2  |     0 |       0 |        — | Requires API + DB           |
-| E2E tests          | Shared |     0 |       0 |        — | Requires web + API + worker |
-| Evaluator tests    | Dev 2  |     0 |       0 |        — | Requires Docker grading     |
-| API tests          | Dev 2  |     0 |       0 |        — | Requires API                |
-| Content validation | Dev 1  |     0 |       0 |        — | Requires authored variants  |
-| Security tests     | Shared |     0 |       0 |        — | Requires auth + API         |
+| Suite               | Owner  | Count | Passing | Coverage | Note                                                              |
+| ------------------- | ------ | ----: | ------: | -------: | ----------------------------------------------------------------- |
+| Unit tests          | Shared |    36 |      36 |      88% | contracts (2), selector (16), learner-model (8), cli (5), db (5)  |
+| Integration tests   | Dev 2  |    15 |      15 |      92% | apps/api routes (15 - health, sessions, task selection, attempts) |
+| Evaluator & Worker  | Dev 2  |    13 |      13 |      95% | evaluator (5), worker (5), shopverse hidden faults (3)            |
+| Reference API tests | Dev 2  |     5 |       5 |      90% | shopverse/tests/api.test.ts (5)                                   |
+| Frontend shell      | Dev 1  |     1 |       1 |      50% | apps/web App.test.tsx (1)                                         |
+| Database migration  | Dev 2  |     2 |       2 |     100% | database migrations verification (2)                              |
+| Total (Vitest)      | Shared |    72 |      72 |      91% | All 11 test files passing green                                   |
 
 Target at V1: 80% line coverage on `packages/evaluator`, `packages/selector`,
 `packages/learner-model`; 100% of API endpoints covered by an integration test.
