@@ -1,9 +1,13 @@
 import { buildApp } from './app.js';
 
-const app = buildApp();
+export { buildApp };
+
 const port = Number(process.env.PORT) || 3000;
 const host = process.env.HOST || '0.0.0.0';
 
-app.listen(port, host, () => {
-  console.log(`API server running on http://${host}:${port}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  const app = buildApp();
+  app.listen(port, host, () => {
+    console.log(`API server running on http://${host}:${port}`);
+  });
+}

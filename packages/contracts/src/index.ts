@@ -152,3 +152,55 @@ export interface TransferStartResponse {
   status: 'transfer';
   transferTask: TransferTaskDetails;
 }
+
+export interface SubmissionCreateRequest {
+  patch: string;
+  structuredAnswers?: Array<{ questionId: string; answer: string }>;
+  clientChecksum?: string;
+}
+
+export interface SubmissionCreateResponse {
+  submissionId: string;
+  status: 'queued';
+  pollingUrl: string;
+}
+
+export interface SubmissionEvaluationDetails {
+  id: string;
+  passed: boolean;
+  score: number;
+  publicTestsPassed: number;
+  publicTestsTotal: number;
+  hiddenTestsPassed: number;
+  hiddenTestsTotal: number;
+  benchmarksPassed: boolean | null;
+  rubricResults: unknown[];
+  feedback: string;
+}
+
+export interface SubmissionPollResponse {
+  submissionId: string;
+  status: 'queued' | 'grading' | 'complete' | 'failed' | 'timeout';
+  evaluation: SubmissionEvaluationDetails | null;
+}
+
+export interface AttemptDetails {
+  id: string;
+  status: string;
+  variantId: string;
+  sessionId: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  hintsUsed: number;
+  submissionsCount: number;
+}
+
+export interface AttemptResponse {
+  attempt: AttemptDetails;
+}
+
+export interface TaskWorkspaceMetadata {
+  attemptId: string;
+  initializedAt: string;
+  lastSubmissionId?: string | null;
+}

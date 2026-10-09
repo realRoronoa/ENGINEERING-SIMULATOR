@@ -27,22 +27,22 @@ FOUNDATION, CORE ENGINES, WORKER, E2E PIPELINE, VIVA VERIFICATION, HINT LADDER, 
 **Overall:**
 80%
 
-| Area                      | Owner    |   % | Note                                                                                                              |
-| ------------------------- | -------- | --: | ----------------------------------------------------------------------------------------------------------------- |
-| Frontend                  | Lead Dev | 15% | `apps/web/` React/Vite shell with route tests, mission demo machine, demo user flow                               |
-| Backend                   | Dev 2    | 98% | `apps/api/` Express API with health, ready, sessions, attempts, submissions, viva, hints, AI mentor, and transfer |
-| Shared Contracts          | Shared   | 90% | `packages/contracts/` exported types & Zod schemas for submission, viva, hints, mentor, and transfer task         |
-| Database                  | Dev 2    | 98% | `packages/database` 5 migrations, client pool, sessions, attempts, content, viva, hints, ai_calls                 |
-| Evaluation                | Dev 2    | 98% | `packages/evaluator` grading engine & `apps/worker` async pipeline with transfer evidence & Bayesian Beta updates |
-| Learning System           | Dev 2    | 98% | `packages/learner-model` Bayesian mastery & `packages/selector` task selector engine                              |
-| AI                        | Dev 2    | 90% | `packages/ai` `@engineering-simulator/ai` Socratic mentor, fact sheet grounding, AI audit logging                 |
-| CLI                       | Dev 2    | 80% | `apps/cli/` `engsim` binary with login, init, submit, status                                                      |
-| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                                               |
-| Content                   | Lead Dev | 10% | Shopverse sample tasks & hidden fault test                                                                        |
-| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                                                       |
+| Area                      | Owner    |   % | Note                                                                                                                 |
+| ------------------------- | -------- | --: | -------------------------------------------------------------------------------------------------------------------- |
+| Frontend                  | Lead Dev | 15% | `apps/web/` React/Vite shell with route tests, mission demo machine, demo user flow                                  |
+| Backend                   | Dev 2    | 98% | `apps/api/` Express API with health, ready, sessions, attempts, submissions, viva, hints, AI mentor, and transfer    |
+| Shared Contracts          | Shared   | 95% | `packages/contracts/` exported types & Zod schemas for submission, viva, hints, mentor, transfer, and CLI workspace  |
+| Database                  | Dev 2    | 98% | `packages/database` 5 migrations, client pool, sessions, attempts, content, viva, hints, ai_calls                    |
+| Evaluation                | Dev 2    | 98% | `packages/evaluator` grading engine & `apps/worker` async pipeline with transfer evidence & Bayesian Beta updates    |
+| Learning System           | Dev 2    | 98% | `packages/learner-model` Bayesian mastery & `packages/selector` task selector engine                                 |
+| AI                        | Dev 2    | 90% | `packages/ai` `@engineering-simulator/ai` Socratic mentor, fact sheet grounding, AI audit logging                    |
+| CLI                       | Dev 2    | 98% | `apps/cli/` `engsim` binary with login, init, test, submit, status, result, workspace state & Express v5 integration |
+| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                                                  |
+| Content                   | Lead Dev | 10% | Shopverse sample tasks & hidden fault test                                                                           |
+| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                                                          |
 
 **Honest summary:**
-The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection, patch submission endpoints, grading worker pipeline, interactive web demo flow, viva oral defense verification, hint ladder progression, grounded Socratic AI mentor package, and transfer task assignment with weighted Bayesian evidence updates are operational with 151 passing tests across 17 test suites. Transfer missions enforce independent verification (AI mentor and hint ladder disabled), and passing submissions emit weighted transfer evidence (weight: 2.0) that transitions attempts to `completed` state. Next step is Phase 15: CLI Integration Verification (`engsim init`, `engsim submit`, `engsim status` against live Express API).
+The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection, patch submission endpoints, grading worker pipeline, interactive web demo flow, viva oral defense verification, hint ladder progression, grounded Socratic AI mentor package, transfer task assignment with weighted Bayesian evidence updates, and local developer CLI (`engsim`) with full lifecycle command integration are operational with 161 passing tests across 17 test suites. All 6 CLI commands (`login`, `init`, `test`, `submit`, `status`, `result`) are verified against live Express v5 API endpoints with persistent `.engsim.json` workspace tracking and Bearer auth. Next step is Phase 16: Diagnostic & Onboarding Flow Completion (`POST /v1/onboarding`, `POST /v1/diagnostic`).
 
 ---
 

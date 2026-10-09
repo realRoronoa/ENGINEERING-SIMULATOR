@@ -1,4 +1,9 @@
 import { loadConfig } from '../config/deviceToken.js';
+import type {
+  AttemptResponse,
+  SubmissionCreateResponse,
+  SubmissionPollResponse,
+} from '@engineering-simulator/contracts';
 
 export interface ApiResponse<T = unknown> {
   ok: boolean;
@@ -17,6 +22,10 @@ export class ApiClient {
   constructor(baseUrl?: string) {
     const config = loadConfig();
     this.baseUrl = baseUrl || config.apiBaseUrl || 'http://localhost:3000';
+  }
+
+  getBaseUrl(): string {
+    return this.baseUrl;
   }
 
   async request<T>(path: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
@@ -66,14 +75,38 @@ export class ApiClient {
     }
   }
 
-  async getAttempt(id: string): Promise<ApiResponse> {
-    return this.request(`/v1/attempts/${id}`, { method: 'GET' });
+  async getAttempt(id: string): Promise<ApiResponse<AttemptResponse>> {
+    return this.request<AttemptResponse>(`/v1/attempts/${id}`, { method: 'GET' });
   }
 
-  async createSession(mode: string): Promise<ApiResponse> {
-    return this.request('/v1/sessions', {
+  async createSession(
+    mode: string
+  ): Promise<ApiResponse<{ sessionId: string; createdAt: string }>> {
+    return this.request<{ sessionId: string; createdAt: string }>('/v1/sessions', {
       method: 'POST',
       body: JSON.stringify({ mode }),
+    });
+  }
+
+  async submitPatch(
+    attemptId: string,
+    patch: string,
+    structuredAnswers?: Array<{ questionId: string; answer: string }>,
+    clientChecksum?: string
+  ): Promise<ApiResponse<SubmissionCreateResponse>> {
+    return this.request<SubmissionCreateResponse>(`/v1/attempts/${attemptId}/submissions`, {
+      method: 'POST',
+      body: JSON.stringify({
+        patch,
+        ...(structuredAnswers ? { structuredAnswers } : {}),
+        ...(clientChecksum ? { clientChecksum } : {}),
+      }),
+    });
+  }
+
+  async getSubmission(submissionId: string): Promise<ApiResponse<SubmissionPollResponse>> {
+    return this.request<SubmissionPollResponse>(`/v1/submissions/${submissionId}`, {
+      method: 'GET',
     });
   }
 }

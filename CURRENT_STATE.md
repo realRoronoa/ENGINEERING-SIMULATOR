@@ -45,16 +45,16 @@ Shopverse standalone reference schema and seeds in `reference-systems/shopverse/
 - `reference-systems/shopverse/tests/api.test.ts` (5 tests passing)
 - `reference-systems/shopverse/tests/hidden/orderAtomicity.test.ts` (3 tests passing - fault injection & fix validation)
 - `apps/api/src/app.test.ts` (56 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling, E2E pipeline, viva start/answers/completion, attempt abandonment, hint ladder progression with exhaustion bounds, AI mentor grounding with prohibition guards, and transfer task assignment & evaluation)
-- `apps/cli/src/cli.test.ts` (5 tests passing - config, init workspace, patch submit, commander registry)
+- `apps/cli/src/cli.test.ts` (15 tests passing - config/device token storage, workspace tracking with `.engsim.json`, init workspace scaffolding, test command local validation, submit command with patch and diff resolution, status inspection, result evaluation polling/formatting, full Commander registry, ApiClient HTTP authorization, and live Express v5 API server integration)
 - `apps/worker/src/worker.test.ts` (10 tests passing - patch validation, test evaluation, evidence events, DB persistence & Bayesian skill update, transfer task grading with completion transition, queue batch draining, lifecycle)
 - `apps/web/src/App.test.tsx` (2 tests passing - header and headline renders)
 - `apps/web/src/features/mission-demo/missionDemoMachine.test.ts` (3 tests passing - state machine transitions)
 - `apps/web/src/features/demo/demo.test.tsx` (5 tests passing - demo mode, preloaded dashboard, mission consistency, safe recovery)
-- Total: 151 unit/integration tests passing cleanly in Vitest across 17 test suites.
+- Total: 161 unit/integration tests passing cleanly in Vitest across 17 test suites.
 
 ### Existing deployment state
 
-Local development mode (`npm run dev:api`, `npm run dev:web`). Production build outputs verified (`dist/` for web, api, contracts, and all packages).
+Local development mode (`npm run dev:api`, `npm run dev:web`). Production build outputs verified (`dist/` for web, api, cli, contracts, and all packages).
 
 ### Current blockers
 
@@ -62,4 +62,4 @@ None.
 
 ### Immediate next milestone
 
-Phase 15 — CLI Integration Verification (`engsim init`, `engsim submit`, `engsim status` against live Express API).
+Phase 16 — Diagnostic & Onboarding Flow Completion (`POST /v1/onboarding`, `POST /v1/diagnostic` per API contract).
