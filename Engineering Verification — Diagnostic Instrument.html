@@ -1,0 +1,1536 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Engineering Verification — Diagnostic Instrument</title>
+    <meta name="color-scheme" content="dark" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --s1: #111;
+        --s2: #1a1a1a;
+        --s3: #222;
+        --border: rgba(255, 255, 255, 0.08);
+        --text: #f7f8f8;
+        --muted: #a3a3a3;
+        --human: #f7f8f8;
+        --ai: #6ea8ff;
+        --inv: #f5a524;
+        --fail: #ff5d5d;
+        --ok: #3ddc84;
+        --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+        --sans: Inter, system-ui, sans-serif;
+        color-scheme: dark;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0);
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 56px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 15px/1.6 var(--sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+      :focus-visible {
+        outline: 2px solid var(--ai);
+        outline-offset: 2px;
+      }
+      .mono,
+      .tl {
+        font-family: var(--mono);
+      }
+      .tl {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(10, 10, 10, 0.92);
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(8px);
+      }
+      nav .wrap {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        height: 48px;
+      }
+      .logo {
+        font: 500 12px var(--mono);
+        letter-spacing: 0.1em;
+      }
+      .logo i {
+        color: var(--ok);
+        font-style: normal;
+      }
+      nav .links {
+        display: flex;
+        gap: 24px;
+        margin-left: auto;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      nav .links a {
+        text-decoration: none;
+      }
+      nav .links a:hover {
+        color: var(--text);
+      }
+      .btn {
+        display: inline-block;
+        font: 500 12px var(--mono);
+        letter-spacing: 0.08em;
+        padding: 10px 16px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text);
+        text-decoration: none;
+      }
+      .btn.p {
+        background: var(--text);
+        color: #0a0a0a;
+        border-color: var(--text);
+      }
+      .btn:hover {
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      .btn.p:hover {
+        background: #fff;
+      }
+      .sm {
+        padding: 6px 12px;
+        font-size: 11px;
+      }
+      section {
+        padding: 96px 0;
+        border-top: 1px solid var(--border);
+      }
+      h1 {
+        font-size: clamp(34px, 5.4vw, 68px);
+        line-height: 1.02;
+        letter-spacing: -0.035em;
+        font-weight: 800;
+        margin: 16px 0 20px;
+      }
+      h2 {
+        font-size: clamp(26px, 3.6vw, 44px);
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+        font-weight: 800;
+        margin: 12px 0 16px;
+        max-width: 820px;
+      }
+      .lead {
+        color: var(--muted);
+        max-width: 640px;
+        font-size: 17px;
+      }
+      .dim {
+        color: #6b6b6b;
+      }
+      .sec-h {
+        margin-bottom: 40px;
+      }
+      .sec-h .tl b {
+        color: var(--text);
+        font-weight: 500;
+        margin-right: 8px;
+      }
+      .hero {
+        padding: 64px 0 48px;
+        border: 0;
+      }
+      .cta {
+        display: flex;
+        gap: 12px;
+        margin-top: 28px;
+        flex-wrap: wrap;
+      }
+      /* status */
+      .st {
+        font: 500 11px var(--mono);
+        letter-spacing: 0.06em;
+        padding: 2px 6px;
+        border: 1px solid currentColor;
+        border-radius: 3px;
+        white-space: nowrap;
+      }
+      .st.ok {
+        color: var(--ok);
+      }
+      .st.fail {
+        color: var(--fail);
+      }
+      .st.rev {
+        color: var(--inv);
+      }
+      .st.ai {
+        color: var(--ai);
+      }
+      /* IDE */
+      .ide {
+        margin-top: 48px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--s1);
+        overflow: hidden;
+      }
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 8px 12px;
+        background: var(--s2);
+        border-bottom: 1px solid var(--border);
+        flex-wrap: wrap;
+      }
+      .bar .sp {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .rail {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        overflow-x: auto;
+      }
+      .rail span {
+        flex: 1;
+        min-width: 104px;
+        padding: 8px 10px;
+        font: 500 10px var(--mono);
+        letter-spacing: 0.06em;
+        color: #666;
+        border-right: 1px solid var(--border);
+        white-space: nowrap;
+      }
+      .rail span.on {
+        color: var(--inv);
+        background: var(--s2);
+      }
+      .rail span.done {
+        color: var(--text);
+      }
+      .rail span.done::before {
+        content: '✓ ';
+        color: var(--ok);
+      }
+      .rail span.f.on,
+      .rail span.f.done {
+        color: var(--fail);
+      }
+      .rail span.f.done::before {
+        content: '✕ ';
+        color: var(--fail);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 200px 1fr 300px;
+        min-height: 420px;
+      }
+      .grid > div {
+        min-width: 0;
+      }
+      .col {
+        border-right: 1px solid var(--border);
+      }
+      .col:last-child {
+        border: 0;
+      }
+      .pane-h {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .tree {
+        padding: 8px 0;
+        font: 12px/1.9 var(--mono);
+        color: var(--muted);
+      }
+      .tree div {
+        padding: 0 12px;
+      }
+      .tree .f {
+        cursor: pointer;
+        background: none;
+        border: 0;
+        color: inherit;
+        font: inherit;
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0 12px 0 28px;
+      }
+      .tree .f:hover {
+        background: var(--s2);
+        color: var(--text);
+      }
+      .tree .f.on {
+        background: var(--s3);
+        color: var(--text);
+      }
+      .ticket {
+        margin: 8px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-left: 2px solid var(--fail);
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      .code {
+        font: 12px/1.7 var(--mono);
+        padding: 8px 0;
+        overflow: auto;
+        height: 300px;
+      }
+      .ln {
+        display: flex;
+        padding-right: 12px;
+        white-space: pre;
+      }
+      .ln b {
+        width: 40px;
+        text-align: right;
+        padding-right: 14px;
+        color: #555;
+        font-weight: 400;
+        flex: none;
+        user-select: none;
+      }
+      .ln.hl {
+        background: rgba(245, 165, 36, 0.12);
+        box-shadow: inset 2px 0 var(--inv);
+      }
+      .ln.add {
+        background: rgba(61, 220, 132, 0.1);
+        box-shadow: inset 2px 0 var(--ok);
+      }
+      .ln.bad {
+        background: rgba(255, 93, 93, 0.1);
+        box-shadow: inset 2px 0 var(--fail);
+      }
+      .k {
+        color: #c0a0ff;
+      }
+      .c {
+        color: #6b6b6b;
+      }
+      .s {
+        color: #9ad1a0;
+      }
+      .ai-p {
+        padding: 10px 12px;
+        font-size: 12px;
+        height: calc(100% - 34px);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .msgs {
+        flex: 1;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 290px;
+      }
+      .m {
+        padding-left: 10px;
+        border-left: 2px solid var(--human);
+        color: var(--text);
+      }
+      .m.ai {
+        border-color: var(--ai);
+      }
+      .m.rej {
+        border-color: var(--fail);
+      }
+      .m .tl {
+        display: block;
+        margin-bottom: 2px;
+      }
+      .m.ai .tl {
+        color: var(--ai);
+      }
+      .m.rej .tl {
+        color: var(--fail);
+      }
+      .q {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .q button {
+        text-align: left;
+        background: var(--s2);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font: 11px var(--mono);
+        padding: 6px 8px;
+        border-radius: 4px;
+      }
+      .q button:hover {
+        color: var(--text);
+      }
+      .term {
+        border-top: 1px solid var(--border);
+        background: var(--bg);
+      }
+      .out {
+        font: 12px/1.6 var(--mono);
+        padding: 8px 12px;
+        height: 150px;
+        overflow: auto;
+        white-space: pre-wrap;
+        color: #cfcfcf;
+      }
+      .out .f {
+        color: var(--fail);
+      }
+      .out .p {
+        color: var(--ok);
+      }
+      .out .i {
+        color: var(--inv);
+      }
+      .out .d {
+        color: #777;
+      }
+      .cmd {
+        display: flex;
+        gap: 8px;
+        padding: 6px 12px;
+        border-top: 1px solid var(--border);
+        font: 12px var(--mono);
+      }
+      .cmd input {
+        flex: 1;
+        background: none;
+        border: 0;
+        color: var(--text);
+        font: inherit;
+        caret-color: var(--ok);
+      }
+      .cmd input:focus-visible {
+        outline: 0;
+      }
+      .signal {
+        display: none;
+        padding: 12px;
+        border-top: 1px solid var(--ok);
+        background: rgba(61, 220, 132, 0.07);
+        font: 500 12px var(--mono);
+        letter-spacing: 0.08em;
+        color: var(--ok);
+      }
+      .signal.on {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .mobile {
+        display: none;
+        padding: 32px 24px;
+        border: 1px solid var(--border);
+        margin-top: 48px;
+        font-family: var(--mono);
+      }
+      /* problem */
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+      }
+      .cols > div {
+        background: var(--bg);
+        padding: 24px;
+      }
+      .cols ul {
+        margin: 12px 0 0;
+        padding: 0;
+        list-style: none;
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .cols li {
+        padding: 6px 0;
+        border-top: 1px solid var(--border);
+      }
+      .noise {
+        font: 11px/1.5 var(--mono);
+        color: #555;
+        margin-top: 32px;
+        max-height: 112px;
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(#000, transparent);
+        mask-image: linear-gradient(#000, transparent);
+      }
+      /* evidence */
+      .ev {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+      }
+      .ev > div {
+        background: var(--s1);
+        padding: 24px;
+        min-width: 0;
+      }
+      .kv {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-top: 1px solid var(--border);
+        font-size: 13px;
+      }
+      .kv span:first-child {
+        color: var(--muted);
+      }
+      .score {
+        font: 500 56px/1 var(--mono);
+        font-variant-numeric: tabular-nums;
+        margin: 8px 0 16px;
+      }
+      .ti {
+        display: grid;
+        grid-template-columns: 52px 14px 1fr;
+        gap: 10px;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: 0;
+        color: var(--text);
+        padding: 6px 4px;
+        font: 12px var(--mono);
+        border-radius: 4px;
+      }
+      .ti:hover,
+      .ti.on {
+        background: var(--s2);
+      }
+      .ti .dot {
+        width: 9px;
+        height: 9px;
+        margin-top: 5px;
+        border-radius: 50%;
+        background: var(--human);
+        position: relative;
+      }
+      .ti .dot.ai {
+        background: var(--ai);
+      }
+      .ti .dot.fail {
+        background: var(--fail);
+      }
+      .ti .dot.inv {
+        background: var(--inv);
+      }
+      .ti .dot.ok {
+        background: var(--ok);
+      }
+      .ti .t {
+        color: #777;
+      }
+      .detail {
+        margin-top: 16px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        font: 12px/1.6 var(--mono);
+        color: var(--muted);
+        min-height: 96px;
+      }
+      .detail b {
+        color: var(--text);
+        font-weight: 500;
+      }
+      /* table */
+      .tbl {
+        width: 100%;
+        border-collapse: collapse;
+        font: 13px var(--mono);
+        border: 1px solid var(--border);
+      }
+      .tbl th {
+        text-align: left;
+        font-weight: 500;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        padding: 10px 12px;
+        background: var(--s1);
+        border-bottom: 1px solid var(--border);
+      }
+      .tbl td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+        font-variant-numeric: tabular-nums;
+      }
+      .tbl tr.r {
+        cursor: pointer;
+      }
+      .tbl tr.r:hover td,
+      .tbl tr.sel td {
+        background: var(--s1);
+      }
+      .sc {
+        overflow-x: auto;
+      }
+      .mini {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-top: 0;
+      }
+      .mini div {
+        background: var(--bg);
+        padding: 12px;
+        font: 12px var(--mono);
+        color: var(--muted);
+      }
+      .mini b {
+        display: block;
+        color: var(--text);
+        font-weight: 500;
+        margin-top: 2px;
+      }
+      /* how */
+      .steps {
+        border-left: 1px solid var(--border);
+        margin-left: 12px;
+      }
+      .step {
+        position: relative;
+        padding: 0 0 32px 32px;
+      }
+      .step::before {
+        content: '';
+        position: absolute;
+        left: -5px;
+        top: 8px;
+        width: 9px;
+        height: 9px;
+        background: var(--bg);
+        border: 1px solid var(--muted);
+        border-radius: 50%;
+      }
+      .step:last-child {
+        padding: 0 0 0 32px;
+      }
+      .step:last-child::before {
+        background: var(--ok);
+        border-color: var(--ok);
+      }
+      .step h3 {
+        margin: 0;
+        font: 500 13px var(--mono);
+        letter-spacing: 0.1em;
+      }
+      .step h3 i {
+        color: #666;
+        font-style: normal;
+        margin-right: 12px;
+      }
+      .step p {
+        margin: 4px 0 0;
+        color: var(--muted);
+      }
+      /* arch */
+      .arch {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        border: 1px solid var(--border);
+      }
+      .arch div {
+        padding: 16px 12px;
+        border-right: 1px solid var(--border);
+        font: 11px/1.5 var(--mono);
+        color: var(--muted);
+      }
+      .arch div:last-child {
+        border: 0;
+      }
+      .arch b {
+        display: block;
+        color: var(--text);
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        margin-bottom: 6px;
+      }
+      .spec {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-top: 32px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .spec b {
+        display: block;
+        color: var(--text);
+        font: 500 12px var(--mono);
+        margin-bottom: 4px;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 48px 0 calc(32px + env(safe-area-inset-bottom, 0));
+        font-size: 13px;
+        color: var(--muted);
+      }
+      footer .wrap {
+        display: flex;
+        gap: 48px;
+        flex-wrap: wrap;
+      }
+      footer a {
+        display: block;
+        text-decoration: none;
+        padding: 2px 0;
+      }
+      footer a:hover {
+        color: var(--text);
+      }
+      footer .tl {
+        color: #666;
+        margin-bottom: 6px;
+      }
+      .cur {
+        display: inline-block;
+        width: 7px;
+        height: 13px;
+        background: var(--ok);
+        vertical-align: -2px;
+        animation: bl 1s steps(1) infinite;
+      }
+      @keyframes bl {
+        50% {
+          opacity: 0;
+        }
+      }
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .ide {
+          display: none;
+        }
+        .mobile {
+          display: block;
+        }
+        nav .links {
+          display: none;
+        }
+        nav .btn {
+          margin-left: auto;
+        }
+        .cols,
+        .ev {
+          grid-template-columns: 1fr;
+        }
+        .arch {
+          grid-template-columns: 1fr;
+        }
+        .arch div {
+          border: 0;
+          border-bottom: 1px solid var(--border);
+        }
+        .spec {
+          grid-template-columns: 1fr;
+        }
+        .mini {
+          grid-template-columns: 1fr 1fr;
+        }
+        section {
+          padding: 64px 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          scroll-behavior: auto !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="wrap">
+        <a class="logo" href="#top">◉ ENGINEERING<i>/</i>VERIFICATION</a>
+        <div class="links">
+          <a href="#mission">Mission</a><a href="#evidence">Evidence</a
+          ><a href="#manager">Candidates</a><a href="#how">Method</a><a href="#trust">Trust</a>
+        </div>
+        <a class="btn p sm" href="#pilot">REQUEST PILOT</a>
+      </div>
+    </nav>
+
+    <header class="hero" id="top">
+      <div class="wrap">
+        <div class="tl">MISSION 4412 · PAYMENTS-SERVICE · LIVE SESSION</div>
+        <h1>
+          The AI era made code cheap.<br /><span style="color: var(--muted)"
+            >Engineering still isn't.</span
+          >
+        </h1>
+        <p class="lead">
+          Evaluate engineering judgment where it actually matters: investigation, debugging,
+          verification, and ownership inside realistic codebases.
+        </p>
+        <div class="cta">
+          <a class="btn p" href="#pilot">REQUEST PILOT</a
+          ><button class="btn" id="play2">EXPLORE THE MISSION</button>
+        </div>
+
+        <div class="ide" id="mission" aria-label="Simulated mission IDE">
+          <div class="bar">
+            <span class="tl" style="color: var(--text)">TICKET-4412</span
+            ><span class="tl">payments-service</span><span class="tl mono" id="clock">00:00</span>
+            <div class="sp">
+              <button class="btn sm" id="play">▶ PLAY MISSION</button
+              ><button class="btn sm" id="reset">RESET</button
+              ><span class="st rev" id="stat">! IDLE</span>
+            </div>
+          </div>
+          <div class="rail" id="rail" aria-live="polite"></div>
+          <div class="grid">
+            <div class="col">
+              <div class="pane-h tl">Files</div>
+              <div class="tree" id="tree">
+                <div>payments-service/</div>
+                <div>&nbsp;&nbsp;src/</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;api/</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;payments/</div>
+                <button class="f" data-f="payment.service.ts">payment.service.ts</button>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;retry/</div>
+                <button class="f on" data-f="retry.ts">retry.ts</button>
+                <div>&nbsp;&nbsp;tests/</div>
+                <button class="f" data-f="retry.test.ts">retry.test.ts</button>
+                <div>&nbsp;&nbsp;package.json</div>
+              </div>
+              <div class="ticket">
+                <span class="tl">TICKET-4412</span><br />Payments return HTTP 500 during retry
+                spikes. Investigate the failure and submit a verified fix.
+              </div>
+            </div>
+            <div class="col">
+              <div class="pane-h tl" id="fname">src/retry/retry.ts</div>
+              <div class="code" id="code" tabindex="0"></div>
+            </div>
+            <div>
+              <div class="pane-h tl" style="color: var(--ai)">AI Investigator</div>
+              <div class="ai-p">
+                <div class="tl" id="ctx" style="font-size: 10px">Context: retry.ts</div>
+                <div class="msgs" id="msgs" aria-live="polite"></div>
+                <div class="q" id="q"></div>
+              </div>
+            </div>
+          </div>
+          <div class="term">
+            <div class="pane-h tl">Terminal</div>
+            <div class="out" id="out" role="log"></div>
+            <form class="cmd" id="cmd">
+              <span style="color: var(--ok)">$</span
+              ><input
+                id="in"
+                autocomplete="off"
+                spellcheck="false"
+                aria-label="Terminal command"
+                placeholder="type: npm test"
+              />
+            </form>
+          </div>
+          <div class="signal" id="sig">
+            <span>✓ [SIGNAL ACQUIRED] SYSTEM DEBUGGING VERIFIED</span
+            ><span>42/42 TESTS · AI SUGGESTION REJECTED · ROOT CAUSE: RACE CONDITION</span>
+          </div>
+        </div>
+        <div class="mobile">
+          <div class="tl">MISSION IDE</div>
+          <p>Best experienced on a desktop or laptop.</p>
+          <a class="btn" href="#problem">RETURN TO OVERVIEW</a>
+        </div>
+      </div>
+    </header>
+
+    <section id="problem">
+      <div class="wrap">
+        <div class="sec-h">
+          <div class="tl"><b>01</b>The problem</div>
+          <h2>AI can write the patch.<br />Can the engineer verify it?</h2>
+          <p class="lead">
+            The final code is only one piece of evidence. Real engineering happens inside imperfect
+            systems.
+          </p>
+        </div>
+        <div class="cols">
+          <div>
+            <div class="tl">The old signal</div>
+            <ul>
+              <li>Algorithm recall</li>
+              <li>Isolated implementation</li>
+              <li>Final output only</li>
+              <li>Greenfield, no context</li>
+            </ul>
+          </div>
+          <div>
+            <div class="tl" style="color: var(--ok)">The signal that remains</div>
+            <ul>
+              <li>Unfamiliar systems</li>
+              <li>Debugging under ambiguity</li>
+              <li>AI assistance, challenged</li>
+              <li>Verification and ownership</li>
+            </ul>
+          </div>
+        </div>
+        <div class="noise" aria-hidden="true">
+          [ERR] retry.ts:6 attempt counter reset · 14:02:11 POST /charge 500<br />[WARN] pool
+          exhausted 18/20 · ai-suggest: raise maxAttempts → 10<br />[ERR] ECONNRESET db-primary ·
+          14:02:12 POST /charge 500 · UnhandledPromiseRejection<br />[WARN] retry storm detected ·
+          213 req/s · idempotency-key reused
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence">
+      <div class="wrap">
+        <div class="sec-h">
+          <div class="tl"><b>02</b>Evidence</div>
+          <h2>Test the investigation, not just the answer.</h2>
+          <p class="lead">
+            Select an event. Each one is meaningful evidence of judgment, not a keystroke log.
+          </p>
+        </div>
+        <div class="ev">
+          <div>
+            <div class="tl">Engineering verification</div>
+            <div class="kv"><span>Candidate</span><span class="mono">Jane Doe</span></div>
+            <div class="kv">
+              <span>Mission</span><span class="mono">Payment Retry Failure</span>
+            </div>
+            <div class="kv"><span>Complexity</span><span class="mono">HIGH</span></div>
+            <div class="tl" style="margin-top: 20px">Verification score</div>
+            <div class="score">94</div>
+            <div class="kv">
+              <span>Root cause understanding</span><span class="st ok">✓ VERIFIED</span>
+            </div>
+            <div class="kv"><span>AI dependency</span><span class="st ok">LOW</span></div>
+            <div class="kv"><span>Testing discipline</span><span class="st ok">✓ STRONG</span></div>
+            <div class="kv"><span>Debugging</span><span class="st ok">✓ STRONG</span></div>
+            <div class="kv"><span>Verification</span><span class="st ok">✓ VERIFIED</span></div>
+            <div class="kv"><span>Ownership</span><span class="st ok">HIGH</span></div>
+          </div>
+          <div>
+            <div class="tl" style="margin-bottom: 8px">Investigation timeline</div>
+            <div id="tli"></div>
+            <div class="detail" id="det"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="manager">
+      <div class="wrap">
+        <div class="sec-h">
+          <div class="tl"><b>03</b>Reviewer view</div>
+          <h2>Forensic evidence, not HR analytics.</h2>
+        </div>
+        <div class="sc">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>CANDIDATE</th>
+                <th>MISSION</th>
+                <th>COMPLEXITY</th>
+                <th>VERIFICATION</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div class="mini" id="mini"></div>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="wrap">
+        <div class="sec-h">
+          <div class="tl"><b>04</b>Method</div>
+          <h2>Noise → investigation → evidence → signal.</h2>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <h3><i>01</i>INVESTIGATE</h3>
+            <p>Read the system. Understand the failure.</p>
+          </div>
+          <div class="step">
+            <h3><i>02</i>QUESTION</h3>
+            <p>Use AI. Form hypotheses.</p>
+          </div>
+          <div class="step">
+            <h3><i>03</i>TEST</h3>
+            <p>Challenge assumptions. Write tests.</p>
+          </div>
+          <div class="step">
+            <h3><i>04</i>DEBUG</h3>
+            <p>Trace the real failure.</p>
+          </div>
+          <div class="step">
+            <h3><i>05</i>VERIFY</h3>
+            <p>Run deterministic validation.</p>
+          </div>
+          <div class="step">
+            <h3><i>06</i>OWN</h3>
+            <p>Explain the root cause. Stand behind the result.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="trust">
+      <div class="wrap">
+        <div class="sec-h">
+          <div class="tl"><b>05</b>Trust architecture</div>
+          <h2>Measure judgment where code meets reality.</h2>
+        </div>
+        <div class="arch">
+          <div><b>MISSION</b>versioned scenario</div>
+          <div><b>ISOLATED ENV</b>Firecracker microVM</div>
+          <div><b>REPOSITORY</b>real multi-file codebase</div>
+          <div><b>CONTROLLED AI</b>logged, scoped context</div>
+          <div><b>TESTS</b>deterministic validation</div>
+          <div><b>EVIDENCE</b>immutable event log</div>
+          <div><b>RESULT</b>verified signal</div>
+        </div>
+        <div class="spec">
+          <p>
+            <b>Isolated execution</b>Each session runs in its own container or microVM, destroyed on
+            submit.
+          </p>
+          <p><b>Network isolation</b>Egress denied by default. Only the AI gateway is reachable.</p>
+          <p>
+            <b>Immutable evidence</b>Append-only, hash-chained session events. Reviewers see what
+            happened, unedited.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="pilot">
+      <div class="wrap">
+        <div class="tl">Next</div>
+        <h2>See an engineer solve a real incident.</h2>
+        <p class="lead">Run a pilot with one mission and your own reviewers.</p>
+        <div class="cta">
+          <a class="btn p" href="mailto:pilot@example.com">REQUEST PILOT</a
+          ><a class="btn" href="#evidence">VIEW EVIDENCE</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <div>
+          <div class="tl">ENGINEERING VERIFICATION</div>
+          <span class="mono">© 2026</span>
+        </div>
+        <div>
+          <div class="tl">Product</div>
+          <a href="#mission">Mission IDE</a><a href="#evidence">Evidence Engine</a
+          ><a href="#trust">Enterprise Trust</a>
+        </div>
+        <div>
+          <div class="tl">Company</div>
+          <a href="#">About</a><a href="#">Contact</a>
+        </div>
+        <div>
+          <div class="tl">Resources</div>
+          <a href="#">Documentation</a><a href="#">Research</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      const $ = (id) => document.getElementById(id),
+        sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+      const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+      const hlx = (s) =>
+        esc(s)
+          .replace(/(\/\/.*)$/, '<span class="c">$1</span>')
+          .replace(
+            /\b(import|from|export|async|await|function|const|let|if|return|throw|new|try|catch|describe|it|expect)\b/g,
+            '<span class="k">$1</span>'
+          )
+          .replace(/('[^']*')/g, '<span class="s">$1</span>');
+      const SRC = {
+        'retry.ts': {
+          path: 'src/retry/retry.ts',
+          bug: `import { sleep } from '../util/time';
+import { PaymentError } from '../payments/errors';
+
+export async function withRetry<T>(key: string, fn: () => Promise<T>, max = 3) {
+  // attempt count lives in this call frame
+  let attempts = 0;
+  while (true) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (++attempts >= max) throw new PaymentError(500, 'Retry limit exceeded');
+      await sleep(50 * 2 ** attempts);
+    }
+  }
+}`,
+          fix: `import { sleep } from '../util/time';
+import { PaymentError } from '../payments/errors';
+import { attemptStore } from './attempt-store';
+
+export async function withRetry<T>(key: string, fn: () => Promise<T>, max = 3) {
+  // attempts keyed by idempotency key, atomically incremented
+  while (true) {
+    try {
+      return await fn();
+    } catch (err) {
+      const n = await attemptStore.incr(key);
+      if (n >= max) throw new PaymentError(409, 'Retry limit exceeded');
+      await sleep(50 * 2 ** n);
+    }
+  }
+}`,
+          hb: [6],
+          hf: [4, 5, 10, 11],
+        },
+        'payment.service.ts': {
+          path: 'src/payments/payment.service.ts',
+          bug: `import { withRetry } from '../retry/retry';
+import { db } from '../database/pool';
+
+export async function charge(req: ChargeRequest) {
+  // handler re-enters charge() on 503 from gateway
+  const key = req.idempotencyKey;
+  return withRetry(key, async () => {
+    const res = await gateway.post('/charge', req);
+    if (res.status === 503) return charge(req); // re-entry
+    await db.ledger.insert({ key, amount: req.amount });
+    return res.data;
+  });
+}`,
+          hb: [7, 9],
+        },
+        'retry.test.ts': {
+          path: 'tests/retry.test.ts',
+          bug: `import { withRetry } from '../src/retry/retry';
+
+describe('retry under concurrent re-entry', () => {
+  it('shares the attempt budget per idempotency key', async () => {
+    const res = await simulateSpike({ key: 'k1', concurrency: 8 });
+    expect(res.status).toBe(200);
+  });
+  it('stops after max attempts', async () => {
+    await expect(withRetry('k2', alwaysFail, 3)).rejects.toThrow();
+  });
+});`,
+          hb: [5, 6],
+        },
+      };
+      const st = { file: 'retry.ts', fixed: false, marks: [], run: 0, adds: false, t0: 0 };
+      function render() {
+        const f = SRC[st.file],
+          lines = (st.fixed && f.fix ? f.fix : f.bug).split('\n'),
+          m = st.marks,
+          fx = st.fixed && f.hf;
+        $('fname').textContent = f.path;
+        $('code').innerHTML = lines
+          .map((l, i) => {
+            const n = i + 1;
+            let c = '';
+            if (fx && f.hf.includes(n) && st.adds) c = 'add';
+            else if (m.includes(st.file + ':hl') && f.hb && f.hb.includes(n) && !st.fixed) c = 'hl';
+            else if (m.includes(st.file + ':bad') && f.hb && f.hb.includes(n)) c = 'bad';
+            return `<div class="ln ${c}"><b>${n}</b>${hlx(l) || ' '}</div>`;
+          })
+          .join('');
+        document
+          .querySelectorAll('.tree .f')
+          .forEach((b) => b.classList.toggle('on', b.dataset.f === st.file));
+      }
+      function open(f) {
+        st.file = f;
+        $('ctx').textContent = 'Context: ' + f;
+        render();
+      }
+      document.querySelectorAll('.tree .f').forEach((b) => (b.onclick = () => open(b.dataset.f)));
+      const out = $('out');
+      function line(t, c = '') {
+        const d = document.createElement('div');
+        d.className = c;
+        d.textContent = t;
+        out.appendChild(d);
+        out.scrollTop = 1e9;
+      }
+      function msg(w, t, c = '') {
+        const d = document.createElement('div');
+        d.className = 'm ' + c;
+        d.innerHTML = '<span class="tl">' + w + '</span>' + t;
+        $('msgs').appendChild(d);
+        $('msgs').scrollTop = 1e9;
+      }
+      function setStat(t, c) {
+        const s = $('stat');
+        s.textContent = t;
+        s.className = 'st ' + c;
+      }
+      async function test(tok) {
+        const fx = st.fixed;
+        line('$ npm test', 'd');
+        setStat('! RUNNING', 'rev');
+        const L = fx
+          ? [
+              ['> jest --runInBand', ''],
+              ['PASS  tests/retry.test.ts', 'p'],
+              ['PASS  tests/payments.test.ts', 'p'],
+              ['PASS  tests/api.test.ts', 'p'],
+              ['', ''],
+              ['Tests:  42 passed, 42 total  ✓', 'p'],
+            ]
+          : [
+              ['> jest --runInBand', ''],
+              ['FAIL  tests/retry.test.ts', 'f'],
+              ['  ● retry under concurrent re-entry › shares the attempt budget', 'f'],
+              ['    Expected: 200', 'f'],
+              ['    Received: 500   Retry limit exceeded', 'f'],
+              ['      at withRetry (src/retry/retry.ts:11:35)', 'd'],
+              ['      at charge (src/payments/payment.service.ts:9:12)', 'd'],
+              ['Tests:  1 failed, 41 passed, 42 total  ✕', 'f'],
+            ];
+        for (const [t, c] of L) {
+          if (tok !== st.run) return;
+          await sleep(220);
+          line(t, c);
+        }
+        setStat(fx ? '✓ VERIFIED' : '✕ FAILED', fx ? 'ok' : 'fail');
+      }
+      const STEPS = [
+        'AI SUGGESTION',
+        'TEST RUN',
+        'FAILURE',
+        'INVESTIGATE',
+        'REJECT AI',
+        'ROOT CAUSE',
+        'FIX',
+        '42/42 PASS',
+        'SIGNAL',
+      ];
+      const rail = $('rail');
+      rail.innerHTML = STEPS.map(
+        (s, i) => `<span class="${[2, 4].includes(i) ? 'f' : ''}">${i + 1} ${s}</span>`
+      ).join('');
+      function mark(i) {
+        [...rail.children].forEach((c, j) => {
+          c.classList.toggle('on', j === i);
+          c.classList.toggle('done', j < i);
+        });
+      }
+      function reset() {
+        st.run++;
+        st.fixed = false;
+        st.marks = [];
+        st.adds = false;
+        $('msgs').innerHTML = '';
+        out.innerHTML = '';
+        $('sig').classList.remove('on');
+        mark(-1);
+        setStat('! IDLE', 'rev');
+        open('retry.ts');
+        out.innerHTML = '<div class="d">sandbox ready · repo mounted · network: isolated</div>';
+        msg('Candidate', 'Starting on TICKET-4412. Reading retry.ts.');
+        line('$ ', 'd');
+      }
+      async function play() {
+        reset();
+        const tok = st.run;
+        st.t0 = Date.now();
+        const w = async (ms) => {
+          await sleep(ms);
+          return tok === st.run;
+        };
+        mark(0);
+        setStat('! INVESTIGATING', 'rev');
+        if (!(await w(900))) return;
+        msg(
+          'AI Investigator',
+          'Likely cause: <b>maxAttempts</b> too low for spike traffic. Suggested fix: raise <span class="mono">max</span> from 3 to 10.',
+          'ai'
+        );
+        st.marks = ['retry.ts:hl'];
+        render();
+        if (!(await w(1800))) return;
+        mark(1);
+        await test(tok);
+        if (tok !== st.run) return;
+        mark(2);
+        if (!(await w(1200))) return;
+        mark(3);
+        msg(
+          'Candidate',
+          'Still 500 with a higher limit would hide it. Where is the counter shared?'
+        );
+        open('payment.service.ts');
+        st.marks = ['payment.service.ts:hl'];
+        render();
+        line('$ cat src/payments/payment.service.ts', 'd');
+        if (!(await w(2200))) return;
+        mark(4);
+        msg(
+          'Candidate',
+          'Rejecting suggestion: charge() re-enters withRetry, so attempts resets each time.',
+          'rej'
+        );
+        if (!(await w(1800))) return;
+        mark(5);
+        open('retry.ts');
+        st.marks = ['retry.ts:hl'];
+        render();
+        setStat('! ROOT CAUSE', 'rev');
+        msg(
+          'Candidate',
+          'Root cause: per-frame counter + re-entry race. Budget must be shared per idempotency key.'
+        );
+        if (!(await w(2200))) return;
+        mark(6);
+        st.fixed = true;
+        st.adds = true;
+        st.marks = [];
+        render();
+        line('$ edit src/retry/retry.ts  (+attemptStore.incr(key))', 'd');
+        if (!(await w(1600))) return;
+        mark(7);
+        await test(tok);
+        if (tok !== st.run) return;
+        mark(8);
+        [...rail.children].forEach((c) => c.classList.add('done'));
+        $('sig').classList.add('on');
+      }
+      $('play').onclick = play;
+      $('reset').onclick = reset;
+      $('play2').onclick = () => {
+        $('mission').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(play, 500);
+      };
+      $('cmd').onsubmit = (e) => {
+        e.preventDefault();
+        const v = $('in').value.trim();
+        $('in').value = '';
+        if (!v) return;
+        st.run++;
+        if (v === 'npm test') test(st.run);
+        else if (v === 'clear') out.innerHTML = '';
+        else {
+          line('$ ' + v, 'd');
+          line('sh: only `npm test` and `clear` are available in this prototype', 'i');
+        }
+      };
+      const QS = [
+        [
+          'Why is this returning 500?',
+          'The retry handler appears to reset the attempt counter when the request is re-entered. I cannot confirm without payment.service.ts.',
+          'retry.ts, retry.test.ts · 1 stack frame',
+        ],
+        [
+          'Is raising max safe?',
+          'Raising max only delays the 500 and may amplify load during spikes. Verify with the failing test first.',
+          'retry.test.ts · 1 test',
+        ],
+        [
+          'Where is retry re-entered?',
+          'payment.service.ts line 9 calls charge() on 503, which creates a new withRetry frame.',
+          'payment.service.ts · 2 stack frames',
+        ],
+      ];
+      $('q').innerHTML = QS.map((q, i) => `<button data-i="${i}">› ${q[0]}</button>`).join('');
+      $('q').onclick = (e) => {
+        const b = e.target.closest('button');
+        if (!b) return;
+        const q = QS[b.dataset.i];
+        msg('Candidate', q[0]);
+        setTimeout(
+          () =>
+            msg(
+              'AI Investigator',
+              q[1] + '<br><span class="tl">Evidence used: ' + q[2] + '</span>',
+              'ai'
+            ),
+          500
+        );
+      };
+      setInterval(() => {
+        if (st.t0 && !$('sig').classList.contains('on')) {
+          const s = Math.floor((Date.now() - st.t0) / 1000);
+          $('clock').textContent =
+            String((s / 60) | 0).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+        }
+      }, 500);
+      reset();
+      /* evidence */
+      const EV = [
+        [
+          '14:02',
+          'fail',
+          'FAILURE',
+          'Encountered HTTP 500 on <b>retry spike</b> test. 1 of 42 failing.',
+        ],
+        [
+          '14:04',
+          'inv',
+          'INSPECTION',
+          'Opened <b>retry.ts</b>, then payment.service.ts. Followed stack frame retry.ts:11.',
+        ],
+        [
+          '14:06',
+          'ai',
+          'AI QUERY',
+          'Asked: "Why is this returning 500?" Context: 3 files, 1 test.',
+        ],
+        [
+          '14:08',
+          'fail',
+          'AI SUGGESTION REJECTED',
+          'AI proposed raising max to 10. Candidate rejected it: <b>limit change hides the defect</b>.',
+        ],
+        [
+          '14:11',
+          'human',
+          'TEST ADDED',
+          'Added regression test: shared attempt budget per idempotency key.',
+        ],
+        [
+          '14:14',
+          'inv',
+          'ROOT CAUSE',
+          'Identified <b>race condition</b>: attempts reset on re-entry from charge().',
+        ],
+        [
+          '14:17',
+          'human',
+          'FIX APPLIED',
+          'Moved counter to atomic attemptStore keyed by idempotency key. 8 lines changed.',
+        ],
+        [
+          '14:18',
+          'ok',
+          'VERIFIED',
+          '<b>42/42 tests passed.</b> Regression test green. Candidate wrote root-cause summary.',
+        ],
+      ];
+      $('tli').innerHTML = EV.map(
+        (e, i) =>
+          `<button class="ti" data-i="${i}"><span class="t">${e[0]}</span><span class="dot ${e[1]}"></span><span>${e[2]}</span></button>`
+      ).join('');
+      function sel(i) {
+        document.querySelectorAll('.ti').forEach((b, j) => b.classList.toggle('on', i === j));
+        $('det').innerHTML =
+          '<span class="tl">' + EV[i][0] + ' · ' + EV[i][2] + '</span><br>' + EV[i][3];
+      }
+      $('tli').onclick = (e) => {
+        const b = e.target.closest('.ti');
+        if (b) sel(+b.dataset.i);
+      };
+      sel(3);
+      /* manager */
+      const C = [
+        [
+          'Jane Doe',
+          'Retry Bug',
+          'HIGH',
+          'ok',
+          '✓ 94',
+          [
+            '4 runs · 1 regression test',
+            '3 queries · 1 rejected',
+            'Race condition',
+            '14 min · 8 events',
+          ],
+        ],
+        [
+          'John Smith',
+          'Cache Bug',
+          'MEDIUM',
+          'rev',
+          '! 62',
+          ['2 runs · 0 new tests', '6 queries · 0 rejected', 'Symptom only', '31 min · 12 events'],
+        ],
+        [
+          'Alex Kumar',
+          'API Failure',
+          'HIGH',
+          'ok',
+          '✓ 89',
+          [
+            '5 runs · 2 new tests',
+            '2 queries · 1 rejected',
+            'Timeout config + pool',
+            '22 min · 9 events',
+          ],
+        ],
+      ];
+      $('rows').innerHTML = C.map(
+        (c, i) =>
+          `<tr class="r${i ? '' : ' sel'}" data-i="${i}" tabindex="0"><td>${c[0]}</td><td>${c[1]}</td><td>${c[2]}</td><td><span class="st ${c[3]}">${c[4]}</span></td></tr>`
+      ).join('');
+      function pick(i) {
+        document.querySelectorAll('#rows tr').forEach((r, j) => r.classList.toggle('sel', i === j));
+        const L = ['TEST BEHAVIOR', 'AI INTERACTION', 'ROOT CAUSE', 'TIMELINE'];
+        $('mini').innerHTML = C[i][5].map((v, j) => `<div>${L[j]}<b>${v}</b></div>`).join('');
+      }
+      $('rows').onclick = (e) => {
+        const r = e.target.closest('tr');
+        if (r) pick(+r.dataset.i);
+      };
+      $('rows').onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          const r = e.target.closest('tr');
+          if (r) pick(+r.dataset.i);
+        }
+      };
+      pick(0);
+    </script>
+  </body>
+</html>

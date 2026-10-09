@@ -1,72 +1,71 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { LandingPage } from './pages/LandingPage.js';
+import { PlaceholderPage } from './components/placeholders/PlaceholderPage.js';
+import './styles/global.css';
 
-function HomePage() {
-  return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <header
-        style={{ borderBottom: '1px solid #334155', paddingBottom: '1rem', marginBottom: '2rem' }}
-      >
-        <h1 style={{ fontSize: '2rem', margin: 0, color: '#38bdf8' }}>Engineering Simulator</h1>
-        <p style={{ color: '#94a3b8' }}>
-          Real-world software engineering debugging and system simulation platform
-        </p>
-      </header>
-
-      <main>
-        <section
-          style={{
-            backgroundColor: '#1e293b',
-            padding: '1.5rem',
-            borderRadius: '8px',
-            marginBottom: '1.5rem',
-          }}
-        >
-          <h2 style={{ marginTop: 0 }}>System Status</h2>
-          <p>
-            <strong>Foundation Status:</strong> Active (Minimal Shell)
-          </p>
-          <p>
-            <strong>Planned Reference System:</strong> Shopverse
-          </p>
-        </section>
-
-        <nav>
-          <Link to="/" style={{ color: '#38bdf8', marginRight: '1rem' }}>
-            Home
-          </Link>
-          <Link to="/about" style={{ color: '#38bdf8' }}>
-            About
-          </Link>
-        </nav>
-      </main>
-    </div>
-  );
-}
-
-function AboutPage() {
-  return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>About Engineering Simulator</h1>
-      <p style={{ color: '#94a3b8' }}>
-        Engineering Simulator trains software engineers by putting them in realistic codebases with
-        real failure modes.
-      </p>
-      <Link to="/" style={{ color: '#38bdf8' }}>
-        Back to Home
-      </Link>
-    </div>
-  );
-}
-
-export function App() {
+export const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/login"
+          element={
+            <PlaceholderPage
+              title="Learner Login"
+              description="Authentication services will connect when identity provider milestone arrives."
+            />
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <PlaceholderPage
+              title="Learner Sign Up"
+              description="Registration and onboarding workflows are planned for Phase 2."
+            />
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <PlaceholderPage
+              title="Learner Dashboard"
+              description="Dashboard view will present assigned missions, mastery progress, and upcoming tasks."
+            />
+          }
+        />
+        <Route
+          path="/missions/:missionId"
+          element={
+            <PlaceholderPage
+              title="Mission Execution Environment"
+              description="Interactive live sandbox workspace for running real codebases."
+            />
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PlaceholderPage
+              title="Learner Skill Profile"
+              description="Verified engineering skills, evidence records, and transfer scores."
+            />
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <PlaceholderPage
+              title="Evaluation Reports"
+              description="Forensic evidence reports and candidate verification summaries for reviewers."
+            />
+          }
+        />
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;
