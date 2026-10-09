@@ -8,6 +8,7 @@
 ## Purpose
 
 The primary learner-facing web application. Learners use this to:
+
 - Sign up and onboard
 - Complete the diagnostic
 - View their skill profile
@@ -21,42 +22,42 @@ The primary learner-facing web application. Learners use this to:
 
 ## Screens
 
-| Screen | Route | Phase | Status |
-|---|---|---|---|
-| Landing page | `/` | MVP | [ ] |
-| Login / Signup | `/auth/login`, `/auth/signup` | MVP | [ ] |
-| Onboarding — Goal selection | `/onboarding/goal` | MVP | [ ] |
-| Onboarding — Background | `/onboarding/background` | MVP | [ ] |
-| Diagnostic | `/diagnostic` | MVP | [ ] |
-| Skill profile | `/profile` | Phase 2 | [ ] |
-| Dashboard | `/dashboard` | MVP | [ ] |
-| Task workspace | `/tasks/[attemptId]` | MVP | [ ] |
-| Evaluation result | `/tasks/[attemptId]/result` | MVP | [ ] |
-| Viva | `/tasks/[attemptId]/viva` | MVP | [ ] |
-| Transfer task | `/tasks/[attemptId]/transfer` | MVP | [ ] |
-| Progress | `/progress` | MVP | [ ] |
-| Weekly report | `/progress/weekly` | Phase 2 | [ ] |
+| Screen                      | Route                         | Phase   | Status |
+| --------------------------- | ----------------------------- | ------- | ------ |
+| Landing page                | `/`                           | MVP     | [ ]    |
+| Login / Signup              | `/auth/login`, `/auth/signup` | MVP     | [ ]    |
+| Onboarding — Goal selection | `/onboarding/goal`            | MVP     | [ ]    |
+| Onboarding — Background     | `/onboarding/background`      | MVP     | [ ]    |
+| Diagnostic                  | `/diagnostic`                 | MVP     | [ ]    |
+| Skill profile               | `/profile`                    | Phase 2 | [ ]    |
+| Dashboard                   | `/dashboard`                  | MVP     | [ ]    |
+| Task workspace              | `/tasks/[attemptId]`          | MVP     | [ ]    |
+| Evaluation result           | `/tasks/[attemptId]/result`   | MVP     | [ ]    |
+| Viva                        | `/tasks/[attemptId]/viva`     | MVP     | [ ]    |
+| Transfer task               | `/tasks/[attemptId]/transfer` | MVP     | [ ]    |
+| Progress                    | `/progress`                   | MVP     | [ ]    |
+| Weekly report               | `/progress/weekly`            | Phase 2 | [ ]    |
 
 ---
 
 ## Components
 
-| Component | Used In | Status |
-|---|---|---|
-| `CodeEditor` | Task workspace | [ ] |
-| `TerminalOutput` | Task workspace | [ ] |
-| `MentorChat` | Task workspace | [ ] |
-| `HintPanel` | Task workspace | [ ] |
-| `SubmitButton` + `SubmissionStatus` | Task workspace | [ ] |
-| `EvaluationResult` | Result page | [ ] |
-| `VivaQuestion` | Viva page | [ ] |
-| `SkillCard` | Profile, dashboard | [ ] |
-| `MasteryBar` | Profile | [ ] |
-| `DiagnosticQuestion` | Diagnostic | [ ] |
-| `WeeklyReport` | Progress page | [ ] |
-| `LoadingState` | All pages | [ ] |
-| `ErrorState` | All pages | [ ] |
-| `EmptyState` | All pages | [ ] |
+| Component                           | Used In            | Status |
+| ----------------------------------- | ------------------ | ------ |
+| `CodeEditor`                        | Task workspace     | [ ]    |
+| `TerminalOutput`                    | Task workspace     | [ ]    |
+| `MentorChat`                        | Task workspace     | [ ]    |
+| `HintPanel`                         | Task workspace     | [ ]    |
+| `SubmitButton` + `SubmissionStatus` | Task workspace     | [ ]    |
+| `EvaluationResult`                  | Result page        | [ ]    |
+| `VivaQuestion`                      | Viva page          | [ ]    |
+| `SkillCard`                         | Profile, dashboard | [ ]    |
+| `MasteryBar`                        | Profile            | [ ]    |
+| `DiagnosticQuestion`                | Diagnostic         | [ ]    |
+| `WeeklyReport`                      | Progress page      | [ ]    |
+| `LoadingState`                      | All pages          | [ ]    |
+| `ErrorState`                        | All pages          | [ ]    |
+| `EmptyState`                        | All pages          | [ ]    |
 
 ---
 
@@ -64,25 +65,25 @@ The primary learner-facing web application. Learners use this to:
 
 All API calls go to `apps/api`. Types come from `packages/contracts/`.
 
-| Action | Endpoint |
-|---|---|
-| Onboarding | `POST /v1/onboarding` |
-| Diagnostic | `POST /v1/diagnostic` |
-| Start session | `POST /v1/sessions` |
-| Get next task | `POST /v1/sessions/:id/next` |
-| Get attempt | `GET /v1/attempts/:id` |
-| Get hint | `POST /v1/attempts/:id/hints` |
-| Send mentor message | `POST /v1/attempts/:id/mentor` |
-| Submit | `POST /v1/attempts/:id/submissions` |
-| Poll result | `GET /v1/submissions/:id` |
-| Start viva | `POST /v1/attempts/:id/viva` |
-| Answer viva | `POST /v1/attempts/:id/viva/answers` |
-| Abandon | `POST /v1/attempts/:id/abandon` |
-| Flag problem | `POST /v1/flags` |
-| Dispute evaluation | `POST /v1/evaluations/:id/disputes` |
-| Get skill profile | `GET /v1/profile/skills` |
-| Get skill evidence | `GET /v1/profile/skills/:skillId/evidence` |
-| Weekly progress | `GET /v1/progress/weekly` |
+| Action              | Endpoint                                   |
+| ------------------- | ------------------------------------------ |
+| Onboarding          | `POST /v1/onboarding`                      |
+| Diagnostic          | `POST /v1/diagnostic`                      |
+| Start session       | `POST /v1/sessions`                        |
+| Get next task       | `POST /v1/sessions/:id/next`               |
+| Get attempt         | `GET /v1/attempts/:id`                     |
+| Get hint            | `POST /v1/attempts/:id/hints`              |
+| Send mentor message | `POST /v1/attempts/:id/mentor`             |
+| Submit              | `POST /v1/attempts/:id/submissions`        |
+| Poll result         | `GET /v1/submissions/:id`                  |
+| Start viva          | `POST /v1/attempts/:id/viva`               |
+| Answer viva         | `POST /v1/attempts/:id/viva/answers`       |
+| Abandon             | `POST /v1/attempts/:id/abandon`            |
+| Flag problem        | `POST /v1/flags`                           |
+| Dispute evaluation  | `POST /v1/evaluations/:id/disputes`        |
+| Get skill profile   | `GET /v1/profile/skills`                   |
+| Get skill evidence  | `GET /v1/profile/skills/:skillId/evidence` |
+| Weekly progress     | `GET /v1/progress/weekly`                  |
 
 ---
 
@@ -99,6 +100,7 @@ All API calls go to `apps/api`. Types come from `packages/contracts/`.
 ## Acceptance Criteria
 
 A screen is complete when:
+
 1. All data is fetched from the real API (no mocks)
 2. Loading state is shown while fetching
 3. Error state is shown on API failure

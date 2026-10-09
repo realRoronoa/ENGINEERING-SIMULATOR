@@ -33,6 +33,7 @@ Indian CS students and early-career developers cannot bridge the gap between aca
 (or basic tutorials) and real-world engineering practice.
 
 They can pass multiple-choice tests, but they cannot:
+
 - debug a system they did not write,
 - work inside a large existing codebase,
 - or build and verify a working change.
@@ -45,13 +46,13 @@ That is the problem this product addresses. No additional problems are claimed h
 
 Learning engineering requires all five of the following, together:
 
-| Element | Why it is required |
-|---|---|
-| **Diagnosis** | You cannot teach a learner until you know where their gaps actually are. Self-reported skill is unreliable. |
-| **Real engineering tasks** | Toy problems do not transfer. The work must happen inside a realistic codebase with realistic constraints. |
-| **Evidence** | Progress must be objectively demonstrated, not asserted. Evidence is produced by execution, not by self-report. |
-| **Adaptive selection** | The right task at the right difficulty with the right support, chosen from learner history. |
-| **Verification** | Correctness is decided by deterministic tests. Reasoning is probed by viva. Learning is proven by AI-off transfer. |
+| Element                    | Why it is required                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Diagnosis**              | You cannot teach a learner until you know where their gaps actually are. Self-reported skill is unreliable.        |
+| **Real engineering tasks** | Toy problems do not transfer. The work must happen inside a realistic codebase with realistic constraints.         |
+| **Evidence**               | Progress must be objectively demonstrated, not asserted. Evidence is produced by execution, not by self-report.    |
+| **Adaptive selection**     | The right task at the right difficulty with the right support, chosen from learner history.                        |
+| **Verification**           | Correctness is decided by deterministic tests. Reasoning is probed by viva. Learning is proven by AI-off transfer. |
 
 Remove any one of the five and the loop stops working: without diagnosis you guess; without
 real tasks you do not transfer; without evidence you cannot adapt; without adaptation you waste
@@ -62,6 +63,7 @@ the learner's time; without verification you cannot claim anything.
 ## 4. Target Users
 
 **Primary (the MVP audience):**
+
 - Indian CS students, **2nd–4th year**
 - Early-career developers
 - **Laptop users** (local execution is assumed — see §16: not mobile-first)
@@ -93,6 +95,7 @@ No secondary-user feature is in V1. See [`RELEASE_PLAN.md`](./RELEASE_PLAN.md).
 **Backend Engineering.**
 
 Stack:
+
 - Node.js
 - TypeScript
 - PostgreSQL
@@ -108,22 +111,22 @@ Do not prepare Redis or Python infrastructure now.
 
 **Rahul** — the reference persona from the product specification.
 
-| Field | Value |
-|---|---|
-| Year | 3rd year CS student |
-| Goal | Secure a backend internship |
-| Target role | Backend engineer |
-| Weekly time | 4–6 hours |
-| Diagnostic | Baseline skill assessment at signup |
-| Skill weaknesses found | Database query design; error handling |
-| First task | A basic N+1 query issue in a realistic codebase |
-| Submission | Submits his patch using the CLI |
-| Evaluation | Hidden tests verify correctness deterministically |
-| Viva | Answers 4 follow-up questions explaining *why* the N+1 occurred |
-| Next task | A related index design problem, chosen by the selector |
-| Incident example | A production-style incident on the same skill area — **Phase 5 capability, not V1** (see §15) |
-| Transfer | A weekly **AI-off** task proves he can solve a new problem without mentor help |
-| Weekly report | Shows his progress and mastery increases |
+| Field                  | Value                                                                                         |
+| ---------------------- | --------------------------------------------------------------------------------------------- |
+| Year                   | 3rd year CS student                                                                           |
+| Goal                   | Secure a backend internship                                                                   |
+| Target role            | Backend engineer                                                                              |
+| Weekly time            | 4–6 hours                                                                                     |
+| Diagnostic             | Baseline skill assessment at signup                                                           |
+| Skill weaknesses found | Database query design; error handling                                                         |
+| First task             | A basic N+1 query issue in a realistic codebase                                               |
+| Submission             | Submits his patch using the CLI                                                               |
+| Evaluation             | Hidden tests verify correctness deterministically                                             |
+| Viva                   | Answers 4 follow-up questions explaining _why_ the N+1 occurred                               |
+| Next task              | A related index design problem, chosen by the selector                                        |
+| Incident example       | A production-style incident on the same skill area — **Phase 5 capability, not V1** (see §15) |
+| Transfer               | A weekly **AI-off** task proves he can solve a new problem without mentor help                |
+| Weekly report          | Shows his progress and mastery increases                                                      |
 
 No persona details beyond the source specification are invented here. The incident example is
 marked explicitly as a later-phase capability because production incidents are Phase 5.
@@ -174,22 +177,26 @@ The loop is the product. Features exist to serve the loop.
 ## 10. Four Engines
 
 ### Content Engine — `packages/content/` (Dev 1)
+
 Human-authored knowledge: skill definitions, the skill graph, task templates, fault patterns,
 validated variants, hint ladders, rubrics, misconceptions, and viva questions.
 Humans author knowledge; machines create variety. Every learner-facing problem is pre-built
 and pre-validated before a learner ever sees it.
 
-### Learner Model — `packages/learner-model/` (Dev 1)
+### Learner Model — `packages/learner-model/` (Dev 2)
+
 The learner's state: per-skill mastery (Beta model), the evidence events that produced it,
 observed misconceptions, and learner flags. It consumes evaluation results and viva outcomes
 and produces an updated capability picture. It never guesses from self-report.
 
-### Selector — `packages/selector/` (Dev 1)
+### Selector — `packages/selector/` (Dev 2)
+
 Rule-based adaptive selection of the next task: which skill, which variant, which difficulty,
 how much support. It reads the Learner Model and the content library and returns a decision
 that can be explained. Rule-based first, by design — see `docs/decisions/ADR-005`.
 
 ### Evaluator — `packages/evaluator/` + `apps/worker/` (Dev 2)
+
 Deterministic execution: applies the submission, runs hidden tests and benchmarks inside Docker
 with resource limits, and emits a structured result. **Tests decide whether code is correct.**
 AI is used only to grade free-text reasoning against fixed rubrics.
@@ -200,16 +207,16 @@ AI is used only to grade free-text reasoning against fixed rubrics.
 
 AI is **not** the moat. These mechanisms are:
 
-| Mechanism | Why it is defensible |
-|---|---|
-| **Capability / evidence model** | A per-skill record built from executed work, not time spent or videos watched. It compounds and cannot be copied without the same task library and grading. |
-| **Realistic engineering tasks** | Work happens inside an existing reference codebase. Building that codebase, its faults, and its tests is slow, deliberate work. |
-| **Validated variants** | Every variant is proven to apply cleanly, fail without the fix, and pass with the fix. This validation is the expensive part. |
-| **Deterministic evaluation** | Correctness comes from tests, so results are reproducible and disputable on evidence. |
-| **Misconception tracking** | We identify the specific faulty mental model, not just "wrong answer". |
-| **Adaptive selection** | Explainable, rule-based task targeting from real evidence. |
-| **AI-assisted but AI-independent verification** | AI probes reasoning; tests judge code. Removing the AI does not break grading. |
-| **AI-off transfer** | The only honest measurement of learning: can they do it unaided? |
+| Mechanism                                       | Why it is defensible                                                                                                                                        |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Capability / evidence model**                 | A per-skill record built from executed work, not time spent or videos watched. It compounds and cannot be copied without the same task library and grading. |
+| **Realistic engineering tasks**                 | Work happens inside an existing reference codebase. Building that codebase, its faults, and its tests is slow, deliberate work.                             |
+| **Validated variants**                          | Every variant is proven to apply cleanly, fail without the fix, and pass with the fix. This validation is the expensive part.                               |
+| **Deterministic evaluation**                    | Correctness comes from tests, so results are reproducible and disputable on evidence.                                                                       |
+| **Misconception tracking**                      | We identify the specific faulty mental model, not just "wrong answer".                                                                                      |
+| **Adaptive selection**                          | Explainable, rule-based task targeting from real evidence.                                                                                                  |
+| **AI-assisted but AI-independent verification** | AI probes reasoning; tests judge code. Removing the AI does not break grading.                                                                              |
+| **AI-off transfer**                             | The only honest measurement of learning: can they do it unaided?                                                                                            |
 
 ---
 
@@ -218,6 +225,7 @@ AI is **not** the moat. These mechanisms are:
 **V1 is the smallest usable product.** If an item is not in this list, it is not in V1.
 
 **V1 is exactly:**
+
 - Backend / Node.js track — one track only
 - One reference system (Shopverse)
 - 12 skills
@@ -239,19 +247,19 @@ AI is **not** the moat. These mechanisms are:
 
 **Explicitly NOT V1:**
 
-| Not in V1 | Where it belongs |
-|---|---|
-| Live problem generation | Never — see §16 |
-| Hosted learner sandboxes | Phase 5 / V3 |
-| Production incidents, investigate/fix modes, postmortem grading | Phase 5 / V3 |
-| Redis, queues, multiple workers | Phase 2 (queue) / Phase 5 (full) |
-| ML-based selection or calibration | Phase 4 / V2 |
-| Spaced review, why-this-task, selector replay | Phase 4 / V2 |
-| Professor dashboard, admin inbox, disputes, content health | Phase 3 / V2 |
-| Second reference system, Python track | Phase 6 / V3 |
-| Hiring assessments, verified profiles | Phase 6 / V3 |
-| Mobile app | Never as primary — see §16 |
-| Kubernetes, multi-region | Phase 5+ / never early |
+| Not in V1                                                       | Where it belongs                 |
+| --------------------------------------------------------------- | -------------------------------- |
+| Live problem generation                                         | Never — see §16                  |
+| Hosted learner sandboxes                                        | Phase 5 / V3                     |
+| Production incidents, investigate/fix modes, postmortem grading | Phase 5 / V3                     |
+| Redis, queues, multiple workers                                 | Phase 2 (queue) / Phase 5 (full) |
+| ML-based selection or calibration                               | Phase 4 / V2                     |
+| Spaced review, why-this-task, selector replay                   | Phase 4 / V2                     |
+| Professor dashboard, admin inbox, disputes, content health      | Phase 3 / V2                     |
+| Second reference system, Python track                           | Phase 6 / V3                     |
+| Hiring assessments, verified profiles                           | Phase 6 / V3                     |
+| Mobile app                                                      | Never as primary — see §16       |
+| Kubernetes, multi-region                                        | Phase 5+ / never early           |
 
 ---
 
@@ -284,6 +292,7 @@ loop completion rate.
 V2 exists only once V1's transfer measurement holds. It is the Phase 3 + Phase 4 band.
 
 **V2 adds:**
+
 - First college pilot
 - Professor dashboard
 - Content health
@@ -323,17 +332,17 @@ not actively blocking it.
 
 ## 16. What We Will Not Build
 
-| We will not build | Reason |
-|---|---|
+| We will not build           | Reason                                                                                                            |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | **Live problem generation** | Every learner-facing problem must be pre-built and pre-validated. Never generate a problem while a learner waits. |
-| **A generic AI tutor** | Chat is not the product. Verified capability is. |
-| **A mobile-first platform** | The work is engineering work on a laptop. |
-| **Kubernetes early** | Two developers, no scale problem. It would be cost without benefit. |
-| **Multi-region systems** | No requirement exists. |
-| **Unnecessary ML** | Rule-based selection is explainable and sufficient until it demonstrably is not. |
-| **Fake logs** | All diagnostic signals must come from actually running code. |
-| **Uncontrolled AI grading** | AI must never decide whether code is objectively correct. |
-| **A giant course library** | Depth over breadth. One track, done properly. |
+| **A generic AI tutor**      | Chat is not the product. Verified capability is.                                                                  |
+| **A mobile-first platform** | The work is engineering work on a laptop.                                                                         |
+| **Kubernetes early**        | Two developers, no scale problem. It would be cost without benefit.                                               |
+| **Multi-region systems**    | No requirement exists.                                                                                            |
+| **Unnecessary ML**          | Rule-based selection is explainable and sufficient until it demonstrably is not.                                  |
+| **Fake logs**               | All diagnostic signals must come from actually running code.                                                      |
+| **Uncontrolled AI grading** | AI must never decide whether code is objectively correct.                                                         |
+| **A giant course library**  | Depth over breadth. One track, done properly.                                                                     |
 
 If you are tempted to build any of these, open an architecture issue first.
 
@@ -342,6 +351,7 @@ If you are tempted to build any of these, open an architecture issue first.
 ## 17. AI Philosophy
 
 **AI should:**
+
 - help
 - guide
 - question
@@ -350,6 +360,7 @@ If you are tempted to build any of these, open an architecture issue first.
 - assist evaluation of reasoning (against fixed rubrics)
 
 **AI must NOT:**
+
 - decide objective code correctness
 - generate unvalidated learner problems
 - invent system logs
@@ -362,18 +373,18 @@ that this holds. See [`AI_POLICY.md`](./AI_POLICY.md).
 
 ## 18. Data We Store
 
-| Data | Purpose |
-|---|---|
-| Learner profile (identity, goal, target role, weekly time) | Onboarding and selection |
-| Per-skill state (mastery, confidence, last practised) | Learner Model, selection |
-| Evidence events (what was executed, what the result was) | The capability record |
-| Attempt records (task, variant, mode, support level, timings) | Loop integrity, selection |
-| Submission patches | Grading, and dispute resolution — retained only as long as needed |
-| Evaluation results (test outcomes, benchmarks, structured failures) | Grading and evidence |
-| Viva transcripts and rubric scores | Reasoning assessment |
-| Observed misconceptions | Targeted selection |
-| AI usage records (prompt/response metadata, tokens, cost) | Cost control, grounding audits |
-| Learner flags (e.g. suspected copy, repeated hint exhaustion) | Content and integrity health |
+| Data                                                                | Purpose                                                           |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Learner profile (identity, goal, target role, weekly time)          | Onboarding and selection                                          |
+| Per-skill state (mastery, confidence, last practised)               | Learner Model, selection                                          |
+| Evidence events (what was executed, what the result was)            | The capability record                                             |
+| Attempt records (task, variant, mode, support level, timings)       | Loop integrity, selection                                         |
+| Submission patches                                                  | Grading, and dispute resolution — retained only as long as needed |
+| Evaluation results (test outcomes, benchmarks, structured failures) | Grading and evidence                                              |
+| Viva transcripts and rubric scores                                  | Reasoning assessment                                              |
+| Observed misconceptions                                             | Targeted selection                                                |
+| AI usage records (prompt/response metadata, tokens, cost)           | Cost control, grounding audits                                    |
+| Learner flags (e.g. suspected copy, repeated hint exhaustion)       | Content and integrity health                                      |
 
 See [`DATABASE.md`](./DATABASE.md) for the authoritative schema and
 [`PRIVACY.md`](./PRIVACY.md) for retention.
@@ -408,15 +419,15 @@ No pricing is defined. Do not invent pricing, tiers, or revenue projections in t
 
 ## 21. Roadmap
 
-| Phase | Name | Band |
-|---|---|---|
-| Phase 0 | Validation | pre-V0.1 |
-| Phase 1 | Prototype | V0.1 – V0.2 |
-| Phase 2 | First usable product | V1.0 |
-| Phase 3 | First 100 users | V1.x – V2.0 |
-| Phase 4 | Personalization | V2.0 |
-| Phase 5 | Production debugging | V3 |
-| Phase 6 | Scale | V3+ |
+| Phase   | Name                 | Band        |
+| ------- | -------------------- | ----------- |
+| Phase 0 | Validation           | pre-V0.1    |
+| Phase 1 | Prototype            | V0.1 – V0.2 |
+| Phase 2 | First usable product | V1.0        |
+| Phase 3 | First 100 users      | V1.x – V2.0 |
+| Phase 4 | Personalization      | V2.0        |
+| Phase 5 | Production debugging | V3          |
+| Phase 6 | Scale                | V3+         |
 
 Full detail: [`ROADMAP.md`](./ROADMAP.md). Version mapping: [`RELEASE_PLAN.md`](./RELEASE_PLAN.md).
 

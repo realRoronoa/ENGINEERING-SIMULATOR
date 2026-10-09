@@ -5,6 +5,7 @@ This directory is reserved for future scripts that will automate the updating of
 For now, `PROJECT_STATUS.md` **must be manually updated via PRs**.
 
 ## Future Automation Possibilities:
+
 - Read GitHub issues to update feature statuses.
 - Detect merged PRs to calculate completion percentages.
 - Update release metrics based on test coverage.

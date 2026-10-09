@@ -46,10 +46,10 @@ flowchart TD
   variantId: string;
   skillId: string;
   taskMode: 'debug' | 'build' | 'fix' | 'investigate';
-  difficulty: number;           // 1-5
+  difficulty: number; // 1-5
   predictedSuccessRate: number; // 0.0-1.0, target ~0.70
-  reason: string;               // human-readable explanation
-  fallback: boolean;            // true if no ideal variant found
+  reason: string; // human-readable explanation
+  fallback: boolean; // true if no ideal variant found
   timestamp: string;
 }
 ```
@@ -71,6 +71,7 @@ The `SelectorDecision` is stored in the `attempts.selector_decision` JSON column
 ## Fallback Behavior
 
 If no suitable variant is found:
+
 1. Log a warning with the learner ID, skill, and mode
 2. Relax constraints (broaden difficulty range, allow recently seen variants)
 3. If still no match, return any published variant for the skill

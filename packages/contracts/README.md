@@ -72,6 +72,7 @@ packages/contracts/
 ## Core Types (Placeholders — to be implemented)
 
 ### AttemptPayload
+
 ```typescript
 // TODO: implement in packages/contracts/src/shared/attempt.ts
 export interface AttemptPayload {
@@ -103,10 +104,11 @@ export type AttemptStatus =
 ```
 
 ### TaskPayload
+
 ```typescript
 // TODO: implement in packages/contracts/src/shared/task.ts
 export interface TaskPayload {
-  id: string;           // variant ID
+  id: string; // variant ID
   title: string;
   narrative: string;
   instructions: string;
@@ -125,6 +127,7 @@ export type TaskMode = 'debug' | 'build' | 'fix' | 'investigate';
 ```
 
 ### SubmissionPayload
+
 ```typescript
 // TODO: implement in packages/contracts/src/shared/submission.ts
 export interface SubmissionPayload {
@@ -138,6 +141,7 @@ export interface SubmissionPayload {
 ```
 
 ### EvaluationPayload
+
 ```typescript
 // TODO: implement in packages/contracts/src/evaluator/evaluation.ts
 export interface EvaluationPayload {
@@ -160,14 +164,15 @@ export interface EvaluationPayload {
 ```
 
 ### SkillStatePayload
+
 ```typescript
 // TODO: implement in packages/contracts/src/learner-model/skill-state.ts
 export interface SkillStatePayload {
   skillId: string;
   learnerId: string;
-  mastery: number;       // 0.0 – 1.0
-  alpha: number;         // Beta distribution alpha
-  beta: number;          // Beta distribution beta
+  mastery: number; // 0.0 – 1.0
+  alpha: number; // Beta distribution alpha
+  beta: number; // Beta distribution beta
   evidenceCount: number;
   lastEvidenceAt: string | null;
   updatedAt: string;
@@ -175,6 +180,7 @@ export interface SkillStatePayload {
 ```
 
 ### SelectorDecision
+
 ```typescript
 // TODO: implement in packages/contracts/src/selector/decision.ts
 export interface SelectorDecision {
@@ -190,6 +196,7 @@ export interface SelectorDecision {
 ```
 
 ### EvidenceEventPayload
+
 ```typescript
 // TODO: implement in packages/contracts/src/learner-model/evidence.ts
 export interface EvidenceEventPayload {
@@ -207,6 +214,7 @@ export interface EvidenceEventPayload {
 ```
 
 ### GradingJobPayload
+
 ```typescript
 // TODO: implement in packages/contracts/src/evaluator/grading-job.ts
 export interface GradingJobPayload {
@@ -230,6 +238,7 @@ export interface GradingJobPayload {
 ```
 
 ### HintPayload
+
 ```typescript
 // TODO: implement in packages/contracts/src/shared/hint.ts
 export interface HintPayload {
@@ -241,6 +250,7 @@ export interface HintPayload {
 ```
 
 ### MentorMessage
+
 ```typescript
 // TODO: implement in packages/contracts/src/ai/mentor.ts
 export interface MentorRequestPayload {
@@ -258,6 +268,7 @@ export interface MentorResponsePayload {
 ```
 
 ### WeeklyReport
+
 ```typescript
 // TODO: implement via API response type
 export interface WeeklyReportPayload {

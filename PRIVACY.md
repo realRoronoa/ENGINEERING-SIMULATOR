@@ -9,21 +9,21 @@ It defines what data the system collects, why, and what it explicitly does not c
 
 The following data is collected to operate the learning platform:
 
-| Data | Purpose | Retention |
-|---|---|---|
-| Learner account (email, name) | Authentication and identity | Until account deletion |
-| Skill states and mastery | Personalized task selection | Indefinitely (learning record) |
-| Attempt records | Grading and evidence | 2 years |
-| Submission code | Grading (run in Docker, not stored raw) | Submission patch stored; deleted after evaluation |
-| Evaluation results | Learner feedback and evidence | 2 years |
-| Evidence events | Mastery model updates | 2 years |
-| Hint events | Learning analytics | 1 year |
-| Viva answers | Reasoning grading | 1 year |
-| Transfer task results | Learning outcome measurement | 2 years |
-| Mentor conversation | Personalized help | 90 days |
-| Weekly reports | Learner progress | 1 year |
-| AI call logs (anonymized) | Quality and cost monitoring | 90 days |
-| Flags and disputes | Content quality | 1 year |
+| Data                          | Purpose                                 | Retention                                         |
+| ----------------------------- | --------------------------------------- | ------------------------------------------------- |
+| Learner account (email, name) | Authentication and identity             | Until account deletion                            |
+| Skill states and mastery      | Personalized task selection             | Indefinitely (learning record)                    |
+| Attempt records               | Grading and evidence                    | 2 years                                           |
+| Submission code               | Grading (run in Docker, not stored raw) | Submission patch stored; deleted after evaluation |
+| Evaluation results            | Learner feedback and evidence           | 2 years                                           |
+| Evidence events               | Mastery model updates                   | 2 years                                           |
+| Hint events                   | Learning analytics                      | 1 year                                            |
+| Viva answers                  | Reasoning grading                       | 1 year                                            |
+| Transfer task results         | Learning outcome measurement            | 2 years                                           |
+| Mentor conversation           | Personalized help                       | 90 days                                           |
+| Weekly reports                | Learner progress                        | 1 year                                            |
+| AI call logs (anonymized)     | Quality and cost monitoring             | 90 days                                           |
+| Flags and disputes            | Content quality                         | 1 year                                            |
 
 ---
 
@@ -31,18 +31,18 @@ The following data is collected to operate the learning platform:
 
 > These must never be collected, stored, or transmitted by any part of the system.
 
-| Prohibited Data | Notes |
-|---|---|
-| **Raw keystrokes** | The CLI must not intercept or log individual keystrokes. |
-| **Full terminal history** | The CLI does not read or transmit the learner's shell history. |
-| **Screen recordings** | No screen capture of any kind. |
-| **Learner secrets** | Passwords, API keys, SSH keys, environment variables from the learner's machine. |
-| **Unrelated machine files** | The CLI accesses only the task directory, nothing else. |
-| **Full mentor transcripts beyond retention window** | Mentor conversations are deleted after 90 days. |
-| **Other learners' data** | Strictly scoped by RLS. |
-| **Browsing history** | Not collected. |
-| **Camera or microphone data** | Not collected (viva is text-based). |
-| **IP address beyond rate limiting** | IP used only for rate limiting; not stored in learning records. |
+| Prohibited Data                                     | Notes                                                                            |
+| --------------------------------------------------- | -------------------------------------------------------------------------------- |
+| **Raw keystrokes**                                  | The CLI must not intercept or log individual keystrokes.                         |
+| **Full terminal history**                           | The CLI does not read or transmit the learner's shell history.                   |
+| **Screen recordings**                               | No screen capture of any kind.                                                   |
+| **Learner secrets**                                 | Passwords, API keys, SSH keys, environment variables from the learner's machine. |
+| **Unrelated machine files**                         | The CLI accesses only the task directory, nothing else.                          |
+| **Full mentor transcripts beyond retention window** | Mentor conversations are deleted after 90 days.                                  |
+| **Other learners' data**                            | Strictly scoped by RLS.                                                          |
+| **Browsing history**                                | Not collected.                                                                   |
+| **Camera or microphone data**                       | Not collected (viva is text-based).                                              |
+| **IP address beyond rate limiting**                 | IP used only for rate limiting; not stored in learning records.                  |
 
 ---
 
@@ -79,18 +79,18 @@ The CLI must:
 
 ## Data Retention Schedule
 
-| Data Type | Retention |
-|---|---|
-| Learner account | Until deletion request |
-| Skill states | Indefinite (core record) |
-| Attempts + submissions | 2 years |
-| Evaluations + evidence | 2 years |
-| Mentor conversations | 90 days |
-| AI call logs | 90 days |
-| Hint events | 1 year |
-| Viva records | 1 year |
-| Flags / disputes | 1 year |
-| Weekly reports | 1 year |
+| Data Type              | Retention                       |
+| ---------------------- | ------------------------------- |
+| Learner account        | Until deletion request          |
+| Skill states           | Indefinite (core record)        |
+| Attempts + submissions | 2 years                         |
+| Evaluations + evidence | 2 years                         |
+| Mentor conversations   | 90 days                         |
+| AI call logs           | 90 days                         |
+| Hint events            | 1 year                          |
+| Viva records           | 1 year                          |
+| Flags / disputes       | 1 year                          |
+| Weekly reports         | 1 year                          |
 | Raw submission patches | Deleted after evaluation stored |
 
 ---

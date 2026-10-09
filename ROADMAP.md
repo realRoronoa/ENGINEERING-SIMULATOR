@@ -7,25 +7,26 @@ is finished.
 - Version mapping → [`RELEASE_PLAN.md`](./RELEASE_PLAN.md)
 - Product definition → [`PRODUCT_SPEC.md`](./PRODUCT_SPEC.md)
 
-| Phase | Name | Version band | Status |
-|---|---|---|---|
-| 0 | Validation | pre-v0.1 | **Current** |
-| 1 | Prototype | v0.1 – v0.2 | Not started |
-| 2 | First usable product | v1.0 | Not started |
-| 3 | First 100 users | v1.x – v2.0 | Not started |
-| 4 | Personalization | v2.0 | Not started |
-| 5 | Production debugging | v3 | Not started |
-| 6 | Scale | v3+ | Not started |
+| Phase | Name                 | Version band | Status          |
+| ----- | -------------------- | ------------ | --------------- |
+| 0     | Validation           | pre-v0.1     | Completed       |
+| 1     | Monorepo & Prototype | v0.1 – v0.2  | **In Progress** |
+| 2     | First usable product | v1.0         | Not started     |
+| 3     | First 100 users      | v1.x – v2.0  | Not started     |
+| 4     | Personalization      | v2.0         | Not started     |
+| 5     | Production debugging | v3           | Not started     |
+| 6     | Scale                | v3+          | Not started     |
 
 ---
 
-## Phase 0 — Validation *(current)*
+## Phase 0 — Validation _(current)_
 
 **Goal:** find out whether the problem and the loop are real, before building a platform.
 
 **Lead:** Dev 1 (research and mission design) · Dev 2 (technical feasibility spike)
 
 **Deliverables**
+
 - Student interviews
 - Faculty interviews
 - Hiring manager interviews
@@ -47,6 +48,7 @@ first observation about whether practice performance predicts AI-off transfer pe
 **Lead:** Dev 2 (pipeline) · Dev 1 (tasks, UI, viva)
 
 **Deliverables**
+
 - Shopverse reference system
 - 3 debug tasks
 - Hidden tests
@@ -73,6 +75,7 @@ Maps to **v0.1** (internal) and **v0.2** (learner prototype).
 **Lead:** Dev 1 (content, learning system, UI) · Dev 2 (API, grading, infrastructure)
 
 **Deliverables**
+
 - 12 skills
 - 15 templates
 - ~60 variants
@@ -102,6 +105,7 @@ Maps to **v1.0**.
 **Lead:** Dev 2 (operations) · Dev 1 (content health, reporting)
 
 **Deliverables**
+
 - College pilot
 - Professor dashboard
 - Admin inbox
@@ -125,6 +129,7 @@ Maps to **v1.x** and part of **v2.0**.
 **Lead:** Dev 1
 
 **Deliverables**
+
 - Difficulty calibration
 - Misconception selection
 - Spaced review
@@ -146,6 +151,7 @@ Maps to **v2.0**.
 **Lead:** Dev 2 (environment, observability) · Dev 1 (incident content, grading rubrics)
 
 **Deliverables**
+
 - Full Shopverse
 - Redis
 - Queue
@@ -174,6 +180,7 @@ Maps to **v3**.
 **Lead:** Shared
 
 **Deliverables**
+
 - Python stack
 - Second reference system
 - Hiring assessments
@@ -196,3 +203,17 @@ Maps to **v3+**.
    No Redis, no Kubernetes, no Python preparation now.
 4. **Anything not listed in a phase above is not on the roadmap.** See
    [`PRODUCT_SPEC.md` §16](./PRODUCT_SPEC.md) for what we will never build.
+
+---
+
+## Implementation Starting Sequence
+
+### Step 1 — Development foundation
+
+Owner: Developer 2.
+Establish package management, workspaces, TypeScript, linting, testing, environment configuration, and basic CI.
+
+### Step 2 — Shared contracts
+
+Owner: Developer 2, with Developer 1 reviewing learner-facing types.
+Define API and event contracts in `packages/contracts` before any dependent implementation begins.

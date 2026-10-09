@@ -15,14 +15,14 @@ Tests, benchmarks, and structured answers decide objective correctness. AI evalu
 
 ## Evaluation Layers (in order of execution)
 
-| Layer | What it judges | Method |
-|---|---|---|
-| 1. Patch validation | Does the code apply cleanly? | Deterministic |
-| 2. Public tests | Basic correctness | Deterministic (test runner) |
-| 3. Hidden tests | Full correctness | Deterministic (test runner) |
-| 4. Benchmarks | Performance/load correctness | Deterministic (runner + threshold) |
-| 5. Structured answers | Factual/multiple-choice reasoning | Exact match / authored answer key |
-| 6. AI rubric grading | Design reasoning, explanation quality | LLM against fixed rubric |
+| Layer                 | What it judges                        | Method                             |
+| --------------------- | ------------------------------------- | ---------------------------------- |
+| 1. Patch validation   | Does the code apply cleanly?          | Deterministic                      |
+| 2. Public tests       | Basic correctness                     | Deterministic (test runner)        |
+| 3. Hidden tests       | Full correctness                      | Deterministic (test runner)        |
+| 4. Benchmarks         | Performance/load correctness          | Deterministic (runner + threshold) |
+| 5. Structured answers | Factual/multiple-choice reasoning     | Exact match / authored answer key  |
+| 6. AI rubric grading  | Design reasoning, explanation quality | LLM against fixed rubric           |
 
 **Layers 1–5 run before Layer 6.**
 **Layer 6 runs only if the task includes a reasoning/explanation component.**
@@ -81,9 +81,9 @@ Every evaluation produces:
   }> | null;
 
   // Overall
-  passed: boolean;          // true only if all required layers pass
-  score: number;            // 0.0–1.0
-  evidenceType: string;     // 'practice' | 'transfer'
+  passed: boolean; // true only if all required layers pass
+  score: number; // 0.0–1.0
+  evidenceType: string; // 'practice' | 'transfer'
   createdAt: string;
 }
 ```
@@ -123,23 +123,23 @@ Submission created
 
 ### Resource Limits (MVP defaults)
 
-| Limit | Default |
-|---|---|
-| CPU | 0.5 cores |
-| Memory | 512 MB |
-| Execution timeout | 60 seconds |
-| Network | Disabled (internal only) |
+| Limit             | Default                  |
+| ----------------- | ------------------------ |
+| CPU               | 0.5 cores                |
+| Memory            | 512 MB                   |
+| Execution timeout | 60 seconds               |
+| Network           | Disabled (internal only) |
 
 ---
 
 ## Retry and Failure Behavior
 
-| Event | Behavior |
-|---|---|
-| Docker startup failure | Retry up to 3 times with backoff |
-| Test runner crash | Mark as `grading_error`, notify learner |
-| Timeout exceeded | Mark as `timeout`, notify learner |
-| All retries exhausted | Mark as `failed`, flag for ops review |
+| Event                    | Behavior                                                      |
+| ------------------------ | ------------------------------------------------------------- |
+| Docker startup failure   | Retry up to 3 times with backoff                              |
+| Test runner crash        | Mark as `grading_error`, notify learner                       |
+| Timeout exceeded         | Mark as `timeout`, notify learner                             |
+| All retries exhausted    | Mark as `failed`, flag for ops review                         |
 | AI rubric grader failure | Mark reasoning as `ungraded`, do not block pass/fail decision |
 
 ---
@@ -164,7 +164,7 @@ After a successful evaluation, the evaluator emits `EvidenceEvent` records:
   evidenceType: 'practice' | 'transfer';
   passed: boolean;
   score: number;
-  difficulty: number;    // variant difficulty at time of attempt
+  difficulty: number; // variant difficulty at time of attempt
   taskMode: string;
   timestamp: string;
 }

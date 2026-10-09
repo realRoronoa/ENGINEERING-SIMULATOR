@@ -32,22 +32,22 @@ Required log fields:
 
 ### Key Events to Log
 
-| Service | Event | Level |
-|---|---|---|
-| API | Request received | `info` |
-| API | Request completed | `info` |
-| API | Validation error | `warn` |
-| API | Auth failure | `warn` |
-| API | 500 error | `error` |
-| Worker | Grading job started | `info` |
-| Worker | Docker container started | `info` |
-| Worker | Tests completed | `info` |
-| Worker | Grading job failed | `error` |
-| Worker | Container timeout | `warn` |
-| AI | AI call started | `info` |
-| AI | AI call completed (tokens, cost) | `info` |
-| AI | AI call failed | `error` |
-| AI | Fallback triggered | `warn` |
+| Service | Event                            | Level   |
+| ------- | -------------------------------- | ------- |
+| API     | Request received                 | `info`  |
+| API     | Request completed                | `info`  |
+| API     | Validation error                 | `warn`  |
+| API     | Auth failure                     | `warn`  |
+| API     | 500 error                        | `error` |
+| Worker  | Grading job started              | `info`  |
+| Worker  | Docker container started         | `info`  |
+| Worker  | Tests completed                  | `info`  |
+| Worker  | Grading job failed               | `error` |
+| Worker  | Container timeout                | `warn`  |
+| AI      | AI call started                  | `info`  |
+| AI      | AI call completed (tokens, cost) | `info`  |
+| AI      | AI call failed                   | `error` |
+| AI      | Fallback triggered               | `warn`  |
 
 ---
 
@@ -65,15 +65,15 @@ Required log fields:
 
 Track in application code and expose to infrastructure:
 
-| Metric | Type | Labels |
-|---|---|---|
+| Metric                    | Type      | Labels                      |
+| ------------------------- | --------- | --------------------------- |
 | `api_request_duration_ms` | Histogram | `route`, `method`, `status` |
-| `grading_job_duration_ms` | Histogram | `variant_id`, `status` |
-| `grading_job_count` | Counter | `status` |
-| `ai_call_cost_usd` | Counter | `purpose`, `model` |
-| `ai_call_latency_ms` | Histogram | `purpose` |
-| `hint_requests_count` | Counter | |
-| `submission_count` | Counter | `status` |
+| `grading_job_duration_ms` | Histogram | `variant_id`, `status`      |
+| `grading_job_count`       | Counter   | `status`                    |
+| `ai_call_cost_usd`        | Counter   | `purpose`, `model`          |
+| `ai_call_latency_ms`      | Histogram | `purpose`                   |
+| `hint_requests_count`     | Counter   |                             |
+| `submission_count`        | Counter   | `status`                    |
 
 ---
 

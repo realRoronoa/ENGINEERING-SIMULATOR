@@ -10,6 +10,7 @@
 The central REST API server. All learner-facing operations go through this service.
 
 Responsibilities:
+
 - Authentication middleware (Supabase JWT verification)
 - Request validation and error handling
 - Rate limiting
@@ -57,27 +58,27 @@ apps/api/src/
 
 See `API_CONTRACT.md` for full request/response schemas.
 
-| Method | Path | Auth | Sync | Phase |
-|---|---|---|---|---|
-| `POST` | `/v1/onboarding` | JWT | Sync | MVP |
-| `POST` | `/v1/diagnostic` | JWT | Sync | MVP |
-| `POST` | `/v1/sessions` | JWT | Sync | MVP |
-| `POST` | `/v1/sessions/:id/next` | JWT | Sync | MVP |
-| `GET` | `/v1/attempts/:id` | JWT | Sync | MVP |
-| `POST` | `/v1/attempts/:id/hints` | JWT | Sync | MVP |
-| `POST` | `/v1/attempts/:id/mentor` | JWT | Sync | MVP |
-| `POST` | `/v1/attempts/:id/submissions` | JWT | **Async 202** | MVP |
-| `GET` | `/v1/submissions/:id` | JWT | Sync | MVP |
-| `POST` | `/v1/attempts/:id/viva` | JWT | Sync | MVP |
-| `POST` | `/v1/attempts/:id/viva/answers` | JWT | Sync | MVP |
-| `POST` | `/v1/attempts/:id/abandon` | JWT | Sync | MVP |
-| `POST` | `/v1/flags` | JWT | Sync | Phase 2 |
-| `POST` | `/v1/evaluations/:id/disputes` | JWT | Sync | Phase 2 |
-| `GET` | `/v1/profile/skills` | JWT | Sync | Phase 2 |
-| `GET` | `/v1/profile/skills/:skillId/evidence` | JWT | Sync | Phase 2 |
-| `GET` | `/v1/progress/weekly` | JWT | Sync | Phase 2 |
-| `GET` | `/health` | None | Sync | MVP |
-| `GET` | `/health/ready` | None | Sync | MVP |
+| Method | Path                                   | Auth | Sync          | Phase   |
+| ------ | -------------------------------------- | ---- | ------------- | ------- |
+| `POST` | `/v1/onboarding`                       | JWT  | Sync          | MVP     |
+| `POST` | `/v1/diagnostic`                       | JWT  | Sync          | MVP     |
+| `POST` | `/v1/sessions`                         | JWT  | Sync          | MVP     |
+| `POST` | `/v1/sessions/:id/next`                | JWT  | Sync          | MVP     |
+| `GET`  | `/v1/attempts/:id`                     | JWT  | Sync          | MVP     |
+| `POST` | `/v1/attempts/:id/hints`               | JWT  | Sync          | MVP     |
+| `POST` | `/v1/attempts/:id/mentor`              | JWT  | Sync          | MVP     |
+| `POST` | `/v1/attempts/:id/submissions`         | JWT  | **Async 202** | MVP     |
+| `GET`  | `/v1/submissions/:id`                  | JWT  | Sync          | MVP     |
+| `POST` | `/v1/attempts/:id/viva`                | JWT  | Sync          | MVP     |
+| `POST` | `/v1/attempts/:id/viva/answers`        | JWT  | Sync          | MVP     |
+| `POST` | `/v1/attempts/:id/abandon`             | JWT  | Sync          | MVP     |
+| `POST` | `/v1/flags`                            | JWT  | Sync          | Phase 2 |
+| `POST` | `/v1/evaluations/:id/disputes`         | JWT  | Sync          | Phase 2 |
+| `GET`  | `/v1/profile/skills`                   | JWT  | Sync          | Phase 2 |
+| `GET`  | `/v1/profile/skills/:skillId/evidence` | JWT  | Sync          | Phase 2 |
+| `GET`  | `/v1/progress/weekly`                  | JWT  | Sync          | Phase 2 |
+| `GET`  | `/health`                              | None | Sync          | MVP     |
+| `GET`  | `/health/ready`                        | None | Sync          | MVP     |
 
 **FUTURE endpoints:** See `API_CONTRACT.md` — incidents, professor, assessments.
 
@@ -85,16 +86,16 @@ See `API_CONTRACT.md` for full request/response schemas.
 
 ## Dependencies
 
-| Package | Usage |
-|---|---|
-| `packages/database` | All DB reads and writes |
-| `packages/contracts` | Request/response types |
-| `packages/selector` | `POST /v1/sessions/:id/next` — get next task |
-| `packages/learner-model` | Diagnostic processing, mastery reads |
-| `packages/ai` | Mentor, viva follow-ups |
-| `packages/content` | Reading hint ladders, fact sheets |
-| Supabase Auth | JWT verification |
-| pg-boss | Grading job enqueue |
+| Package                  | Usage                                        |
+| ------------------------ | -------------------------------------------- |
+| `packages/database`      | All DB reads and writes                      |
+| `packages/contracts`     | Request/response types                       |
+| `packages/selector`      | `POST /v1/sessions/:id/next` — get next task |
+| `packages/learner-model` | Diagnostic processing, mastery reads         |
+| `packages/ai`            | Mentor, viva follow-ups                      |
+| `packages/content`       | Reading hint ladders, fact sheets            |
+| Supabase Auth            | JWT verification                             |
+| pg-boss                  | Grading job enqueue                          |
 
 ---
 
@@ -125,12 +126,12 @@ Standard error codes live in `packages/contracts/api/errors.ts`.
 
 ## Rate Limiting
 
-| Endpoint | Limit |
-|---|---|
-| `POST /v1/attempts/:id/mentor` | 20 req/min per learner |
-| `POST /v1/attempts/:id/submissions` | 5 req/min per learner |
-| `POST /v1/attempts/:id/hints` | 30 req/min per learner |
-| All other endpoints | 60 req/min per learner |
+| Endpoint                            | Limit                  |
+| ----------------------------------- | ---------------------- |
+| `POST /v1/attempts/:id/mentor`      | 20 req/min per learner |
+| `POST /v1/attempts/:id/submissions` | 5 req/min per learner  |
+| `POST /v1/attempts/:id/hints`       | 30 req/min per learner |
+| All other endpoints                 | 60 req/min per learner |
 
 ---
 

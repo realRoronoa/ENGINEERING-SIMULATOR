@@ -2,13 +2,13 @@
 
 ## Prerequisites
 
-| Tool | Version | Notes |
-|---|---|---|
-| Node.js | 20+ | LTS recommended |
-| pnpm | 8+ | Package manager |
-| Docker | 24+ | Required for grading worker and local infra |
-| Docker Compose | v2+ | Bundled with Docker Desktop |
-| PostgreSQL client | 16 | `psql` for direct DB access |
+| Tool              | Version | Notes                                       |
+| ----------------- | ------- | ------------------------------------------- |
+| Node.js           | 20+     | LTS recommended                             |
+| pnpm              | 8+      | Package manager                             |
+| Docker            | 24+     | Required for grading worker and local infra |
+| Docker Compose    | v2+     | Bundled with Docker Desktop                 |
+| PostgreSQL client | 16      | `psql` for direct DB access                 |
 
 ---
 
@@ -178,16 +178,16 @@ pnpm type-check
 
 See [`TESTING_STRATEGY.md`](./TESTING_STRATEGY.md) for full detail.
 
-| Package | Test Type |
-|---|---|
-| `packages/evaluator` | Unit + integration (Docker) |
-| `packages/selector` | Unit (deterministic logic) |
-| `packages/learner-model` | Unit (mastery math) |
-| `packages/ai` | Unit with mocked LLM |
-| `packages/content` | Validation scripts |
-| `apps/api` | Integration (real DB) |
-| `apps/web` | Component tests |
-| `apps/cli` | E2E tests |
+| Package                  | Test Type                   |
+| ------------------------ | --------------------------- |
+| `packages/evaluator`     | Unit + integration (Docker) |
+| `packages/selector`      | Unit (deterministic logic)  |
+| `packages/learner-model` | Unit (mastery math)         |
+| `packages/ai`            | Unit with mocked LLM        |
+| `packages/content`       | Validation scripts          |
+| `apps/api`               | Integration (real DB)       |
+| `apps/web`               | Component tests             |
+| `apps/cli`               | E2E tests                   |
 
 ---
 

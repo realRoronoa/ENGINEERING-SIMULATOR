@@ -52,6 +52,7 @@ All errors return:
 **DB Impact:** Creates or updates `learners` record; triggers diagnostic session creation.
 
 **Request:**
+
 ```json
 {
   "goal": "get-a-job | improve-skills | interview-prep",
@@ -62,6 +63,7 @@ All errors return:
 ```
 
 **Response: 201**
+
 ```json
 {
   "learnerId": "uuid",
@@ -83,16 +85,16 @@ All errors return:
 **DB Impact:** Creates evidence events; initializes `skill_states`; creates first session.
 
 **Request:**
+
 ```json
 {
   "diagnosticSessionId": "uuid",
-  "answers": [
-    { "questionId": "uuid", "answer": "string | string[]" }
-  ]
+  "answers": [{ "questionId": "uuid", "answer": "string | string[]" }]
 }
 ```
 
 **Response: 200**
+
 ```json
 {
   "skillProfile": [
@@ -121,6 +123,7 @@ All errors return:
 **DB Impact:** Creates `sessions` record.
 
 **Request:**
+
 ```json
 {
   "mode": "practice | debug | build | transfer"
@@ -128,6 +131,7 @@ All errors return:
 ```
 
 **Response: 201**
+
 ```json
 {
   "sessionId": "uuid",
@@ -150,6 +154,7 @@ All errors return:
 **Request:** (empty body)
 
 **Response: 201**
+
 ```json
 {
   "attemptId": "uuid",
@@ -186,6 +191,7 @@ All errors return:
 **DB Impact:** Read only.
 
 **Response: 200**
+
 ```json
 {
   "attempt": {
@@ -214,6 +220,7 @@ All errors return:
 **DB Impact:** Creates `hint_events` record; increments hint counter.
 
 **Request:**
+
 ```json
 {
   "currentHintIndex": 0
@@ -221,6 +228,7 @@ All errors return:
 ```
 
 **Response: 200**
+
 ```json
 {
   "hint": {
@@ -245,6 +253,7 @@ All errors return:
 **DB Impact:** Stores mentor exchange in `ai_calls`.
 
 **Request:**
+
 ```json
 {
   "message": "string",
@@ -253,6 +262,7 @@ All errors return:
 ```
 
 **Response: 200**
+
 ```json
 {
   "reply": "string",
@@ -274,17 +284,17 @@ All errors return:
 **DB Impact:** Creates `submissions` record; enqueues grading job.
 
 **Request:**
+
 ```json
 {
   "patch": "string (unified diff format)",
-  "structuredAnswers": [
-    { "questionId": "uuid", "answer": "string" }
-  ],
+  "structuredAnswers": [{ "questionId": "uuid", "answer": "string" }],
   "clientChecksum": "string"
 }
 ```
 
 **Response: 202**
+
 ```json
 {
   "submissionId": "uuid",
@@ -306,6 +316,7 @@ All errors return:
 **DB Impact:** Read only.
 
 **Response: 200**
+
 ```json
 {
   "submissionId": "uuid",
@@ -338,6 +349,7 @@ All errors return:
 **DB Impact:** Creates `viva_records` record; updates attempt status to `viva`.
 
 **Response: 201**
+
 ```json
 {
   "vivaId": "uuid",
@@ -362,6 +374,7 @@ All errors return:
 **DB Impact:** Updates `viva_records`; triggers AI rubric grading if applicable.
 
 **Request:**
+
 ```json
 {
   "vivaId": "uuid",
@@ -371,6 +384,7 @@ All errors return:
 ```
 
 **Response: 200**
+
 ```json
 {
   "nextQuestion": {
@@ -395,6 +409,7 @@ All errors return:
 **DB Impact:** Updates attempt status to `abandoned`.
 
 **Response: 200**
+
 ```json
 {
   "attemptId": "uuid",
@@ -415,6 +430,7 @@ All errors return:
 **DB Impact:** Creates `flags` record.
 
 **Request:**
+
 ```json
 {
   "attemptId": "uuid",
@@ -424,6 +440,7 @@ All errors return:
 ```
 
 **Response: 201**
+
 ```json
 {
   "flagId": "uuid",
@@ -442,6 +459,7 @@ All errors return:
 **DB Impact:** Creates `disputes` record.
 
 **Request:**
+
 ```json
 {
   "reason": "string",
@@ -450,6 +468,7 @@ All errors return:
 ```
 
 **Response: 201**
+
 ```json
 {
   "disputeId": "uuid",
@@ -470,6 +489,7 @@ All errors return:
 **DB Impact:** Read only from `skill_states`.
 
 **Response: 200**
+
 ```json
 {
   "skills": [
@@ -496,6 +516,7 @@ All errors return:
 **DB Impact:** Read only from `evidence_events`.
 
 **Response: 200**
+
 ```json
 {
   "skillId": "uuid",
@@ -523,6 +544,7 @@ All errors return:
 **DB Impact:** Read only from `weekly_reports`.
 
 **Response: 200**
+
 ```json
 {
   "weekOf": "iso8601",
@@ -530,9 +552,7 @@ All errors return:
   "skillsImproved": ["string"],
   "attemptsCompleted": 5,
   "transferTasksPassed": 1,
-  "masteryChanges": [
-    { "skillId": "uuid", "skillName": "string", "delta": 0.1 }
-  ]
+  "masteryChanges": [{ "skillId": "uuid", "skillName": "string", "delta": 0.1 }]
 }
 ```
 
@@ -542,13 +562,13 @@ All errors return:
 
 > These endpoints are documented for planning only. Do not build until the indicated phase.
 
-| Endpoint | Phase | Notes |
-|---|---|---|
-| `GET /v1/incidents` | Phase 5 | Production incident tasks |
-| `POST /v1/incidents/:id/investigate` | Phase 5 | Investigate mode |
-| `POST /v1/incidents/:id/fix` | Phase 5 | Fix mode |
-| `POST /v1/incidents/:id/postmortem` | Phase 5 | Postmortem grading |
-| `GET /v1/admin/content` | Phase 3 | Admin content review |
-| `GET /v1/admin/flags` | Phase 3 | Admin flag inbox |
-| `GET /v1/professor/cohorts` | Phase 3 | Professor dashboard |
-| `GET /v1/assessments/:id` | Phase 6 | Company assessments |
+| Endpoint                             | Phase   | Notes                     |
+| ------------------------------------ | ------- | ------------------------- |
+| `GET /v1/incidents`                  | Phase 5 | Production incident tasks |
+| `POST /v1/incidents/:id/investigate` | Phase 5 | Investigate mode          |
+| `POST /v1/incidents/:id/fix`         | Phase 5 | Fix mode                  |
+| `POST /v1/incidents/:id/postmortem`  | Phase 5 | Postmortem grading        |
+| `GET /v1/admin/content`              | Phase 3 | Admin content review      |
+| `GET /v1/admin/flags`                | Phase 3 | Admin flag inbox          |
+| `GET /v1/professor/cohorts`          | Phase 3 | Professor dashboard       |
+| `GET /v1/assessments/:id`            | Phase 6 | Company assessments       |

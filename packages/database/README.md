@@ -57,17 +57,17 @@ packages/database/
 
 ## Responsibilities
 
-| Task | Owner |
-|---|---|
-| Schema definition | Developer 3 |
-| Migrations | Developer 3 |
-| Index design | Developer 3 |
-| Constraints + relationships | Developer 3 |
-| Typed DB access functions | Developer 3 |
-| Seed data (structure) | Developer 3 |
-| Seed data (content) | Developer 4 (content imports) |
-| RLS policies | Developer 3 (with Dev 10) |
-| Data retention jobs | Developer 3 [Phase 3] |
+| Task                        | Owner                         |
+| --------------------------- | ----------------------------- |
+| Schema definition           | Developer 3                   |
+| Migrations                  | Developer 3                   |
+| Index design                | Developer 3                   |
+| Constraints + relationships | Developer 3                   |
+| Typed DB access functions   | Developer 3                   |
+| Seed data (structure)       | Developer 3                   |
+| Seed data (content)         | Developer 4 (content imports) |
+| RLS policies                | Developer 3 (with Dev 10)     |
+| Data retention jobs         | Developer 3 [Phase 3]         |
 
 ---
 

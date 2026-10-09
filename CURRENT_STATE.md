@@ -3,60 +3,50 @@
 > **What is true RIGHT NOW.**
 > Not what we are building ([`PRODUCT_SPEC.md`](./PRODUCT_SPEC.md)).
 > Not how much is built ([`PROJECT_STATUS.md`](./PROJECT_STATUS.md)).
->
-> Keep this file short. If it grows past one screen, it has become the wrong file.
 
-**As of:** 2026-10-08
+**As of:** 2026-10-09
 
-| | |
-|---|---|
-| **Current version** | v0.0.1 — repository scaffold |
-| **Current phase** | Phase 0 — Validation |
-| **Next milestone** | Phase 0 validation evidence: 3 student interviews + manual mission #1 run by hand |
+### Current repository state
 
-### Current architecture
-Monorepo (`apps/` + `packages/` + `reference-systems/` + `infrastructure/`), documented only.
-Attempt-centered API design. Deterministic evaluation ahead of AI. No code implements this yet.
+The repository is an operational TypeScript ESM monorepo using npm workspaces with initial runnable applications (`apps/api`, `apps/web`) and a shared contract package (`packages/contracts`).
 
-### Current tech stack
-Node.js, TypeScript, PostgreSQL. Docker for reference-system and grading execution.
-Decided and documented; **not installed, not wired, no `package.json` workspace yet.**
+### Current development phase
 
-### Current deployed services
-None. No development, staging, or production environment exists.
+Phase 1 — Technical Monorepo Foundation & Core Scaffolding.
 
-### Current working features
-None. The repository contains documentation, architecture decisions, contracts, and ownership —
-no executable product code.
+### Actual technology configuration
 
-### Current known bugs
-None — there is no running code to have bugs.
+- **Runtime & Language:** Node.js LTS, ESM modules, TypeScript strict (`tsconfig.base.json`).
+- **Monorepo Workspaces:** `apps/*`, `packages/*`.
+- **Backend Shell (`apps/api`):** Fastify + Zod with `/health` endpoint returning typed `HealthResponse`.
+- **Frontend Shell (`apps/web`):** React + Vite + React Router shell with production build.
+- **Contracts Package (`packages/contracts`):** Exported TypeScript interfaces (`Submission`, `EvaluationResult`, `EvaluationStatus`, `HealthResponse`).
+- **Quality Tooling:** Vitest, ESLint (TypeScript flat config), Prettier (`.prettierrc.json`), `.editorconfig`, `.env.example`.
 
-### Current limitations
-- Nothing runs; the monorepo is not installable.
-- No CI pipeline.
-- No database migrations.
-- Local-only by design at this stage.
+### Existing executable applications
 
-### Current users / testers
-0
+- `apps/api` (Fastify HTTP server shell)
+- `apps/web` (React/Vite frontend shell)
 
-### Current content
-| | Count |
-|---|---:|
-| Skills | 0 (12 planned for V1) |
-| Task templates | 0 (15 planned for V1) |
-| Variants | 0 (~60 planned for V1) |
-| Reference systems | 0 running (Shopverse documented) |
+### Existing database and migrations
 
-### Current infrastructure
-None. No Docker Compose, no Redis, no queue, no object storage, no monitoring, no backups.
+None. PostgreSQL is configured as the planned database (`DATABASE.md`, `.env.example`, `packages/database/README.md`).
 
-### Current AI integrations
-None. Provider and model configuration not yet chosen.
+### Existing tests and their last verified results
 
-### Current database state
-Schema designed in [`DATABASE.md`](./DATABASE.md). Zero migrations written, zero applied.
+- `packages/contracts/src/index.test.ts` (2 tests passing)
+- `apps/api/src/app.test.ts` (1 test passing - `/health` endpoint)
+- `apps/web/src/App.test.tsx` (1 test passing - React component shell render)
+- Total: 4 unit/integration tests passing cleanly in Vitest.
+
+### Existing deployment state
+
+Local development mode (`npm run dev:api`, `npm run dev:web`). Production build outputs verified (`dist/` for web, api, and contracts).
 
 ### Current blockers
-None.
+
+None for foundation setup.
+
+### Immediate next milestone
+
+Milestone 1 — Database schema setup (`packages/database`) & Reference system integration (`reference-systems/shopverse`).

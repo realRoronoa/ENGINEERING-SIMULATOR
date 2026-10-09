@@ -21,6 +21,7 @@ The platform needs to grade learner code submissions. Options for grading:
 We will use **deterministic evaluation first, AI for reasoning only**.
 
 Specifically:
+
 - Code correctness is determined by running tests in an isolated Docker container.
 - AI rubric grading is used ONLY for free-text reasoning, design explanations, and viva answers — against a fixed, human-authored rubric.
 - AI does NOT decide pass/fail for code submissions.

@@ -9,6 +9,7 @@
 ## Purpose
 
 The local engineering environment for learners. Learners use the CLI to:
+
 - Authenticate with the platform
 - Download and initialize a task in their local environment
 - Run tests locally before submitting
@@ -34,16 +35,16 @@ engsim login
 
 ## Commands
 
-| Command | Description | Phase |
-|---|---|---|
-| `engsim login` | Authenticate with the platform, store device token | MVP |
-| `engsim init <attemptId>` | Download task environment to local folder | MVP |
-| `engsim test` | Run public tests locally (Docker) | MVP |
-| `engsim submit` | Submit the learner's changes for grading | MVP |
-| `engsim status` | Check the grading status of the last submission | MVP |
-| `engsim result` | Fetch and display the grading result | MVP |
-| `engsim help` | Show help | MVP |
-| `engsim version` | Show CLI version | MVP |
+| Command                   | Description                                        | Phase |
+| ------------------------- | -------------------------------------------------- | ----- |
+| `engsim login`            | Authenticate with the platform, store device token | MVP   |
+| `engsim init <attemptId>` | Download task environment to local folder          | MVP   |
+| `engsim test`             | Run public tests locally (Docker)                  | MVP   |
+| `engsim submit`           | Submit the learner's changes for grading           | MVP   |
+| `engsim status`           | Check the grading status of the last submission    | MVP   |
+| `engsim result`           | Fetch and display the grading result               | MVP   |
+| `engsim help`             | Show help                                          | MVP   |
+| `engsim version`          | Show CLI version                                   | MVP   |
 
 ---
 
@@ -109,6 +110,7 @@ The CLI does NOT upload the entire project — only the patch.
 ## Error Messages
 
 All error messages must be:
+
 - Human-readable
 - Actionable ("Run `engsim login` first")
 - No stack traces shown to the learner (log to file for debugging)
@@ -117,17 +119,18 @@ All error messages must be:
 
 ## Dependencies
 
-| Package | Usage |
-|---|---|
-| `packages/contracts` | API request/response types |
-| `apps/api` | All API calls |
-| Docker (local) | `engsim test` — run public tests locally |
+| Package              | Usage                                    |
+| -------------------- | ---------------------------------------- |
+| `packages/contracts` | API request/response types               |
+| `apps/api`           | All API calls                            |
+| Docker (local)       | `engsim test` — run public tests locally |
 
 ---
 
 ## Privacy Requirements (CRITICAL)
 
 The CLI must NOT:
+
 - Collect raw keystrokes
 - Read terminal history
 - Record the screen
@@ -136,6 +139,7 @@ The CLI must NOT:
 - Read unrelated machine files
 
 The CLI ONLY transmits:
+
 - The submission patch (diff of task directory changes)
 - The device token (for auth)
 

@@ -13,19 +13,19 @@ decisions lives — the raw material that `PRODUCT_SPEC.md` is distilled from.
 
 ## What belongs here
 
-| Content | When |
-|---|---|
-| Student interview notes and findings | Phase 0 |
-| Faculty interview notes | Phase 0 |
-| Hiring manager interview notes | Phase 0 |
-| Manual mission designs and run write-ups | Phase 0 |
-| Practice vs transfer observations | Phase 0 onward |
-| Skill graph design notes and rationale | Phase 0–2 |
-| Task template design notes | Phase 1–2 |
-| Misconception research | Phase 2 onward |
-| Learner session observations | Phase 1 onward |
-| Diagnostic design rationale | Phase 2 |
-| Weekly report design notes | Phase 2 |
+| Content                                  | When           |
+| ---------------------------------------- | -------------- |
+| Student interview notes and findings     | Phase 0        |
+| Faculty interview notes                  | Phase 0        |
+| Hiring manager interview notes           | Phase 0        |
+| Manual mission designs and run write-ups | Phase 0        |
+| Practice vs transfer observations        | Phase 0 onward |
+| Skill graph design notes and rationale   | Phase 0–2      |
+| Task template design notes               | Phase 1–2      |
+| Misconception research                   | Phase 2 onward |
+| Learner session observations             | Phase 1 onward |
+| Diagnostic design rationale              | Phase 2        |
+| Weekly report design notes               | Phase 2        |
 
 ## What does not belong here
 

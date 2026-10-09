@@ -17,36 +17,36 @@ AI assists learners and evaluates reasoning. AI does **not** decide whether code
 
 ### Online (Real-time, learner-facing)
 
-| Use | Details |
-|---|---|
-| **Mentor** | Socratic, grounded in the task's verified fact sheet and reference code. Must NOT reveal hidden test details. |
-| **Hint wording** | Final hint wording may be AI-generated, but hint content/structure is authored. |
-| **Viva follow-ups** | Dynamic follow-up questions in viva, grounded in learner's answer. |
-| **Explanation classification** | Classify whether a learner's explanation matches expected reasoning. |
-| **Rubric-based reasoning grading** | Grade free-text reasoning against a fixed, human-authored rubric. |
-| **Weekly report writing** | Write a personalized weekly summary grounded in learner's actual data. |
+| Use                                | Details                                                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Mentor**                         | Socratic, grounded in the task's verified fact sheet and reference code. Must NOT reveal hidden test details. |
+| **Hint wording**                   | Final hint wording may be AI-generated, but hint content/structure is authored.                               |
+| **Viva follow-ups**                | Dynamic follow-up questions in viva, grounded in learner's answer.                                            |
+| **Explanation classification**     | Classify whether a learner's explanation matches expected reasoning.                                          |
+| **Rubric-based reasoning grading** | Grade free-text reasoning against a fixed, human-authored rubric.                                             |
+| **Weekly report writing**          | Write a personalized weekly summary grounded in learner's actual data.                                        |
 
 ### Offline (Content creation, not learner-facing)
 
-| Use | Details |
-|---|---|
-| **Variant drafting** | Draft new task variant descriptions for human review. |
-| **Variant critique** | Critique a draft variant for clarity, difficulty calibration, ambiguity. |
-| **Solver checks** | Verify that a proposed fix actually solves the task (assisted review). |
-| **Explanation drafting** | Draft post-task explanations for human review. |
+| Use                      | Details                                                                  |
+| ------------------------ | ------------------------------------------------------------------------ |
+| **Variant drafting**     | Draft new task variant descriptions for human review.                    |
+| **Variant critique**     | Critique a draft variant for clarity, difficulty calibration, ambiguity. |
+| **Solver checks**        | Verify that a proposed fix actually solves the task (assisted review).   |
+| **Explanation drafting** | Draft post-task explanations for human review.                           |
 
 ---
 
 ## Prohibited AI Use
 
-| Prohibited | Reason |
-|---|---|
-| Deciding whether code is objectively correct | Principle 4: deterministic evaluation only |
-| Generating new problems live for a learner | Principle 2: pre-build everything |
-| Generating fake production logs or metrics | Principle 5: logs come from running code |
-| Storing or repeating learner secrets/credentials | Privacy policy |
-| Making claims not grounded in fact sheet or reference code | Hallucination risk |
-| Using AI to bypass the hidden test grader | Evaluation integrity |
+| Prohibited                                                 | Reason                                     |
+| ---------------------------------------------------------- | ------------------------------------------ |
+| Deciding whether code is objectively correct               | Principle 4: deterministic evaluation only |
+| Generating new problems live for a learner                 | Principle 2: pre-build everything          |
+| Generating fake production logs or metrics                 | Principle 5: logs come from running code   |
+| Storing or repeating learner secrets/credentials           | Privacy policy                             |
+| Making claims not grounded in fact sheet or reference code | Hallucination risk                         |
+| Using AI to bypass the hidden test grader                  | Evaluation integrity                       |
 
 ---
 
@@ -55,11 +55,13 @@ AI assists learners and evaluates reasoning. AI does **not** decide whether code
 ### Mentor Grounding
 
 The mentor **must** be grounded in:
+
 1. The task's **fact sheet** (verified, human-authored facts about the system)
 2. The **reference codebase** (actual running code)
 3. The **task instructions**
 
 The mentor **must NOT**:
+
 - Reveal hidden test details
 - Hallucinate system behavior not in the fact sheet
 - Provide the complete solution
@@ -67,6 +69,7 @@ The mentor **must NOT**:
 ### Rubric-Based Grading Grounding
 
 AI grading of reasoning **must**:
+
 1. Use a **fixed, human-authored rubric** — not invent evaluation criteria
 2. Return a **structured result** (rubric item → pass/fail + evidence quote)
 3. Be overridable by deterministic signals
@@ -86,17 +89,17 @@ AI grading of reasoning **must**:
 
 Every AI call must log to the `ai_calls` table:
 
-| Field | Details |
-|---|---|
-| `model` | Model name and version (e.g., `gpt-4o-2024-11-20`) |
-| `prompt_name` | Name of the prompt used |
-| `prompt_version` | Version of the prompt |
-| `input_tokens` | Token count |
-| `output_tokens` | Token count |
-| `latency_ms` | Latency |
-| `attempt_id` | Associated attempt (if applicable) |
-| `purpose` | `mentor` / `viva` / `rubric_grading` / `weekly_report` / `offline_drafting` |
-| `cost_usd` | Estimated cost |
+| Field            | Details                                                                     |
+| ---------------- | --------------------------------------------------------------------------- |
+| `model`          | Model name and version (e.g., `gpt-4o-2024-11-20`)                          |
+| `prompt_name`    | Name of the prompt used                                                     |
+| `prompt_version` | Version of the prompt                                                       |
+| `input_tokens`   | Token count                                                                 |
+| `output_tokens`  | Token count                                                                 |
+| `latency_ms`     | Latency                                                                     |
+| `attempt_id`     | Associated attempt (if applicable)                                          |
+| `purpose`        | `mentor` / `viva` / `rubric_grading` / `weekly_report` / `offline_drafting` |
+| `cost_usd`       | Estimated cost                                                              |
 
 ---
 
@@ -110,12 +113,12 @@ Every AI call must log to the `ai_calls` table:
 
 ## Fallback Behavior
 
-| Failure Mode | Fallback |
-|---|---|
-| AI mentor timeout | Show authored fallback message: "I'm unable to help right now. Try the hint ladder." |
-| AI viva follow-up failure | Skip to next authored question |
-| AI rubric grading failure | Mark reasoning as `ungraded`, flag for human review |
-| AI weekly report failure | Show data-only summary without AI narrative |
+| Failure Mode              | Fallback                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------ |
+| AI mentor timeout         | Show authored fallback message: "I'm unable to help right now. Try the hint ladder." |
+| AI viva follow-up failure | Skip to next authored question                                                       |
+| AI rubric grading failure | Mark reasoning as `ungraded`, flag for human review                                  |
+| AI weekly report failure  | Show data-only summary without AI narrative                                          |
 
 **Never block the learner's core flow due to an AI failure.**
 

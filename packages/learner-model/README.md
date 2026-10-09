@@ -82,22 +82,24 @@ mastery estimate = alpha / (alpha + beta)
 
 ### Evidence Update Rules
 
-| Evidence Type | Weight | Notes |
-|---|---|---|
-| `practice` (pass) | 1.0 | Standard evidence |
-| `practice` (fail) | 0.5 | Failure is evidence too, but weighted less |
-| `transfer` (pass) | 2.0 | Transfer evidence is weighted higher — indicates genuine learning |
-| `transfer` (fail) | 0.5 | |
-| `diagnostic` (pass) | 0.3 | Low weight — diagnostic is uncertain baseline |
-| `diagnostic` (fail) | 0.2 | |
+| Evidence Type       | Weight | Notes                                                             |
+| ------------------- | ------ | ----------------------------------------------------------------- |
+| `practice` (pass)   | 1.0    | Standard evidence                                                 |
+| `practice` (fail)   | 0.5    | Failure is evidence too, but weighted less                        |
+| `transfer` (pass)   | 2.0    | Transfer evidence is weighted higher — indicates genuine learning |
+| `transfer` (fail)   | 0.5    |                                                                   |
+| `diagnostic` (pass) | 0.3    | Low weight — diagnostic is uncertain baseline                     |
+| `diagnostic` (fail) | 0.2    |                                                                   |
 
 Difficulty modifies weight:
+
 - Higher difficulty success → slightly higher weight
 - Lower difficulty success → slightly lower weight
 
 ### Alpha/Beta Update
 
 On each evidence event:
+
 ```
 if passed:
   alpha = alpha + weight * difficulty_modifier
@@ -144,10 +146,10 @@ The diagnostic provides the initial prior. Each diagnostic question answered cor
 
 ## Dependencies
 
-| Package | Usage |
-|---|---|
-| `packages/database` | Read/write skill_states, evidence_events, misconception_hits |
-| `packages/contracts` | EvidenceEventPayload, SkillStatePayload |
+| Package              | Usage                                                        |
+| -------------------- | ------------------------------------------------------------ |
+| `packages/database`  | Read/write skill_states, evidence_events, misconception_hits |
+| `packages/contracts` | EvidenceEventPayload, SkillStatePayload                      |
 
 ---
 

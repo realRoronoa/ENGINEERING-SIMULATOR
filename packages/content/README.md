@@ -122,23 +122,23 @@ export function loadMisconceptions(): Promise<Misconception[]>;
 
 ## MVP Content Plan
 
-| Content Type | MVP Count | Phase 1 Count | Status |
-|---|---|---|---|
-| Skills | 12 | 3 | [ ] |
-| TaskTemplates | 15 | 3 | [ ] |
-| Variants | ~60 | 3 | [ ] |
-| FaultPatterns | ~20 | 3 | [ ] |
-| Rubrics | ~15 | 3 | [ ] |
-| VivaQuestionBanks | ~15 | 3 | [ ] |
-| Misconceptions | ~30 | 0 | [ ] |
+| Content Type      | MVP Count | Phase 1 Count | Status |
+| ----------------- | --------- | ------------- | ------ |
+| Skills            | 12        | 3             | [ ]    |
+| TaskTemplates     | 15        | 3             | [ ]    |
+| Variants          | ~60       | 3             | [ ]    |
+| FaultPatterns     | ~20       | 3             | [ ]    |
+| Rubrics           | ~15       | 3             | [ ]    |
+| VivaQuestionBanks | ~15       | 3             | [ ]    |
+| Misconceptions    | ~30       | 0             | [ ]    |
 
 ---
 
 ## Dependencies
 
-| Package | Usage |
-|---|---|
-| `packages/database` | Import scripts write to DB |
+| Package                       | Usage                                           |
+| ----------------------------- | ----------------------------------------------- |
+| `packages/database`           | Import scripts write to DB                      |
 | `reference-systems/shopverse` | Validation scripts run against Shopverse Docker |
 
 This package does NOT depend on `packages/contracts` for its file-level types.

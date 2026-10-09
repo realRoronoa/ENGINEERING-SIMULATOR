@@ -32,17 +32,17 @@ All events are defined as TypeScript types in `packages/contracts/events/`.
   learnerId: string;
   variantId: string;
   referenceSystemDockerImage: string;
-  patch: string;               // unified diff
+  patch: string; // unified diff
   structuredAnswers: Array<{
     questionId: string;
     answer: string;
   }>;
-  hiddenTestsPath: string;     // path in reference system to hidden tests
+  hiddenTestsPath: string; // path in reference system to hidden tests
   resourceLimits: {
     cpuCores: number;
     memoryMb: number;
     timeoutSeconds: number;
-  };
+  }
   idempotencyKey: string;
   createdAt: string;
 }
@@ -75,7 +75,7 @@ All events are defined as TypeScript types in `packages/contracts/events/`.
     }>;
     passed: boolean;
     score: number;
-  };
+  }
   gradingError: string | null;
   completedAt: string;
 }
@@ -137,19 +137,19 @@ All events are defined as TypeScript types in `packages/contracts/events/`.
 
 ## Retry Policy
 
-| Failure Type | Max Retries | Backoff |
-|---|---|---|
-| Docker startup failure | 3 | Exponential (1s, 5s, 30s) |
-| Test runner crash | 2 | Fixed (10s) |
-| Timeout | 0 | No retry — log and fail |
-| Unknown error | 2 | Exponential |
+| Failure Type           | Max Retries | Backoff                   |
+| ---------------------- | ----------- | ------------------------- |
+| Docker startup failure | 3           | Exponential (1s, 5s, 30s) |
+| Test runner crash      | 2           | Fixed (10s)               |
+| Timeout                | 0           | No retry — log and fail   |
+| Unknown error          | 2           | Exponential               |
 
 ---
 
 ## Future Events [FUTURE — Phase 5]
 
-| Event | Notes |
-|---|---|
-| `incident.created` | Production incident task assigned |
-| `sandbox.ready` | Hosted sandbox environment ready |
+| Event                  | Notes                             |
+| ---------------------- | --------------------------------- |
+| `incident.created`     | Production incident task assigned |
+| `sandbox.ready`        | Hosted sandbox environment ready  |
 | `postmortem.submitted` | Postmortem submission for grading |

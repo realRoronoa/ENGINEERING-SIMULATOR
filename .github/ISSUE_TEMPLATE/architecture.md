@@ -30,9 +30,9 @@ assignees: ''
 ## Options considered
 
 | Option | Cost | Risk |
-|---|---|---|
-| | | |
-| | | |
+| ------ | ---- | ---- |
+|        |      |      |
+|        |      |      |
 
 ## Recommendation
 

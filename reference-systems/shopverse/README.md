@@ -26,14 +26,14 @@ Learners are given tasks (variants) that require them to find and fix bugs, impr
 
 ## Modules
 
-| Module | Description |
-|---|---|
-| `api/` | Express/Hono route handlers |
-| `services/` | Business logic (orders, products, users) |
-| `db/` | Database access and queries |
-| `tests/` | Internal test suite (not learner hidden tests) |
-| `docker/` | Dockerfile and compose for local execution |
-| `seed/` | Database seed scripts (generates realistic data volume) |
+| Module      | Description                                             |
+| ----------- | ------------------------------------------------------- |
+| `api/`      | Express/Hono route handlers                             |
+| `services/` | Business logic (orders, products, users)                |
+| `db/`       | Database access and queries                             |
+| `tests/`    | Internal test suite (not learner hidden tests)          |
+| `docker/`   | Dockerfile and compose for local execution              |
+| `seed/`     | Database seed scripts (generates realistic data volume) |
 
 ---
 
@@ -64,6 +64,7 @@ pnpm dev
 
 Content authors (Developer 4) design tasks by injecting faults into this codebase.
 Common injection points for MVP:
+
 - `api/products.ts` — N+1 queries in category fetching
 - `services/orders.ts` — Missing transactions during checkout
 - `db/schema.sql` — Missing indexes on heavily queried columns
@@ -75,6 +76,7 @@ Common injection points for MVP:
 ## Testing Requirements
 
 This system is tested two ways:
+
 1. **Internal tests:** The system's own unit/integration tests (`tests/`).
 2. **Variant validation:** Developer 4 runs content validation scripts against this system to ensure injected faults behave as expected and hidden tests can catch them.
 

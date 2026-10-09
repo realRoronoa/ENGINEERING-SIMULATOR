@@ -59,8 +59,8 @@ interface GradingInput {
   structuredAnswers: Array<{ questionId: string; answer: string }>;
   variantId: string;
   hiddenTestsPath: string;
-  dockerContainerId: string;    // pre-started by worker
-  answerKey: AnswerKey;         // from content package
+  dockerContainerId: string; // pre-started by worker
+  answerKey: AnswerKey; // from content package
   rubricId: string | null;
 }
 ```
@@ -97,11 +97,11 @@ AI rubric results are stored but do not block `passed` for MVP.
 
 ## Dependencies
 
-| Package | Usage |
-|---|---|
-| `packages/contracts` | Input/output types |
-| `packages/ai` | AI rubric grading (Phase 2) |
-| `packages/database` | Read answer keys, write evaluations |
+| Package              | Usage                               |
+| -------------------- | ----------------------------------- |
+| `packages/contracts` | Input/output types                  |
+| `packages/ai`        | AI rubric grading (Phase 2)         |
+| `packages/database`  | Read answer keys, write evaluations |
 
 ---
 

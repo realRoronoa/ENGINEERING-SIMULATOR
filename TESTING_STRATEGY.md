@@ -15,17 +15,17 @@
 
 ## Test Layers
 
-| Layer | Type | Tool | Owner |
-|---|---|---|---|
-| Contracts | Type checking | TypeScript compiler | All |
-| Engines (evaluator, selector, learner-model) | Unit | Vitest | Dev 5, 7, 6 |
-| API endpoints | Integration (real DB) | Supertest + Vitest | Dev 2 |
-| Database | Migration + query tests | Vitest + pg | Dev 3 |
-| Content | Validation scripts | Custom scripts | Dev 4 |
-| Worker | Integration (Docker) | Vitest | Dev 5 |
-| Web | Component tests | Vitest + Testing Library | Dev 1 |
-| CLI | E2E | Vitest | Dev 9 |
-| AI | Unit (mocked LLM) | Vitest | Dev 8 |
+| Layer                                        | Type                    | Tool                     | Owner       |
+| -------------------------------------------- | ----------------------- | ------------------------ | ----------- |
+| Contracts                                    | Type checking           | TypeScript compiler      | All         |
+| Engines (evaluator, selector, learner-model) | Unit                    | Vitest                   | Dev 5, 7, 6 |
+| API endpoints                                | Integration (real DB)   | Supertest + Vitest       | Dev 2       |
+| Database                                     | Migration + query tests | Vitest + pg              | Dev 3       |
+| Content                                      | Validation scripts      | Custom scripts           | Dev 4       |
+| Worker                                       | Integration (Docker)    | Vitest                   | Dev 5       |
+| Web                                          | Component tests         | Vitest + Testing Library | Dev 1       |
+| CLI                                          | E2E                     | Vitest                   | Dev 9       |
+| AI                                           | Unit (mocked LLM)       | Vitest                   | Dev 8       |
 
 ---
 
@@ -74,6 +74,7 @@ pnpm --filter @eng-sim/content validate
 ```
 
 Validation checks:
+
 - Fix applies cleanly to Docker reference system
 - Hidden tests pass with fix
 - Hidden tests fail without fix

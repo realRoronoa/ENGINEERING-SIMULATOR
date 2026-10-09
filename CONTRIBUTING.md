@@ -48,6 +48,7 @@ Name the exact sections of `PROJECT_STATUS.md` you edited and what you changed t
 
 ```markdown
 ### Project Status Impact
+
 - §4 Feature Status: `API` → IN_PROGRESS, 30%
 - §6 Currently In Progress: added "Attempt endpoints" (Dev 2)
 - §10 Test Status: API tests 0 → 6, all passing
@@ -57,6 +58,7 @@ If the PR genuinely has no status impact (a typo fix, a comment, a formatting ch
 
 ```markdown
 ### Project Status Impact
+
 None — <one-line reason>.
 ```
 
@@ -64,16 +66,16 @@ Do not leave the section blank, and do not delete it.
 
 ### Which sections to touch
 
-| You did this | Update these sections |
-|---|---|
-| Started a feature | §4 (→ `IN_PROGRESS`), §6 |
-| Finished a feature | §4 (→ `DONE`/`REVIEW`/`TESTING`, %), §5, §6 (remove it), §1 percentages |
-| Hit a blocker | §4 (→ `BLOCKED`, Blocked By), §7 (full blocker entry) |
-| Deferred something | §4 (→ `DEFERRED`), §8 if priorities shifted |
-| Changed scope | §4, §8, and `PRODUCT_SPEC.md` in a **separate** agreed PR |
-| Added or fixed tests | §10 |
-| Deployed anything | §11 |
-| Created known debt | §9 |
+| You did this         | Update these sections                                                   |
+| -------------------- | ----------------------------------------------------------------------- |
+| Started a feature    | §4 (→ `IN_PROGRESS`), §6                                                |
+| Finished a feature   | §4 (→ `DONE`/`REVIEW`/`TESTING`, %), §5, §6 (remove it), §1 percentages |
+| Hit a blocker        | §4 (→ `BLOCKED`, Blocked By), §7 (full blocker entry)                   |
+| Deferred something   | §4 (→ `DEFERRED`), §8 if priorities shifted                             |
+| Changed scope        | §4, §8, and `PRODUCT_SPEC.md` in a **separate** agreed PR               |
+| Added or fixed tests | §10                                                                     |
+| Deployed anything    | §11                                                                     |
+| Created known debt   | §9                                                                      |
 
 Conflicts in `PROJECT_STATUS.md` are resolved by **keeping both developers' edits**.
 Never overwrite the other developer's status rows.
@@ -94,14 +96,14 @@ Full detail: [`docs/WORKFLOW.md`](./docs/WORKFLOW.md).
 
 ## Branch Naming
 
-| Pattern | Use |
-|---|---|
-| `feat/<area>/<name>` | New feature |
-| `fix/<area>/<name>` | Bug fix |
-| `content/<name>` | Skills, templates, variants |
-| `db/<name>` | Database migrations |
-| `contract/<name>` | `packages/contracts/` changes |
-| `docs/<name>` | Documentation only |
+| Pattern              | Use                           |
+| -------------------- | ----------------------------- |
+| `feat/<area>/<name>` | New feature                   |
+| `fix/<area>/<name>`  | Bug fix                       |
+| `content/<name>`     | Skills, templates, variants   |
+| `db/<name>`          | Database migrations           |
+| `contract/<name>`    | `packages/contracts/` changes |
+| `docs/<name>`        | Documentation only            |
 
 `<area>` matches an `area:` label — see [`.github/LABELS.md`](./.github/LABELS.md).
 

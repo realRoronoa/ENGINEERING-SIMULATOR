@@ -63,24 +63,24 @@ Pick job from queue
 
 ## Container Constraints (MVP Defaults)
 
-| Constraint | Default |
-|---|---|
-| CPU cores | 0.5 |
-| Memory | 512 MB |
-| Execution timeout | 60 seconds |
-| Network access | Internal only (no external network) |
-| Filesystem | Read-only except task directory |
+| Constraint        | Default                             |
+| ----------------- | ----------------------------------- |
+| CPU cores         | 0.5                                 |
+| Memory            | 512 MB                              |
+| Execution timeout | 60 seconds                          |
+| Network access    | Internal only (no external network) |
+| Filesystem        | Read-only except task directory     |
 
 ---
 
 ## Retry Policy
 
-| Failure Type | Max Retries | Backoff |
-|---|---|---|
-| Docker startup failure | 3 | Exponential (1s, 5s, 30s) |
-| Test runner crash | 2 | Fixed (10s) |
-| Timeout | 0 | No retry |
-| Unknown error | 2 | Exponential |
+| Failure Type           | Max Retries | Backoff                   |
+| ---------------------- | ----------- | ------------------------- |
+| Docker startup failure | 3           | Exponential (1s, 5s, 30s) |
+| Test runner crash      | 2           | Fixed (10s)               |
+| Timeout                | 0           | No retry                  |
+| Unknown error          | 2           | Exponential               |
 
 After all retries: mark submission as `failed`, log error, alert ops.
 
@@ -88,13 +88,13 @@ After all retries: mark submission as `failed`, log error, alert ops.
 
 ## Dependencies
 
-| Package | Usage |
-|---|---|
-| `packages/evaluator` | Core grading logic |
-| `packages/database` | Read variants, write evaluations and evidence |
-| `packages/contracts` | Job and evaluation types |
-| Docker SDK | Container management |
-| pg-boss | Queue consumption |
+| Package              | Usage                                         |
+| -------------------- | --------------------------------------------- |
+| `packages/evaluator` | Core grading logic                            |
+| `packages/database`  | Read variants, write evaluations and evidence |
+| `packages/contracts` | Job and evaluation types                      |
+| Docker SDK           | Container management                          |
+| pg-boss              | Queue consumption                             |
 
 ---
 

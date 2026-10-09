@@ -11,6 +11,7 @@
 We need to decide how to structure the codebase for a system with multiple deployable applications (web, API, worker, CLI) and multiple shared packages (evaluator, selector, learner-model, ai, content, database, contracts).
 
 Options considered:
+
 1. **Monorepo** — all code in one repository, managed with pnpm workspaces
 2. **Polyrepo** — each service in its own repository
 3. **Hybrid** — apps separate, shared packages in a library repo

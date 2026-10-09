@@ -90,6 +90,7 @@ export async function selectNextTask(input: SelectorInput): Promise<SelectorDeci
 ## Fallback Behavior
 
 If no suitable variant is found after all filters:
+
 1. Log warning with learner ID, skill, mode
 2. Relax constraints: broaden difficulty range, allow recently seen
 3. If still no match: return any published variant for the skill
@@ -108,10 +109,10 @@ It is derived fresh at each selection by reading the learner's current state. Th
 
 ## Dependencies
 
-| Package | Usage |
-|---|---|
-| `packages/database` | Read skill states, variants, item_stats |
-| `packages/contracts` | SelectorInput, SelectorDecision types |
+| Package              | Usage                                   |
+| -------------------- | --------------------------------------- |
+| `packages/database`  | Read skill states, variants, item_stats |
+| `packages/contracts` | SelectorInput, SelectorDecision types   |
 
 Note: The selector reads mastery state from the database (written by `packages/learner-model`). It does NOT import from `packages/learner-model` directly — it reads the DB.
 

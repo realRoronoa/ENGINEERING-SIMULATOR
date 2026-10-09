@@ -20,16 +20,16 @@ All learner-facing content is **human-authored and pre-validated**.
 Draft → Generate → Validate → Review → Publish → Active → Paused → Retired
 ```
 
-| Status | Meaning |
-|---|---|
-| `draft` | Author is working on it. Not visible to anyone. |
-| `generate` | AI-assisted drafting in progress (offline). |
-| `validate` | Automated validation scripts running. |
-| `review` | Human review required before publish. |
-| `publish` | Approved. Being published (immutable after this). |
-| `active` | Live. Visible to selector and learners. |
-| `paused` | Temporarily removed from selection. Learners who have it continue. |
-| `retired` | Permanently removed. No new learners assigned. |
+| Status     | Meaning                                                            |
+| ---------- | ------------------------------------------------------------------ |
+| `draft`    | Author is working on it. Not visible to anyone.                    |
+| `generate` | AI-assisted drafting in progress (offline).                        |
+| `validate` | Automated validation scripts running.                              |
+| `review`   | Human review required before publish.                              |
+| `publish`  | Approved. Being published (immutable after this).                  |
+| `active`   | Live. Visible to selector and learners.                            |
+| `paused`   | Temporarily removed from selection. Learners who have it continue. |
+| `retired`  | Permanently removed. No new learners assigned.                     |
 
 **Key rule:** No learner ever sees content with status `draft`, `generate`, `validate`, or `review`.
 
@@ -85,7 +85,7 @@ id: uuid
 template_id: uuid
 reference_system_id: uuid (shopverse)
 version: 1
-title: "Shopverse: Products endpoint is slow"
+title: 'Shopverse: Products endpoint is slow'
 narrative: >
   The team has received a Datadog alert. The GET /products endpoint
   is taking 2.3s on average. Your job is to investigate and fix it.
@@ -104,11 +104,11 @@ difficulty: 2
 estimated_minutes: 25
 hint_ladder:
   - index: 1
-    text: "Have you tried running the load test first to see the actual latency?"
+    text: 'Have you tried running the load test first to see the actual latency?'
   - index: 2
-    text: "Check the query log. How many queries are being executed per request?"
+    text: 'Check the query log. How many queries are being executed per request?'
   - index: 3
-    text: "The problem is in the product listing code. Look at how categories are fetched."
+    text: 'The problem is in the product listing code. Look at how categories are fetched.'
 explanation: |
   This is a classic N+1 query. The endpoint fetches all products,
   then for each product makes a separate database call to fetch its category.
@@ -169,13 +169,13 @@ id: uuid
 name: N+1 Fix Explanation Rubric
 items:
   - id: uuid
-    criterion: "Learner correctly identifies that multiple queries are being executed."
+    criterion: 'Learner correctly identifies that multiple queries are being executed.'
     weight: 0.4
   - id: uuid
-    criterion: "Learner explains why this causes performance degradation."
+    criterion: 'Learner explains why this causes performance degradation.'
     weight: 0.3
   - id: uuid
-    criterion: "Learner proposes the correct category of fix (JOIN or batch)."
+    criterion: 'Learner proposes the correct category of fix (JOIN or batch).'
     weight: 0.3
 ```
 
@@ -210,12 +210,12 @@ Every variant must pass these checks before reaching `review` status:
 
 ## Initial Content Plan (MVP)
 
-| Item | Count | Status |
-|---|---|---|
-| Skills | 12 | To be authored |
-| TaskTemplates | 15 | To be authored |
-| Variants | ~60 | To be drafted and validated |
-| FaultPatterns | ~20 | To be authored |
-| Rubrics | ~15 | To be authored |
-| Viva question banks | ~15 | To be authored |
-| Misconception catalog | ~30 | To be authored |
+| Item                  | Count | Status                      |
+| --------------------- | ----- | --------------------------- |
+| Skills                | 12    | To be authored              |
+| TaskTemplates         | 15    | To be authored              |
+| Variants              | ~60   | To be drafted and validated |
+| FaultPatterns         | ~20   | To be authored              |
+| Rubrics               | ~15   | To be authored              |
+| Viva question banks   | ~15   | To be authored              |
+| Misconception catalog | ~30   | To be authored              |

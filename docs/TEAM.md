@@ -1,15 +1,12 @@
 # TEAM
 
-Engineering Simulator is built by a **TWO-DEVELOPER TEAM**.
+Engineering Simulator is built by a **SINGLE DEVELOPER**.
 
-**Developer 1**
-Product / Frontend / Learning System
+**Lead Developer**
+Full-stack Product, Architecture, Platform, and Evaluation.
 
-**Developer 2**
-Backend / Infrastructure / Evaluation
-
-> **Packages are architectural modules, not individual developer teams.**
-> There is no per-package owner. There are two people, and two domains.
+> **Packages are architectural modules, not separate developer teams.**
+> A single developer maintains the entire repository across all application and package boundaries.
 
 ```
                     ENGINEERING SIMULATOR
@@ -20,11 +17,14 @@ Backend / Infrastructure / Evaluation
               |                           |
       Product / Learning          Platform / Backend
               |                           |
-       ┌──────┼──────┐            ┌───────┼───────┐
-       |      |      |            |       |       |
-      Web   Content Selector      API   Eval    Infra
-       |      |      |            |       |       |
-      CLI Learner Model           DB    Worker   AI
+       ┌──────┴──────┐            ┌───────┼───────┐
+       |             |            |       |       |
+      Web         Content        API    Eval    Infra
+                                  |       |       |
+                                  DB    Worker    AI
+                                  |       |       |
+                                 CLI   Selector Learner
+                                                  Model
 ```
 
 ---
@@ -35,10 +35,7 @@ Backend / Infrastructure / Evaluation
 
 ```
 apps/web/
-apps/cli/
 packages/content/
-packages/learner-model/
-packages/selector/
 docs/product/
 ```
 
@@ -51,16 +48,14 @@ evaluation results · viva · transfer · progress · weekly report
 
 **Learning system**
 skill definitions · skill graph · task templates · fault patterns · variants · hints · rubrics ·
-misconceptions · learner learning state · mastery rules · selector rules
+misconceptions · defining mastery rules and selector rules (implemented by Dev 2)
 
 **Content**
 authoring the initial 12 skills · authoring the initial task templates · designing variants ·
 defining expected behaviour · defining misconceptions · defining viva questions
 
-**CLI**
-local task setup · test command · submission command · status/result commands
-
 ### Developer 1 does NOT own
+
 - database infrastructure
 - API implementation
 - grading workers
@@ -76,10 +71,13 @@ local task setup · test command · submission command · status/result commands
 ```
 apps/api/
 apps/worker/
+apps/cli/
 packages/database/
 packages/evaluator/
 packages/contracts/
 packages/ai/
+packages/learner-model/
+packages/selector/
 infrastructure/
 reference-systems/
 ```
@@ -106,7 +104,11 @@ Shopverse backend · Docker setup · database · tests · fault injection points
 **AI infrastructure**
 LLM integration · mentor API · viva API · AI usage tracking · grounding · model configuration
 
+**Learning System & CLI**
+Learner Model implementation · Selector implementation · CLI tool (apps/cli) implementation
+
 ### Developer 2 does NOT own
+
 - frontend UX
 - content authoring
 - skill graph design
@@ -160,18 +162,19 @@ These exist so two people do not block each other.
 
 ## Review Matrix
 
-| Change type | Author | Required reviewer | Notes |
-|---|---|---|---|
-| Frontend / CLI | Dev 1 | Dev 2 | Correctness + contract use |
-| Content / variants | Dev 1 | Dev 2 | Must pass content validation |
-| Learner model / selector rules | Dev 1 | Dev 2 | Rules must be explainable |
-| API / database | Dev 2 | Dev 1 | Consumer impact |
-| Evaluator / worker / infra | Dev 2 | Dev 1 | Determinism + learner safety |
-| AI integration | Dev 2 | Dev 1 | Grounding + `AI_POLICY.md` compliance |
-| `packages/contracts/` | Either | **Both must agree before implementation** | Contract change |
-| Architecture (ADR) | Either | **Both** | Joint decision |
-| Product scope (`PRODUCT_SPEC.md`) | Either | **Both** | Joint decision |
-| Release | Either | **Both** | Joint decision |
+| Change type                       | Author | Required reviewer                         | Notes                                 |
+| --------------------------------- | ------ | ----------------------------------------- | ------------------------------------- |
+| Frontend                          | Dev 1  | Dev 2                                     | Correctness + contract use            |
+| CLI                               | Dev 2  | Dev 1                                     | Learner-facing workflow review        |
+| Content / variants                | Dev 1  | Dev 2                                     | Must pass content validation          |
+| Learner model / selector          | Dev 2  | Dev 1                                     | Rules must match Dev 1's definitions  |
+| API / database                    | Dev 2  | Dev 1                                     | Consumer impact                       |
+| Evaluator / worker / infra        | Dev 2  | Dev 1                                     | Determinism + learner safety          |
+| AI integration                    | Dev 2  | Dev 1                                     | Grounding + `AI_POLICY.md` compliance |
+| `packages/contracts/`             | Either | **Both must agree before implementation** | Contract change                       |
+| Architecture (ADR)                | Either | **Both**                                  | Joint decision                        |
+| Product scope (`PRODUCT_SPEC.md`) | Either | **Both**                                  | Joint decision                        |
+| Release                           | Either | **Both**                                  | Joint decision                        |
 
 ---
 
@@ -191,11 +194,11 @@ With two developers there is no tie-break by majority. Use this instead:
 
 ## Related
 
-| Question | File |
-|---|---|
-| What are we building? | [`../PRODUCT_SPEC.md`](../PRODUCT_SPEC.md) |
-| How much is built? | [`../PROJECT_STATUS.md`](../PROJECT_STATUS.md) |
-| What is true right now? | [`../CURRENT_STATE.md`](../CURRENT_STATE.md) |
-| Which directory belongs to whom? | [`DEVELOPER_MAP.md`](./DEVELOPER_MAP.md) |
-| How do we work day to day? | [`WORKFLOW.md`](./WORKFLOW.md) |
+| Question                                 | File                                             |
+| ---------------------------------------- | ------------------------------------------------ |
+| What are we building?                    | [`../PRODUCT_SPEC.md`](../PRODUCT_SPEC.md)       |
+| How much is built?                       | [`../PROJECT_STATUS.md`](../PROJECT_STATUS.md)   |
+| What is true right now?                  | [`../CURRENT_STATE.md`](../CURRENT_STATE.md)     |
+| Which directory belongs to whom?         | [`DEVELOPER_MAP.md`](./DEVELOPER_MAP.md)         |
+| How do we work day to day?               | [`WORKFLOW.md`](./WORKFLOW.md)                   |
 | What features exist, and whose are they? | [`FEATURE_INVENTORY.md`](./FEATURE_INVENTORY.md) |

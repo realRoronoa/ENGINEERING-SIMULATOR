@@ -8,13 +8,13 @@ This document defines the security model for Engineering Simulator.
 
 ## Authentication Model
 
-| Actor | Method | Notes |
-|---|---|---|
-| Learner (web) | Supabase JWT | Issued on login. Attached as `Authorization: Bearer <token>`. |
-| Learner (CLI) | Device token | Scoped to the learner. Generated on `engsim login`. Stored in local config only. |
-| Admin | JWT + admin role | [FUTURE] RLS enforced at DB level. |
-| Grading worker | Internal service token | Never exposed to learners. Rotated periodically. |
-| AI service | OpenAI API key | Environment variable only. Never committed. |
+| Actor          | Method                 | Notes                                                                            |
+| -------------- | ---------------------- | -------------------------------------------------------------------------------- |
+| Learner (web)  | Supabase JWT           | Issued on login. Attached as `Authorization: Bearer <token>`.                    |
+| Learner (CLI)  | Device token           | Scoped to the learner. Generated on `engsim login`. Stored in local config only. |
+| Admin          | JWT + admin role       | [FUTURE] RLS enforced at DB level.                                               |
+| Grading worker | Internal service token | Never exposed to learners. Rotated periodically.                                 |
+| AI service     | OpenAI API key         | Environment variable only. Never committed.                                      |
 
 ---
 

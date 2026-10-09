@@ -11,13 +11,13 @@
 **Rule:** a version ships when its success criteria are met and its release blockers are
 cleared — not when the calendar says so. Scope is cut, not quality.
 
-| Version | Band | Phase | Audience |
-|---|---|---|---|
-| v0.1 | Internal prototype | Phase 1 | The two developers only |
-| v0.2 | Learner prototype | Phase 1 | ~5 hand-held learners |
-| v1.0 | First usable product | Phase 2 | Self-serve learners |
-| v1.x | Improvements | Phase 3 | First 100 users / first college |
-| v2.0 | First scalable product | Phase 3–4 | Institutions + personalization |
+| Version | Band                   | Phase     | Audience                        |
+| ------- | ---------------------- | --------- | ------------------------------- |
+| v0.1    | Internal prototype     | Phase 1   | The two developers only         |
+| v0.2    | Learner prototype      | Phase 1   | ~5 hand-held learners           |
+| v1.0    | First usable product   | Phase 2   | Self-serve learners             |
+| v1.x    | Improvements           | Phase 3   | First 100 users / first college |
+| v2.0    | First scalable product | Phase 3–4 | Institutions + personalization  |
 
 ---
 
@@ -28,6 +28,7 @@ Prove the technical pipeline end to end: a submission can be graded deterministi
 machine, with no human in the loop.
 
 **Features**
+
 - Shopverse reference system runs in Docker locally
 - One hardcoded task with one injected fault
 - Hidden tests for that fault
@@ -40,12 +41,14 @@ Web UI, learner accounts, database persistence beyond the minimum, selector, lea
 AI mentor, viva, transfer, diagnostic, content library, deployment.
 
 **Success criteria**
+
 - The same submission graded twice produces the same result (determinism).
 - The hidden test **fails without** the fix and **passes with** the fix.
 - A grading run completes within its resource and time limits, and a hanging submission is
   killed rather than hanging the worker.
 
 **Release blockers**
+
 - None external — this version is internal. It is not shown to a learner.
 
 **Owner split**
@@ -61,6 +64,7 @@ Put the loop in front of real learners for the first time, with the developers w
 Learn whether the loop is worth building properly.
 
 **Features**
+
 - 3 debug tasks (authored, validated)
 - Basic web interface: task view, submission state, results page
 - AI mentor (grounded, with usage limits)
@@ -73,12 +77,14 @@ Diagnostic, skill profile, rule-based selector, Beta mastery model, full content
 weekly report, hint ladder depth, queues, staging/production deployment.
 
 **Success criteria**
+
 - 5 learners each complete at least one full practice → evaluation → viva → transfer cycle.
 - The developers can state, from observed evidence, whether transfer outcomes differed from
   practice outcomes.
 - No learner is blocked by platform failure during their session.
 
 **Release blockers**
+
 - Mentor grounding verified: the mentor must not hand over the answer.
 - Hidden tests not exposed to the learner in any response, log, or error message.
 - Manual rollback path documented, since this is run with real people.
@@ -96,6 +102,7 @@ The smallest product a learner can use on their own, repeatedly, without a devel
 and which produces a credible capability record.
 
 **Features** (exactly the V1 list in [`PRODUCT_SPEC.md` §12](./PRODUCT_SPEC.md))
+
 - Backend / Node.js track, one reference system (Shopverse)
 - 12 skills, 15 task templates, ~60 validated variants
 - Diagnostic and skill profile
@@ -114,6 +121,7 @@ incidents, hosted sandbox, proctoring, Redis beyond a simple queue, Python, seco
 system, hiring products, mobile app, Kubernetes, multi-region.
 
 **Success criteria**
+
 - A learner completes the full flow unaided: signup → goal → diagnostic → skill profile → task
   → mentor/hints → submit → evaluation → viva → transfer → profile update → next task →
   weekly report.
@@ -123,6 +131,7 @@ system, hiring products, mobile app, Kubernetes, multi-region.
 - Grading is reproducible: re-running an evaluation produces the same verdict.
 
 **Release blockers**
+
 - [ ] Security review complete (authorization boundaries: no learner reads another's data)
 - [ ] Privacy review complete (nothing from [`PRODUCT_SPEC.md` §19](./PRODUCT_SPEC.md) is stored)
 - [ ] E2E flow test passes against a real database and real Docker grading
@@ -147,6 +156,7 @@ Make V1 survive contact with its first 100 users and its first institution, with
 the product thesis.
 
 **Features**
+
 - Reliability and performance fixes driven by real usage
 - Content health signals (which variants are too easy, too hard, or broken)
 - Dispute handling for contested evaluations
@@ -161,11 +171,13 @@ Python track, incidents and investigate/fix modes, hosted sandboxes, proctoring,
 reference system, hiring assessments, ML selection.
 
 **Success criteria**
+
 - 100 learners served without an unrecoverable incident.
 - Content health data is good enough to retire or fix bad variants.
 - Disputes are resolvable from stored evidence alone.
 
 **Release blockers**
+
 - [ ] Backups verified by an actual restore
 - [ ] Monitoring alerts on grading queue depth and failure rate
 - [ ] Data retention job in place for submission patches
@@ -179,6 +191,7 @@ Personalization becomes real, and the product works for an institution rather th
 at a time.
 
 **Features**
+
 - Stronger selector
 - Variant difficulty calibration from observed outcomes
 - Misconception-driven selection
@@ -192,11 +205,13 @@ Multi-region, hiring assessments, verified profiles, Python track, second refere
 hosted sandbox, proctored AI-off. Those are V3 / Phase 5–6.
 
 **Success criteria**
+
 - Selection quality is measurably better than the V1 rule set on transfer outcomes.
 - Every selection decision is replayable and explainable after the fact.
 - Calibrated difficulty solved per learner trends upward over time.
 
 **Release blockers**
+
 - [ ] Selector replay can reproduce any historical decision from stored state
 - [ ] Calibration cannot silently remove a skill from a learner's path
 - [ ] Spaced review does not starve new-skill progress

@@ -10,6 +10,7 @@
 All AI interactions in the system go through this package. It is the only place where LLM API calls are made.
 
 This package implements:
+
 - AI mentor (online, grounded in fact sheets)
 - Viva follow-up question generation
 - Rubric-based reasoning grading
@@ -21,12 +22,14 @@ This package implements:
 ## Responsibilities
 
 ### Online (Real-time, learner-facing)
+
 - Mentor: answer learner questions grounded in fact sheet + reference code
 - Viva: generate dynamic follow-up questions from learner answers
 - Rubric grading: grade reasoning and explanations against fixed rubrics
 - Weekly report: generate personalized narrative grounded in real data
 
 ### Offline (Content creation, not learner-facing)
+
 - Variant drafting: assist content author in drafting variant text
 - Variant critique: critique a draft for clarity, difficulty, ambiguity
 - Explanation drafting: draft post-task explanations for human review
@@ -86,9 +89,7 @@ export async function gradeWithRubric(
 ): Promise<RubricGradingResult>;
 
 // Online: weekly report
-export async function generateWeeklyReport(
-  data: WeeklyReportData
-): Promise<string>;
+export async function generateWeeklyReport(data: WeeklyReportData): Promise<string>;
 ```
 
 ---
@@ -98,11 +99,13 @@ export async function generateWeeklyReport(
 ### Mentor Grounding
 
 The mentor system prompt must include:
+
 1. The task's **fact sheet** (verified, human-authored)
 2. The **task instructions**
 3. A **prohibited topics list**: hidden tests, complete solutions
 
 The prompt must instruct the model to:
+
 - Only make claims supported by the fact sheet
 - Respond with Socratic questions where possible
 - Say "I don't know" rather than speculate
@@ -126,10 +129,15 @@ Every AI call must log to the `ai_calls` database table:
 
 ```typescript
 {
-  model, prompt_name, prompt_version,
-  input_tokens, output_tokens,
-  latency_ms, cost_usd,
-  attempt_id, purpose
+  (model,
+    prompt_name,
+    prompt_version,
+    input_tokens,
+    output_tokens,
+    latency_ms,
+    cost_usd,
+    attempt_id,
+    purpose);
 }
 ```
 
@@ -139,12 +147,12 @@ Logging is handled by `packages/ai/src/logger.ts` — every call goes through th
 
 ## Fallback Behavior
 
-| Failure | Fallback |
-|---|---|
-| Mentor timeout | Return authored fallback: "I'm unable to help right now. Try the hint ladder." |
-| Viva follow-up failure | Skip to next authored question |
-| Rubric grading failure | Return `{ status: 'ungraded', reason: 'ai_unavailable' }` |
-| Weekly report failure | Return `null` (API shows data-only summary) |
+| Failure                | Fallback                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------ |
+| Mentor timeout         | Return authored fallback: "I'm unable to help right now. Try the hint ladder." |
+| Viva follow-up failure | Skip to next authored question                                                 |
+| Rubric grading failure | Return `{ status: 'ungraded', reason: 'ai_unavailable' }`                      |
+| Weekly report failure  | Return `null` (API shows data-only summary)                                    |
 
 **Never block the learner's core flow due to an AI failure.**
 
@@ -152,11 +160,11 @@ Logging is handled by `packages/ai/src/logger.ts` — every call goes through th
 
 ## Dependencies
 
-| Package | Usage |
-|---|---|
+| Package              | Usage                                    |
+| -------------------- | ---------------------------------------- |
 | `packages/contracts` | MentorRequestPayload, RubricResult types |
-| `packages/database` | Log AI calls to ai_calls table |
-| OpenAI API | LLM calls |
+| `packages/database`  | Log AI calls to ai_calls table           |
+| OpenAI API           | LLM calls                                |
 
 ---
 

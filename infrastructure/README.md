@@ -9,20 +9,20 @@ Docker, local development environment, CI/CD, deployment, monitoring, backups, a
 
 ## Scope
 
-| Concern | Phase | Note |
-|---|---|---|
+| Concern                                | Phase   | Note                                                      |
+| -------------------------------------- | ------- | --------------------------------------------------------- |
 | Docker + Compose for local development | Phase 1 | One command to bring up API, DB, worker, reference system |
-| Reference-system container image | Phase 1 | Built from `reference-systems/shopverse/` |
-| Grading sandbox | Phase 1 | Isolated, resource-limited, no network by default |
-| CI/CD | Phase 1 | Lint, type-check, unit tests, content validation |
-| Secrets management | Phase 1 | No secret in the repository, ever |
-| Staging deployment | Phase 2 | |
-| Redis + queue | Phase 2 | Simple queue only — see `PRODUCT_SPEC.md` §12 |
-| Object storage | Phase 2 | Submissions and evaluation artifacts |
-| Production deployment | Phase 3 | First college pilot |
-| Monitoring | Phase 3 | Queue depth, grading failure rate, API error rate |
-| Backups | Phase 3 | Verified by an actual restore, not by the job exiting 0 |
-| Observability | Phase 5 | Real telemetry for production-debugging tasks |
+| Reference-system container image       | Phase 1 | Built from `reference-systems/shopverse/`                 |
+| Grading sandbox                        | Phase 1 | Isolated, resource-limited, no network by default         |
+| CI/CD                                  | Phase 1 | Lint, type-check, unit tests, content validation          |
+| Secrets management                     | Phase 1 | No secret in the repository, ever                         |
+| Staging deployment                     | Phase 2 |                                                           |
+| Redis + queue                          | Phase 2 | Simple queue only — see `PRODUCT_SPEC.md` §12             |
+| Object storage                         | Phase 2 | Submissions and evaluation artifacts                      |
+| Production deployment                  | Phase 3 | First college pilot                                       |
+| Monitoring                             | Phase 3 | Queue depth, grading failure rate, API error rate         |
+| Backups                                | Phase 3 | Verified by an actual restore, not by the job exiting 0   |
+| Observability                          | Phase 5 | Real telemetry for production-debugging tasks             |
 
 ---
 

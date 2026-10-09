@@ -50,13 +50,13 @@ graph TD
 
 ## Key Boundaries
 
-| Boundary | Description |
-|---|---|
-| Learner ↔ API | All learner actions go through the API. No direct DB access. |
-| API ↔ Worker | Async via queue. API returns 202; worker processes independently. |
-| Worker ↔ Docker | Each grading job runs in an isolated container. No shared state. |
-| Packages ↔ DB | Packages (selector, learner-model) access DB via `packages/database` layer only. |
-| API ↔ AI | AI calls are logged. AI never writes directly to core tables. |
+| Boundary        | Description                                                                      |
+| --------------- | -------------------------------------------------------------------------------- |
+| Learner ↔ API   | All learner actions go through the API. No direct DB access.                     |
+| API ↔ Worker    | Async via queue. API returns 202; worker processes independently.                |
+| Worker ↔ Docker | Each grading job runs in an isolated container. No shared state.                 |
+| Packages ↔ DB   | Packages (selector, learner-model) access DB via `packages/database` layer only. |
+| API ↔ AI        | AI calls are logged. AI never writes directly to core tables.                    |
 
 ---
 
