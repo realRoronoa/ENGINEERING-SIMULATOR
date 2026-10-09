@@ -44,8 +44,10 @@ Shopverse standalone reference schema and seeds in `reference-systems/shopverse/
 - `apps/api/src/app.test.ts` (23 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling, E2E pipeline)
 - `apps/cli/src/cli.test.ts` (5 tests passing - config, init workspace, patch submit, commander registry)
 - `apps/worker/src/worker.test.ts` (9 tests passing - patch validation, test evaluation, evidence events, DB persistence & Bayesian skill update, queue batch draining, lifecycle)
-- `apps/web/src/App.test.tsx` (1 test passing - React component shell render)
-- Total: 89 unit/integration tests passing cleanly in Vitest across 12 test suites.
+- `apps/web/src/App.test.tsx` (2 tests passing - header and headline renders)
+- `apps/web/src/features/mission-demo/missionDemoMachine.test.ts` (3 tests passing - state machine transitions)
+- `apps/web/src/features/demo/demo.test.tsx` (5 tests passing - demo mode, preloaded dashboard, mission consistency, safe recovery)
+- Total: 98 unit/integration tests passing cleanly in Vitest across 14 test suites.
 
 ### Existing deployment state
 
