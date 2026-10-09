@@ -9,11 +9,15 @@ export interface GradingJobPayload {
   attemptId: string;
   learnerId: string;
   variantId: string;
+  skillId?: string;
+  taskMode?: string;
+  difficulty?: number;
   patch: string;
   publicTests?: TestExecutionResult[];
   hiddenTests?: TestExecutionResult[];
   structuredAnswers?: Record<string, string>;
   expectedAnswers?: Record<string, string>;
+  persistToDb?: boolean;
 }
 
 export interface GradingJobResult {
@@ -22,9 +26,16 @@ export interface GradingJobResult {
   evaluation: DetailedEvaluationResult;
   evidenceEvent?: EvidenceEventPayload;
   status: 'complete' | 'failed' | 'rejected';
+  skillState?: {
+    alpha: number;
+    beta: number;
+    mastery: number;
+    evidenceCount: number;
+  };
 }
 
 export interface WorkerConfig {
   concurrency: number;
   pollIntervalMs: number;
+  autoProcess?: boolean;
 }

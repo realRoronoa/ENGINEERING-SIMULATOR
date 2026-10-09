@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { getAttemptById, createSubmission } from '@engineering-simulator/database';
 import { validatePatch } from '@engineering-simulator/evaluator';
+import { enqueueGradingJob } from '@engineering-simulator/worker';
 
 export const attemptRouter = Router();
 
@@ -157,6 +158,17 @@ attemptRouter.post('/:id/submissions', async (req: Request, res: Response) => {
       answersMap,
       clientChecksum
     );
+
+    // Enqueue grading job to async worker pipeline
+    enqueueGradingJob({
+      submissionId: submission.id,
+      attemptId,
+      learnerId,
+      variantId: attempt.variant_id,
+      patch,
+      structuredAnswers: answersMap,
+      persistToDb: true,
+    });
 
     res.status(202).json({
       submissionId: submission.id,

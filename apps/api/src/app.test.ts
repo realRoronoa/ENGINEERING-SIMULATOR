@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import request from 'supertest';
 import * as database from '@engineering-simulator/database';
+import { defaultGradingWorker } from '@engineering-simulator/worker';
 import { buildApp } from './app.js';
 
 describe('API Server Suite', () => {
@@ -411,6 +412,160 @@ describe('API Server Suite', () => {
       expect(response.body.evaluation.passed).toBe(true);
       expect(response.body.evaluation.publicTestsPassed).toBe(5);
       expect(response.body.evaluation.hiddenTestsPassed).toBe(3);
+    });
+  });
+
+  describe('End-to-End Submission Pipeline Wiring', () => {
+    const validPatch = '--- a/src/index.ts\n+++ b/src/index.ts\n@@ -1,1 +1,1 @@\n-old\n+new\n';
+
+    it('submits patch, queues in worker, processes grading, and returns evaluated status via polling', async () => {
+      defaultGradingWorker.clear();
+
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        id: 'att-e2e',
+        session_id: 'sess-e2e',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-e2e',
+        status: 'working',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 0,
+        created_at: new Date(),
+      });
+
+      vi.spyOn(database, 'createSubmission').mockResolvedValueOnce({
+        id: 'sub-e2e-1',
+        attempt_id: 'att-e2e',
+        learner_id: 'learner_test-token',
+        patch: validPatch,
+        structured_answers: {},
+        client_checksum: 'checksum',
+        status: 'queued',
+        submitted_at: new Date(),
+      });
+
+      // 1. Submit patch via HTTP
+      const postRes = await request(app)
+        .post('/v1/attempts/att-e2e/submissions')
+        .set('Authorization', 'Bearer test-token')
+        .send({ patch: validPatch });
+
+      expect(postRes.status).toBe(202);
+      expect(postRes.body.submissionId).toBe('sub-e2e-1');
+      expect(defaultGradingWorker.getQueueLength()).toBe(1);
+
+      // 2. Mock database operations for worker evaluation
+      vi.spyOn(database, 'updateSubmissionStatus').mockResolvedValueOnce({
+        id: 'sub-e2e-1',
+        attempt_id: 'att-e2e',
+        learner_id: 'learner_test-token',
+        patch: validPatch,
+        structured_answers: {},
+        client_checksum: 'checksum',
+        status: 'complete',
+        submitted_at: new Date(),
+      });
+
+      vi.spyOn(database, 'createEvaluation').mockResolvedValueOnce({
+        id: 'eval-e2e-1',
+        submission_id: 'sub-e2e-1',
+        attempt_id: 'att-e2e',
+        patch_valid: true,
+        public_tests_passed: 1,
+        public_tests_total: 1,
+        hidden_tests_passed: 1,
+        hidden_tests_total: 1,
+        benchmarks_passed: null,
+        structured_answers_result: {},
+        rubric_results: null,
+        passed: true,
+        score: 1.0,
+        created_at: new Date(),
+      });
+
+      vi.spyOn(database, 'updateAttemptStatus').mockResolvedValueOnce({
+        id: 'att-e2e',
+        session_id: 'sess-e2e',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-e2e',
+        status: 'evaluated',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 1,
+        created_at: new Date(),
+      });
+
+      vi.spyOn(database, 'recordEvidenceEvent').mockResolvedValueOnce({
+        id: 'ev-e2e-1',
+        learner_id: 'learner_test-token',
+        attempt_id: 'att-e2e',
+        skill_id: 'var-e2e',
+        evidence_type: 'practice',
+        passed: true,
+        score: 1.0,
+        difficulty: 2,
+        task_mode: 'debug',
+        occurred_at: new Date(),
+      });
+
+      vi.spyOn(database, 'getSkillState').mockResolvedValueOnce(null);
+
+      vi.spyOn(database, 'upsertSkillState').mockResolvedValueOnce({
+        id: 'state-e2e-1',
+        learner_id: 'learner_test-token',
+        skill_id: 'var-e2e',
+        alpha: 2.0,
+        beta: 3.0,
+        mastery: 0.4,
+        evidence_count: 1,
+        updated_at: new Date(),
+      });
+
+      // 3. Worker processes next job
+      const jobResult = await defaultGradingWorker.processNextJob();
+      expect(jobResult?.status).toBe('complete');
+      expect(jobResult?.evaluation.status).toBe('PASS');
+      expect(defaultGradingWorker.getQueueLength()).toBe(0);
+
+      // 4. Poll submission endpoint
+      vi.spyOn(database, 'getSubmissionWithEvaluation').mockResolvedValueOnce({
+        submission: {
+          id: 'sub-e2e-1',
+          attempt_id: 'att-e2e',
+          learner_id: 'learner_test-token',
+          patch: validPatch,
+          structured_answers: {},
+          client_checksum: 'checksum',
+          status: 'complete',
+          submitted_at: new Date(),
+        },
+        evaluation: {
+          id: 'eval-e2e-1',
+          submission_id: 'sub-e2e-1',
+          attempt_id: 'att-e2e',
+          patch_valid: true,
+          public_tests_passed: 1,
+          public_tests_total: 1,
+          hidden_tests_passed: 1,
+          hidden_tests_total: 1,
+          benchmarks_passed: null,
+          structured_answers_result: {},
+          rubric_results: null,
+          passed: true,
+          score: 1.0,
+          created_at: new Date(),
+        },
+      });
+
+      const pollRes = await request(app)
+        .get('/v1/submissions/sub-e2e-1')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(pollRes.status).toBe(200);
+      expect(pollRes.body.status).toBe('complete');
+      expect(pollRes.body.evaluation.passed).toBe(true);
+      expect(pollRes.body.evaluation.publicTestsPassed).toBe(1);
+      expect(pollRes.body.evaluation.hiddenTestsPassed).toBe(1);
     });
   });
 });

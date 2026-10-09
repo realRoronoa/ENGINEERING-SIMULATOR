@@ -1,5 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { processGradingJob, GradingWorker } from './index.js';
+import { describe, it, expect, vi } from 'vitest';
+import * as database from '@engineering-simulator/database';
+import {
+  processGradingJob,
+  GradingWorker,
+  defaultGradingWorker,
+  enqueueGradingJob,
+} from './index.js';
 
 describe('Grading Worker Suite (@engineering-simulator/worker)', () => {
   const validPatch = `--- a/src/index.ts
@@ -21,6 +27,7 @@ malformed patch content
         learnerId: 'learner-1',
         variantId: 'var-1',
         patch: invalidPatch,
+        persistToDb: false,
       });
 
       expect(result.status).toBe('rejected');
@@ -38,6 +45,7 @@ malformed patch content
         patch: validPatch,
         publicTests: [{ suiteName: 'Order Suite', testName: 'creates order', passed: true }],
         hiddenTests: [{ suiteName: 'Hidden Suite', testName: 'checks atomicity', passed: true }],
+        persistToDb: false,
       });
 
       expect(result.status).toBe('complete');
@@ -65,6 +73,7 @@ malformed patch content
             errorMessage: 'Race condition',
           },
         ],
+        persistToDb: false,
       });
 
       expect(result.status).toBe('failed');
@@ -72,6 +81,96 @@ malformed patch content
       expect(result.evaluation.testsPassed).toBe(1);
       expect(result.evaluation.testsFailed).toBe(1);
       expect(result.evidenceEvent?.passed).toBe(false);
+    });
+
+    it('persists evaluation, attempt status, evidence event, and updates Bayesian skill state to database', async () => {
+      const updateSubSpy = vi.spyOn(database, 'updateSubmissionStatus').mockResolvedValueOnce({
+        id: 'sub-db-1',
+        attempt_id: 'att-db-1',
+        learner_id: 'learner-db',
+        patch: validPatch,
+        structured_answers: {},
+        client_checksum: '',
+        status: 'complete',
+        submitted_at: new Date(),
+      });
+
+      const createEvalSpy = vi.spyOn(database, 'createEvaluation').mockResolvedValueOnce({
+        id: 'eval-db-1',
+        submission_id: 'sub-db-1',
+        attempt_id: 'att-db-1',
+        patch_valid: true,
+        public_tests_passed: 1,
+        public_tests_total: 1,
+        hidden_tests_passed: 1,
+        hidden_tests_total: 1,
+        benchmarks_passed: null,
+        structured_answers_result: {},
+        rubric_results: null,
+        passed: true,
+        score: 1.0,
+        created_at: new Date(),
+      });
+
+      const updateAttemptSpy = vi.spyOn(database, 'updateAttemptStatus').mockResolvedValueOnce({
+        id: 'att-db-1',
+        session_id: 'sess-1',
+        learner_id: 'learner-db',
+        variant_id: 'var-1',
+        status: 'evaluated',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 1,
+        created_at: new Date(),
+      });
+
+      const recordEvidenceSpy = vi.spyOn(database, 'recordEvidenceEvent').mockResolvedValueOnce({
+        id: 'ev-1',
+        learner_id: 'learner-db',
+        attempt_id: 'att-db-1',
+        skill_id: 'var-1',
+        evidence_type: 'practice',
+        passed: true,
+        score: 1.0,
+        difficulty: 2,
+        task_mode: 'debug',
+        occurred_at: new Date(),
+      });
+
+      vi.spyOn(database, 'getSkillState').mockResolvedValueOnce(null); // No previous state
+
+      const upsertSkillSpy = vi.spyOn(database, 'upsertSkillState').mockResolvedValueOnce({
+        id: 'state-1',
+        learner_id: 'learner-db',
+        skill_id: 'var-1',
+        alpha: 2.0,
+        beta: 3.0,
+        mastery: 0.4,
+        evidence_count: 1,
+        updated_at: new Date(),
+      });
+
+      const result = await processGradingJob({
+        submissionId: 'sub-db-1',
+        attemptId: 'att-db-1',
+        learnerId: 'learner-db',
+        variantId: 'var-1',
+        patch: validPatch,
+        publicTests: [{ suiteName: 'Suite', testName: 'T1', passed: true }],
+        hiddenTests: [{ suiteName: 'Suite', testName: 'T2', passed: true }],
+        persistToDb: true,
+      });
+
+      expect(result.status).toBe('complete');
+      expect(result.skillState).toBeDefined();
+      expect(result.skillState?.evidenceCount).toBe(1);
+      expect(result.skillState?.alpha).toBeGreaterThan(1.0);
+
+      expect(updateSubSpy).toHaveBeenCalledWith('sub-db-1', 'complete');
+      expect(createEvalSpy).toHaveBeenCalled();
+      expect(updateAttemptSpy).toHaveBeenCalledWith('att-db-1', 'evaluated');
+      expect(recordEvidenceSpy).toHaveBeenCalled();
+      expect(upsertSkillSpy).toHaveBeenCalled();
     });
   });
 
@@ -88,6 +187,7 @@ malformed patch content
         patch: validPatch,
         publicTests: [{ suiteName: 'Public Suite', testName: 'test 1', passed: true }],
         hiddenTests: [{ suiteName: 'Hidden Suite', testName: 'test 2', passed: true }],
+        persistToDb: false,
       });
 
       expect(worker.getQueueLength()).toBe(1);
@@ -96,6 +196,50 @@ malformed patch content
       expect(processed?.submissionId).toBe('sub-queue-1');
       expect(worker.getQueueLength()).toBe(0);
       expect(worker.getResult('sub-queue-1')?.status).toBe('complete');
+    });
+
+    it('processes all jobs with processAllJobs', async () => {
+      const worker = new GradingWorker();
+      worker.enqueueJob({
+        submissionId: 'sub-1',
+        attemptId: 'att-1',
+        learnerId: 'learner-1',
+        variantId: 'var-1',
+        patch: validPatch,
+        publicTests: [{ suiteName: 'S1', testName: 'T1', passed: true }],
+        hiddenTests: [{ suiteName: 'S2', testName: 'T2', passed: true }],
+        persistToDb: false,
+      });
+      worker.enqueueJob({
+        submissionId: 'sub-2',
+        attemptId: 'att-2',
+        learnerId: 'learner-1',
+        variantId: 'var-1',
+        patch: invalidPatch,
+        persistToDb: false,
+      });
+
+      expect(worker.getQueueLength()).toBe(2);
+      const results = await worker.processAllJobs();
+      expect(results).toHaveLength(2);
+      expect(results[0].status).toBe('complete');
+      expect(results[1].status).toBe('rejected');
+      expect(worker.getQueueLength()).toBe(0);
+    });
+
+    it('clears queue and results using clear()', () => {
+      const worker = new GradingWorker();
+      worker.enqueueJob({
+        submissionId: 'sub-clear',
+        attemptId: 'att-clear',
+        learnerId: 'learner-1',
+        variantId: 'var-1',
+        patch: validPatch,
+        persistToDb: false,
+      });
+      expect(worker.getQueueLength()).toBe(1);
+      worker.clear();
+      expect(worker.getQueueLength()).toBe(0);
     });
 
     it('tracks worker lifecycle status', () => {
@@ -107,6 +251,23 @@ malformed patch content
 
       worker.stop();
       expect(worker.getStatus().isRunning).toBe(false);
+    });
+
+    it('enqueueGradingJob adds to defaultGradingWorker', () => {
+      defaultGradingWorker.clear();
+      expect(defaultGradingWorker.getQueueLength()).toBe(0);
+
+      enqueueGradingJob({
+        submissionId: 'sub-default',
+        attemptId: 'att-default',
+        learnerId: 'learner-1',
+        variantId: 'var-1',
+        patch: validPatch,
+        persistToDb: false,
+      });
+
+      expect(defaultGradingWorker.getQueueLength()).toBe(1);
+      defaultGradingWorker.clear();
     });
   });
 });

@@ -35,16 +35,17 @@ Shopverse standalone reference schema and seeds in `reference-systems/shopverse/
 
 - `packages/contracts/src/index.test.ts` (2 tests passing)
 - `packages/database/src/migrations.test.ts` (7 tests passing)
+- `packages/database/src/learner.test.ts` (5 tests passing - skill state queries, Bayesian upserts, evidence logging)
 - `packages/evaluator/src/evaluator.test.ts` (5 tests passing)
 - `packages/learner-model/src/mastery.test.ts` (8 tests passing - Bayesian mastery, bounds, evidence updates, misconception frequency)
 - `packages/selector/src/selector.test.ts` (16 tests passing - prerequisite filtering, priority ranker, ~70% difficulty targeting, recency exclusion, misconception remediation, fallback)
 - `reference-systems/shopverse/tests/api.test.ts` (5 tests passing)
 - `reference-systems/shopverse/tests/hidden/orderAtomicity.test.ts` (3 tests passing - fault injection & fix validation)
-- `apps/api/src/app.test.ts` (22 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling)
+- `apps/api/src/app.test.ts` (23 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling, E2E pipeline)
 - `apps/cli/src/cli.test.ts` (5 tests passing - config, init workspace, patch submit, commander registry)
-- `apps/worker/src/worker.test.ts` (5 tests passing - patch validation, test evaluation, evidence events, worker lifecycle)
+- `apps/worker/src/worker.test.ts` (9 tests passing - patch validation, test evaluation, evidence events, DB persistence & Bayesian skill update, queue batch draining, lifecycle)
 - `apps/web/src/App.test.tsx` (1 test passing - React component shell render)
-- Total: 79 unit/integration tests passing cleanly in Vitest across 11 test suites.
+- Total: 89 unit/integration tests passing cleanly in Vitest across 12 test suites.
 
 ### Existing deployment state
 
@@ -52,8 +53,10 @@ Local development mode (`npm run dev:api`, `npm run dev:web`). Production build 
 
 ### Current blockers
 
-None for foundation setup.
+None.
 
 ### Immediate next milestone
+
+Phase 12 — Viva Oral Verification Scaffold (`POST /v1/attempts/:id/viva`).
 
 Milestone 1 — Database schema setup (`packages/database`) & Reference system integration (`reference-systems/shopverse`).

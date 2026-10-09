@@ -11,11 +11,15 @@ export class GradingWorker {
     this.config = {
       concurrency: config.concurrency ?? 1,
       pollIntervalMs: config.pollIntervalMs ?? 1000,
+      autoProcess: config.autoProcess ?? false,
     };
   }
 
   public enqueueJob(job: GradingJobPayload): void {
     this.queue.push(job);
+    if (this.isRunning && this.config.autoProcess) {
+      void this.processNextJob();
+    }
   }
 
   public getQueueLength(): number {
@@ -37,6 +41,22 @@ export class GradingWorker {
     return result;
   }
 
+  public async processAllJobs(): Promise<GradingJobResult[]> {
+    const results: GradingJobResult[] = [];
+    while (this.queue.length > 0) {
+      const res = await this.processNextJob();
+      if (res) {
+        results.push(res);
+      }
+    }
+    return results;
+  }
+
+  public clear(): void {
+    this.queue = [];
+    this.results.clear();
+  }
+
   public start(): void {
     this.isRunning = true;
   }
@@ -51,4 +71,10 @@ export class GradingWorker {
       queueLength: this.queue.length,
     };
   }
+}
+
+export const defaultGradingWorker = new GradingWorker({ autoProcess: false });
+
+export function enqueueGradingJob(job: GradingJobPayload): void {
+  defaultGradingWorker.enqueueJob(job);
 }

@@ -14,7 +14,8 @@
   "dependencies": {
     "@engineering-simulator/contracts": "*",
     "@engineering-simulator/database": "*",
-    "@engineering-simulator/evaluator": "*"
+    "@engineering-simulator/evaluator": "*",
+    "@engineering-simulator/learner-model": "*"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
