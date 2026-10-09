@@ -152,3 +152,25 @@ export interface VivaRecord {
   started_at: Date;
   completed_at?: Date | null;
 }
+
+export interface HintEvent {
+  id: string;
+  attempt_id: string;
+  learner_id: string;
+  hint_index: number;
+  requested_at: Date;
+}
+
+export interface AiCall {
+  id: string;
+  attempt_id?: string | null;
+  purpose: 'mentor' | 'viva' | 'rubric_grading' | 'weekly_report' | 'offline';
+  model: string;
+  prompt_name: string;
+  prompt_version: string;
+  input_tokens: number;
+  output_tokens: number;
+  latency_ms: number;
+  cost_usd: number;
+  created_at: Date;
+}

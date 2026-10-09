@@ -847,4 +847,286 @@ describe('API Server Suite', () => {
       expect(updateAttemptSpy).toHaveBeenCalledWith('att-abandon', 'abandoned');
     });
   });
+
+  describe('Hint Ladder & AI Mentor Endpoints', () => {
+    const mockAttempt = {
+      id: 'att-hint-1',
+      session_id: 'sess-1',
+      learner_id: 'learner_test-token',
+      variant_id: 'var-shopverse-1',
+      status: 'working' as const,
+      selector_decision: {},
+      hints_used: 0,
+      submissions_count: 0,
+      created_at: new Date(),
+    };
+
+    const mockVariantData = {
+      id: 'var-shopverse-1',
+      title: 'Order Atomicity Bug',
+      instructions: 'Fix race condition during concurrent order placement',
+      factSheet:
+        'Orders and inventory must update atomically. Row locking prevents concurrent stock overdrafts.',
+      hintLadder: [
+        {
+          index: 1,
+          text: 'Check the transaction boundary around order creation and stock update.',
+        },
+        {
+          index: 2,
+          text: 'Use SELECT FOR UPDATE on inventory items to prevent concurrent decrement.',
+        },
+      ],
+      mode: 'fix',
+    };
+
+    describe('POST /v1/attempts/:id/hints', () => {
+      it('rejects unauthenticated hint requests with 401', async () => {
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/hints')
+          .send({ currentHintIndex: 0 });
+
+        expect(response.status).toBe(401);
+        expect(response.body.error.code).toBe('UNAUTHORIZED');
+      });
+
+      it('rejects invalid body with 400', async () => {
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/hints')
+          .set('Authorization', 'Bearer test-token')
+          .send({ currentHintIndex: -1 });
+
+        expect(response.status).toBe(400);
+        expect(response.body.error.code).toBe('VALIDATION_ERROR');
+      });
+
+      it('returns 404 when attempt is not found', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(null);
+
+        const response = await request(app)
+          .post('/v1/attempts/att-nonexistent/hints')
+          .set('Authorization', 'Bearer test-token')
+          .send({ currentHintIndex: 0 });
+
+        expect(response.status).toBe(404);
+        expect(response.body.error.code).toBe('ATTEMPT_NOT_FOUND');
+      });
+
+      it('returns 403 when attempt belongs to another learner', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+          ...mockAttempt,
+          learner_id: 'other-learner',
+        });
+
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/hints')
+          .set('Authorization', 'Bearer test-token')
+          .send({ currentHintIndex: 0 });
+
+        expect(response.status).toBe(403);
+        expect(response.body.error.code).toBe('FORBIDDEN');
+      });
+
+      it('returns 409 when attempt is in non-working status', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+          ...mockAttempt,
+          status: 'evaluated',
+        });
+
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/hints')
+          .set('Authorization', 'Bearer test-token')
+          .send({ currentHintIndex: 0 });
+
+        expect(response.status).toBe(409);
+        expect(response.body.error.code).toBe('ATTEMPT_NOT_IN_WORKING_STATE');
+      });
+
+      it('returns 409 when attempt is in transfer mode', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(mockAttempt);
+        vi.spyOn(database, 'getVariantHintData').mockResolvedValueOnce({
+          ...mockVariantData,
+          mode: 'transfer',
+        });
+
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/hints')
+          .set('Authorization', 'Bearer test-token')
+          .send({ currentHintIndex: 0 });
+
+        expect(response.status).toBe(409);
+        expect(response.body.error.code).toBe('HINTS_NOT_ALLOWED_IN_TRANSFER');
+      });
+
+      it('successfully returns the first authored hint and increments counter', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(mockAttempt);
+        vi.spyOn(database, 'getVariantHintData').mockResolvedValueOnce(mockVariantData);
+        const recordHintSpy = vi.spyOn(database, 'recordHintEvent').mockResolvedValueOnce({
+          id: 'he-1',
+          attempt_id: mockAttempt.id,
+          learner_id: mockAttempt.learner_id,
+          hint_index: 1,
+          requested_at: new Date(),
+        });
+
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/hints')
+          .set('Authorization', 'Bearer test-token')
+          .send({ currentHintIndex: 0 });
+
+        expect(response.status).toBe(200);
+        expect(response.body.hint).toEqual({
+          index: 1,
+          text: 'Check the transaction boundary around order creation and stock update.',
+          type: 'authored',
+          isLast: false,
+        });
+        expect(recordHintSpy).toHaveBeenCalledWith(mockAttempt.id, mockAttempt.learner_id, 1);
+      });
+
+      it('returns last hint marked with isLast: true', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(mockAttempt);
+        vi.spyOn(database, 'getVariantHintData').mockResolvedValueOnce(mockVariantData);
+        vi.spyOn(database, 'recordHintEvent').mockResolvedValueOnce({
+          id: 'he-2',
+          attempt_id: mockAttempt.id,
+          learner_id: mockAttempt.learner_id,
+          hint_index: 2,
+          requested_at: new Date(),
+        });
+
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/hints')
+          .set('Authorization', 'Bearer test-token')
+          .send({ currentHintIndex: 1 });
+
+        expect(response.status).toBe(200);
+        expect(response.body.hint.index).toBe(2);
+        expect(response.body.hint.isLast).toBe(true);
+      });
+
+      it('returns 409 ALL_HINTS_EXHAUSTED when currentHintIndex exceeds available hints', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(mockAttempt);
+        vi.spyOn(database, 'getVariantHintData').mockResolvedValueOnce(mockVariantData);
+
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/hints')
+          .set('Authorization', 'Bearer test-token')
+          .send({ currentHintIndex: 2 });
+
+        expect(response.status).toBe(409);
+        expect(response.body.error.code).toBe('ALL_HINTS_EXHAUSTED');
+      });
+    });
+
+    describe('POST /v1/attempts/:id/mentor', () => {
+      it('rejects unauthenticated mentor request with 401', async () => {
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/mentor')
+          .send({ message: 'How do I solve this?' });
+
+        expect(response.status).toBe(401);
+        expect(response.body.error.code).toBe('UNAUTHORIZED');
+      });
+
+      it('rejects empty message with 400 VALIDATION_ERROR', async () => {
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/mentor')
+          .set('Authorization', 'Bearer test-token')
+          .send({ message: '   ' });
+
+        expect(response.status).toBe(400);
+        expect(response.body.error.code).toBe('VALIDATION_ERROR');
+      });
+
+      it('returns 404 when attempt is not found', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(null);
+
+        const response = await request(app)
+          .post('/v1/attempts/att-nonexistent/mentor')
+          .set('Authorization', 'Bearer test-token')
+          .send({ message: 'How does locking work?' });
+
+        expect(response.status).toBe(404);
+        expect(response.body.error.code).toBe('ATTEMPT_NOT_FOUND');
+      });
+
+      it('returns 403 when attempt belongs to another learner', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+          ...mockAttempt,
+          learner_id: 'someone-else',
+        });
+
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/mentor')
+          .set('Authorization', 'Bearer test-token')
+          .send({ message: 'Can you help?' });
+
+        expect(response.status).toBe(403);
+        expect(response.body.error.code).toBe('FORBIDDEN');
+      });
+
+      it('returns 409 when attempt is in non-working status', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+          ...mockAttempt,
+          status: 'completed',
+        });
+
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/mentor')
+          .set('Authorization', 'Bearer test-token')
+          .send({ message: 'Can you help?' });
+
+        expect(response.status).toBe(409);
+        expect(response.body.error.code).toBe('ATTEMPT_NOT_IN_WORKING_STATE');
+      });
+
+      it('returns 409 when mission is in transfer mode', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(mockAttempt);
+        vi.spyOn(database, 'getVariantHintData').mockResolvedValueOnce({
+          ...mockVariantData,
+          mode: 'transfer',
+        });
+
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/mentor')
+          .set('Authorization', 'Bearer test-token')
+          .send({ message: 'What is the approach?' });
+
+        expect(response.status).toBe(409);
+        expect(response.body.error.code).toBe('AI_MENTOR_NOT_ALLOWED_IN_TRANSFER');
+      });
+
+      it('returns Socratic grounded reply and preserves conversationId', async () => {
+        vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(mockAttempt);
+        vi.spyOn(database, 'getVariantHintData').mockResolvedValueOnce(mockVariantData);
+        vi.spyOn(database, 'recordAiCall').mockResolvedValueOnce({
+          id: 'ai-call-1',
+          attempt_id: mockAttempt.id,
+          purpose: 'mentor',
+          model: 'claude-3-5-sonnet-20241022',
+          prompt_name: 'mentor',
+          prompt_version: 'v1',
+          input_tokens: 250,
+          output_tokens: 80,
+          latency_ms: 30,
+          cost_usd: 0.002,
+          created_at: new Date(),
+        });
+
+        const response = await request(app)
+          .post('/v1/attempts/att-hint-1/mentor')
+          .set('Authorization', 'Bearer test-token')
+          .send({
+            message: 'Where is the race condition in the inventory update?',
+            conversationId: 'c8d62634-1111-4567-89ab-cdef01234567',
+          });
+
+        expect(response.status).toBe(200);
+        expect(response.body.conversationId).toBe('c8d62634-1111-4567-89ab-cdef01234567');
+        expect(response.body.reply).toContain('Consider this system behavior');
+        expect(response.body.groundedOn.length).toBeGreaterThan(0);
+      });
+    });
+  });
 });

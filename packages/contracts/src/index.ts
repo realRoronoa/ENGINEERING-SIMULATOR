@@ -108,3 +108,29 @@ export interface VivaAnswerResponse {
   nextQuestion: VivaQuestion | null;
   vivaComplete: boolean;
 }
+
+export interface HintRequest {
+  currentHintIndex: number;
+}
+
+export interface HintItem {
+  index: number;
+  text: string;
+  type: 'authored' | 'ai-worded';
+  isLast: boolean;
+}
+
+export interface HintResponse {
+  hint: HintItem;
+}
+
+export interface MentorRequest {
+  message: string;
+  conversationId?: string | null;
+}
+
+export interface MentorResponse {
+  reply: string;
+  conversationId: string;
+  groundedOn: string[];
+}

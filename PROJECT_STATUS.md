@@ -22,27 +22,27 @@
 **Phase:** Phase 1 — Monorepo Foundation
 
 **Status:**
-FOUNDATION, CORE ENGINES, WORKER, & E2E SUBMISSION-TO-EVIDENCE PIPELINE OPERATIONAL (Monorepo, shared contracts, Express API shell + DB connectivity, task selection route, patch submission and polling routes, E2E grading pipeline, React/Vite shell, PostgreSQL migrations & client, Shopverse reference system with hidden tests, Evaluator engine, Learner Model Bayesian engine with DB upsert, Selector engine, Grading Worker with DB persistence, CLI tool, Vitest 98/98 passing)
+FOUNDATION, CORE ENGINES, WORKER, E2E PIPELINE, VIVA VERIFICATION, HINT LADDER, & SOCRATIC AI MENTOR OPERATIONAL (Monorepo, shared contracts, Express API shell + DB connectivity, task selection route, patch submission and polling routes, E2E grading pipeline, React/Vite shell, PostgreSQL migrations & client, Shopverse reference system with hidden tests, Evaluator engine, Learner Model Bayesian engine with DB upsert, Selector engine, Grading Worker with DB persistence, CLI tool, Viva oral defense lifecycle, Hint Ladder progression, Socratic AI Mentor package with prohibition safeguards, Vitest 142/142 passing across 17 test suites)
 
 **Overall:**
-65%
+75%
 
-| Area                      | Owner    |   % | Note                                                                                             |
-| ------------------------- | -------- | --: | ------------------------------------------------------------------------------------------------ |
-| Frontend                  | Lead Dev | 15% | `apps/web/` React/Vite shell with route tests, mission demo machine, demo user flow              |
-| Backend                   | Dev 2    | 90% | `apps/api/` Express API with health, ready probe, sessions, attempts, submissions, E2E worker    |
-| Shared Contracts          | Shared   | 70% | `packages/contracts/` exported types & Zod schemas                                               |
-| Database                  | Dev 2    | 98% | `packages/database` 5 migrations, client pool, sessions, attempts, content, submissions, learner |
-| Evaluation                | Dev 2    | 95% | `packages/evaluator` grading engine & `apps/worker` async pipeline with DB & evidence emission   |
-| Learning System           | Dev 2    | 95% | `packages/learner-model` Bayesian mastery & `packages/selector` task selector engine             |
-| AI                        | Dev 2    | 60% | `AI_POLICY.md` approved provider & temperature matrix                                            |
-| CLI                       | Dev 2    | 80% | `apps/cli/` `engsim` binary with login, init, submit, status                                     |
-| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                              |
-| Content                   | Lead Dev | 10% | Shopverse sample tasks & hidden fault test                                                       |
-| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                                      |
+| Area                      | Owner    |   % | Note                                                                                                    |
+| ------------------------- | -------- | --: | ------------------------------------------------------------------------------------------------------- |
+| Frontend                  | Lead Dev | 15% | `apps/web/` React/Vite shell with route tests, mission demo machine, demo user flow                     |
+| Backend                   | Dev 2    | 95% | `apps/api/` Express API with health, ready, sessions, attempts, submissions, viva, hints, and AI mentor |
+| Shared Contracts          | Shared   | 85% | `packages/contracts/` exported types & Zod schemas for submission, viva, hints, and mentor              |
+| Database                  | Dev 2    | 98% | `packages/database` 5 migrations, client pool, sessions, attempts, content, viva, hints, ai_calls       |
+| Evaluation                | Dev 2    | 95% | `packages/evaluator` grading engine & `apps/worker` async pipeline with DB & evidence emission          |
+| Learning System           | Dev 2    | 95% | `packages/learner-model` Bayesian mastery & `packages/selector` task selector engine                    |
+| AI                        | Dev 2    | 90% | `packages/ai` `@engineering-simulator/ai` Socratic mentor, fact sheet grounding, AI audit logging       |
+| CLI                       | Dev 2    | 80% | `apps/cli/` `engsim` binary with login, init, submit, status                                            |
+| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                                     |
+| Content                   | Lead Dev | 10% | Shopverse sample tasks & hidden fault test                                                              |
+| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                                             |
 
 **Honest summary:**
-The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection and patch submission endpoints, grading worker pipeline, interactive web demo flow, and end-to-end submission-to-evidence flow are operational with 98 passing tests across 14 test suites. Learner patch submitted over HTTP is queued, processed by the grading worker, persists evaluation results to PostgreSQL, records evidence events, and updates Bayesian skill states with Beta bounds. Next step is Phase 12: Viva Oral Verification Scaffold (`POST /v1/attempts/:id/viva`).
+The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection, patch submission endpoints, grading worker pipeline, interactive web demo flow, viva oral defense verification, hint ladder progression, and grounded Socratic AI mentor package are operational with 142 passing tests across 17 test suites. Hints progress through author-defined ladders with exhaustion bounds, and the AI mentor strictly adheres to AI policy (grounded in fact sheets, refusing solution leaks or hidden test disclosures, logging token usage and costs to `ai_calls`). Next step is Phase 14: Transfer Task Assignment & Evaluation (`Phase 6 — Transfer`).
 
 ---
 

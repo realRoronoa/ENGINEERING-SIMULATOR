@@ -7,11 +7,23 @@ import {
   createVivaRecord,
   getVivaRecordById,
   addVivaAnswer,
+  getVariantHintData,
+  recordHintEvent,
 } from '@engineering-simulator/database';
 import { validatePatch } from '@engineering-simulator/evaluator';
 import { enqueueGradingJob } from '@engineering-simulator/worker';
+import { sendMentorMessage } from '@engineering-simulator/ai';
 
 export const attemptRouter = Router();
+
+const hintBodySchema = z.object({
+  currentHintIndex: z.number().int().min(0, 'currentHintIndex must be greater than or equal to 0'),
+});
+
+const mentorBodySchema = z.object({
+  message: z.string().trim().min(1, 'Message is required'),
+  conversationId: z.string().optional().nullable(),
+});
 
 const submissionBodySchema = z.object({
   patch: z.string().min(1, 'Patch content is required'),
@@ -188,6 +200,230 @@ attemptRouter.post('/:id/submissions', async (req: Request, res: Response) => {
       error: {
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Could not create submission',
+        details: {},
+      },
+    });
+  }
+});
+
+attemptRouter.post('/:id/hints', async (req: Request, res: Response) => {
+  const attemptId = String(req.params.id);
+  const learnerId = req.learnerId;
+
+  if (!learnerId) {
+    return res.status(401).json({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required to request hints.',
+        details: {},
+      },
+    });
+  }
+
+  const parseResult = hintBodySchema.safeParse(req.body);
+  if (!parseResult.success) {
+    return res.status(400).json({
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid hint request payload.',
+        details: parseResult.error.flatten(),
+      },
+    });
+  }
+
+  const { currentHintIndex } = parseResult.data;
+
+  try {
+    const attempt = await getAttemptById(attemptId);
+    if (!attempt) {
+      return res.status(404).json({
+        error: {
+          code: 'ATTEMPT_NOT_FOUND',
+          message: 'Attempt not found.',
+          details: {},
+        },
+      });
+    }
+
+    if (attempt.learner_id !== learnerId) {
+      return res.status(403).json({
+        error: {
+          code: 'FORBIDDEN',
+          message: 'You are not authorized to request hints for this attempt.',
+          details: {},
+        },
+      });
+    }
+
+    if (['completed', 'abandoned', 'evaluated', 'viva'].includes(attempt.status)) {
+      return res.status(409).json({
+        error: {
+          code: 'ATTEMPT_NOT_IN_WORKING_STATE',
+          message: `Hints cannot be requested when attempt is in '${attempt.status}' state.`,
+          details: { currentStatus: attempt.status },
+        },
+      });
+    }
+
+    const variantData = await getVariantHintData(attempt.variant_id);
+    if (!variantData) {
+      return res.status(404).json({
+        error: {
+          code: 'VARIANT_NOT_FOUND',
+          message: 'Task variant not found for this attempt.',
+          details: {},
+        },
+      });
+    }
+
+    if (variantData.mode === 'transfer' || attempt.status === 'transfer') {
+      return res.status(409).json({
+        error: {
+          code: 'HINTS_NOT_ALLOWED_IN_TRANSFER',
+          message: 'Hints are prohibited during transfer verification tasks.',
+          details: {},
+        },
+      });
+    }
+
+    const ladder = variantData.hintLadder;
+    if (ladder.length === 0 || currentHintIndex >= ladder.length) {
+      return res.status(409).json({
+        error: {
+          code: 'ALL_HINTS_EXHAUSTED',
+          message: 'All authored hints have been exhausted for this task variant.',
+          details: { hintsAvailable: ladder.length, currentHintIndex },
+        },
+      });
+    }
+
+    const nextHint = ladder[currentHintIndex];
+    const isLast = currentHintIndex + 1 >= ladder.length;
+
+    await recordHintEvent(attemptId, learnerId, nextHint.index);
+
+    res.json({
+      hint: {
+        index: nextHint.index,
+        text: nextHint.text,
+        type: 'authored' as const,
+        isLast,
+      },
+    });
+  } catch (err: unknown) {
+    console.error('Hint request error:', err);
+    res.status(500).json({
+      error: {
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Could not retrieve hint',
+        details: {},
+      },
+    });
+  }
+});
+
+attemptRouter.post('/:id/mentor', async (req: Request, res: Response) => {
+  const attemptId = String(req.params.id);
+  const learnerId = req.learnerId;
+
+  if (!learnerId) {
+    return res.status(401).json({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required to consult mentor.',
+        details: {},
+      },
+    });
+  }
+
+  const parseResult = mentorBodySchema.safeParse(req.body);
+  if (!parseResult.success) {
+    return res.status(400).json({
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid mentor request payload.',
+        details: parseResult.error.flatten(),
+      },
+    });
+  }
+
+  const { message, conversationId } = parseResult.data;
+
+  try {
+    const attempt = await getAttemptById(attemptId);
+    if (!attempt) {
+      return res.status(404).json({
+        error: {
+          code: 'ATTEMPT_NOT_FOUND',
+          message: 'Attempt not found.',
+          details: {},
+        },
+      });
+    }
+
+    if (attempt.learner_id !== learnerId) {
+      return res.status(403).json({
+        error: {
+          code: 'FORBIDDEN',
+          message: 'You are not authorized to consult the mentor for this attempt.',
+          details: {},
+        },
+      });
+    }
+
+    if (['completed', 'abandoned', 'evaluated', 'viva'].includes(attempt.status)) {
+      return res.status(409).json({
+        error: {
+          code: 'ATTEMPT_NOT_IN_WORKING_STATE',
+          message: `Mentor guidance is unavailable when attempt is in '${attempt.status}' state.`,
+          details: { currentStatus: attempt.status },
+        },
+      });
+    }
+
+    const variantData = await getVariantHintData(attempt.variant_id);
+    if (!variantData) {
+      return res.status(404).json({
+        error: {
+          code: 'VARIANT_NOT_FOUND',
+          message: 'Task variant not found for this attempt.',
+          details: {},
+        },
+      });
+    }
+
+    if (variantData.mode === 'transfer' || attempt.status === 'transfer') {
+      return res.status(409).json({
+        error: {
+          code: 'AI_MENTOR_NOT_ALLOWED_IN_TRANSFER',
+          message: 'AI Mentor assistance is prohibited during transfer verification tasks.',
+          details: {},
+        },
+      });
+    }
+
+    const mentorResponse = await sendMentorMessage({
+      attemptId,
+      learnerId,
+      taskTitle: variantData.title,
+      taskInstructions: variantData.instructions,
+      taskMode: variantData.mode,
+      factSheet: variantData.factSheet,
+      message,
+      conversationId: conversationId ?? null,
+    });
+
+    res.json({
+      reply: mentorResponse.reply,
+      conversationId: mentorResponse.conversationId,
+      groundedOn: mentorResponse.groundedOn,
+    });
+  } catch (err: unknown) {
+    console.error('Mentor consultation error:', err);
+    res.status(500).json({
+      error: {
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Could not process mentor message',
         details: {},
       },
     });

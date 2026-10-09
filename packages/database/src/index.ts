@@ -6,6 +6,7 @@ export * from './content.js';
 export * from './submissions.js';
 export * from './learner.js';
 export * from './viva.js';
+export * from './hints.js';
 
 export const MIGRATION_FILES = [
   '20261009_000001_authored_knowledge.sql',

@@ -34,25 +34,27 @@ Shopverse standalone reference schema and seeds in `reference-systems/shopverse/
 ### Existing tests and their last verified results
 
 - `packages/contracts/src/index.test.ts` (2 tests passing)
-- `packages/database/src/migrations.test.ts` (7 tests passing)
+- `packages/database/migrations.test.ts` (7 tests passing)
 - `packages/database/src/learner.test.ts` (5 tests passing - skill state queries, Bayesian upserts, evidence logging)
 - `packages/database/src/viva.test.ts` (5 tests passing - viva session creation, answer logging, and completion)
+- `packages/database/src/hints.test.ts` (5 tests passing - hint event logging, ladder fetching, AI call audit logging)
 - `packages/evaluator/src/evaluator.test.ts` (5 tests passing)
 - `packages/learner-model/src/mastery.test.ts` (8 tests passing - Bayesian mastery, bounds, evidence updates, misconception frequency)
 - `packages/selector/src/selector.test.ts` (16 tests passing - prerequisite filtering, priority ranker, ~70% difficulty targeting, recency exclusion, misconception remediation, fallback)
+- `packages/ai/src/ai.test.ts` (9 tests passing - fact sheet grounding, Socratic mentor inquiries, prohibition safeguards against hidden tests and solution leaks, simulated fallback)
 - `reference-systems/shopverse/tests/api.test.ts` (5 tests passing)
 - `reference-systems/shopverse/tests/hidden/orderAtomicity.test.ts` (3 tests passing - fault injection & fix validation)
-- `apps/api/src/app.test.ts` (32 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling, E2E pipeline, viva start/answers/completion, and attempt abandonment)
+- `apps/api/src/app.test.ts` (48 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling, E2E pipeline, viva start/answers/completion, attempt abandonment, hint ladder progression with exhaustion bounds, and AI mentor grounding with prohibition guards)
 - `apps/cli/src/cli.test.ts` (5 tests passing - config, init workspace, patch submit, commander registry)
 - `apps/worker/src/worker.test.ts` (9 tests passing - patch validation, test evaluation, evidence events, DB persistence & Bayesian skill update, queue batch draining, lifecycle)
 - `apps/web/src/App.test.tsx` (2 tests passing - header and headline renders)
 - `apps/web/src/features/mission-demo/missionDemoMachine.test.ts` (3 tests passing - state machine transitions)
 - `apps/web/src/features/demo/demo.test.tsx` (5 tests passing - demo mode, preloaded dashboard, mission consistency, safe recovery)
-- Total: 112 unit/integration tests passing cleanly in Vitest across 15 test suites.
+- Total: 142 unit/integration tests passing cleanly in Vitest across 17 test suites.
 
 ### Existing deployment state
 
-Local development mode (`npm run dev:api`, `npm run dev:web`). Production build outputs verified (`dist/` for web, api, and contracts).
+Local development mode (`npm run dev:api`, `npm run dev:web`). Production build outputs verified (`dist/` for web, api, contracts, and all packages).
 
 ### Current blockers
 
@@ -60,4 +62,4 @@ None.
 
 ### Immediate next milestone
 
-Phase 13 — Mentor Guidance & Hint Ladder API (`POST /v1/attempts/:id/hints` & AI policy guardrails).
+Phase 14 — Transfer Task Assignment & Evaluation (`Phase 6 — Transfer`).
