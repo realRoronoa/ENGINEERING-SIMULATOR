@@ -30,11 +30,11 @@ FOUNDATION, CORE ENGINES, WORKER, E2E PIPELINE, VIVA VERIFICATION, HINT LADDER, 
 | Area                      | Owner    |   % | Note                                                                                                                 |
 | ------------------------- | -------- | --: | -------------------------------------------------------------------------------------------------------------------- |
 | Frontend                  | Lead Dev | 15% | `apps/web/` React/Vite shell with route tests, mission demo machine, demo user flow                                  |
-| Backend                   | Dev 2    | 98% | `apps/api/` Express API with health, ready, sessions, attempts, submissions, viva, hints, AI mentor, and transfer    |
-| Shared Contracts          | Shared   | 95% | `packages/contracts/` exported types & Zod schemas for submission, viva, hints, mentor, transfer, and CLI workspace  |
-| Database                  | Dev 2    | 98% | `packages/database` 5 migrations, client pool, sessions, attempts, content, viva, hints, ai_calls                    |
+| Backend                   | Dev 2    | 99% | `apps/api/` Express API with health, ready, onboarding, diagnostic, profile, sessions, attempts, submissions, viva   |
+| Shared Contracts          | Shared   | 98% | `packages/contracts/` exported types & Zod schemas for onboarding, diagnostic, profiles, submissions, viva, mentor   |
+| Database                  | Dev 2    | 99% | `packages/database` 5 migrations, client pool, sessions, attempts, content, viva, hints, onboarding & skill profiles |
 | Evaluation                | Dev 2    | 98% | `packages/evaluator` grading engine & `apps/worker` async pipeline with transfer evidence & Bayesian Beta updates    |
-| Learning System           | Dev 2    | 98% | `packages/learner-model` Bayesian mastery & `packages/selector` task selector engine                                 |
+| Learning System           | Dev 2    | 99% | `packages/learner-model` Bayesian Beta mastery & confidence, `packages/selector` task selector engine                |
 | AI                        | Dev 2    | 90% | `packages/ai` `@engineering-simulator/ai` Socratic mentor, fact sheet grounding, AI audit logging                    |
 | CLI                       | Dev 2    | 98% | `apps/cli/` `engsim` binary with login, init, test, submit, status, result, workspace state & Express v5 integration |
 | Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                                                  |
@@ -42,7 +42,7 @@ FOUNDATION, CORE ENGINES, WORKER, E2E PIPELINE, VIVA VERIFICATION, HINT LADDER, 
 | Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                                                          |
 
 **Honest summary:**
-The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection, patch submission endpoints, grading worker pipeline, interactive web demo flow, viva oral defense verification, hint ladder progression, grounded Socratic AI mentor package, transfer task assignment with weighted Bayesian evidence updates, and local developer CLI (`engsim`) with full lifecycle command integration are operational with 161 passing tests across 17 test suites. All 6 CLI commands (`login`, `init`, `test`, `submit`, `status`, `result`) are verified against live Express v5 API endpoints with persistent `.engsim.json` workspace tracking and Bearer auth. Next step is Phase 16: Diagnostic & Onboarding Flow Completion (`POST /v1/onboarding`, `POST /v1/diagnostic`).
+The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection, patch submission endpoints, grading worker pipeline, interactive web demo flow, viva oral defense verification, hint ladder progression, grounded Socratic AI mentor package, transfer task assignment with weighted Bayesian evidence updates, local developer CLI (`engsim`), learner onboarding (`POST /v1/onboarding`), diagnostic skill profiling (`POST /v1/diagnostic`), and learner profile & evidence endpoints (`GET /v1/profile/skills`, `GET /v1/profile/skills/:skillId/evidence`) are operational with 175 passing tests across 17 test suites. The entire onboarding-to-practice loop works end-to-end with Bayesian skill state initialization and confidence estimation. Next step is Phase 17: Content Catalog Seeding & Multi-Skill Variant Expansion per `CONTENT_AUTHORING.md`.
 
 ---
 

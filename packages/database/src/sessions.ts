@@ -16,3 +16,14 @@ export async function getSessionById(id: string): Promise<Session | null> {
   const res = await query<Session>(sql, [id]);
   return res.rows[0] || null;
 }
+
+export async function endSession(id: string): Promise<Session | null> {
+  const sql = `
+    UPDATE sessions
+    SET ended_at = NOW()
+    WHERE id = $1
+    RETURNING *
+  `;
+  const res = await query<Session>(sql, [id]);
+  return res.rows[0] || null;
+}

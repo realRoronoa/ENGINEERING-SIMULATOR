@@ -204,3 +204,69 @@ export interface TaskWorkspaceMetadata {
   initializedAt: string;
   lastSubmissionId?: string | null;
 }
+
+export type LearnerGoal = 'get-a-job' | 'improve-skills' | 'interview-prep';
+export type LearnerRole = 'student' | 'junior' | 'mid' | 'senior';
+
+export interface OnboardingRequest {
+  goal: LearnerGoal;
+  currentRole: LearnerRole;
+  yearsExperience: number;
+  targetStack: string[];
+}
+
+export interface OnboardingResponse {
+  learnerId: string;
+  diagnosticSessionId: string;
+  nextStep: 'diagnostic';
+}
+
+export interface DiagnosticAnswer {
+  questionId: string;
+  answer: string | string[];
+}
+
+export interface DiagnosticRequest {
+  diagnosticSessionId: string;
+  answers: DiagnosticAnswer[];
+}
+
+export interface SkillProfileEstimate {
+  skillId: string;
+  skillName: string;
+  masteryEstimate: number;
+  confidence: 'low' | 'medium' | 'high';
+}
+
+export interface DiagnosticResponse {
+  skillProfile: SkillProfileEstimate[];
+  sessionId: string;
+  nextStep: 'task';
+}
+
+export interface LearnerSkillSummary {
+  skillId: string;
+  skillName: string;
+  mastery: number;
+  confidence: 'low' | 'medium' | 'high';
+  attemptsCount: number;
+  lastAttemptAt: string | null;
+}
+
+export interface LearnerSkillsResponse {
+  skills: LearnerSkillSummary[];
+}
+
+export interface SkillEvidenceItem {
+  id: string;
+  evidenceType: 'practice' | 'transfer' | 'diagnostic';
+  passed: boolean;
+  score: number;
+  difficulty: number;
+  timestamp: string;
+}
+
+export interface SkillEvidenceResponse {
+  skillId: string;
+  evidence: SkillEvidenceItem[];
+}

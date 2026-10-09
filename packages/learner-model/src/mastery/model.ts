@@ -55,3 +55,14 @@ export function initializeSkillState(learnerId: string, skillId: string): SkillS
     updatedAt: new Date(),
   };
 }
+
+export function calculateConfidence(alpha: number, beta: number): 'low' | 'medium' | 'high' {
+  const sum = alpha + beta;
+  if (sum < 6) {
+    return 'low';
+  }
+  if (sum < 12) {
+    return 'medium';
+  }
+  return 'high';
+}

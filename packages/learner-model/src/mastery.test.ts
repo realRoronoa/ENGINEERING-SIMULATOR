@@ -3,6 +3,7 @@ import {
   calculateMastery,
   updateSkillState,
   initializeSkillState,
+  calculateConfidence,
   INITIAL_ALPHA,
   INITIAL_BETA,
 } from './mastery/model.js';
@@ -94,6 +95,14 @@ describe('Learner Model Suite (Bayesian Beta Mastery)', () => {
       const highDiff = getEvidenceWeight('practice', true, 5);
 
       expect(highDiff.difficultyModifier).toBeGreaterThan(lowDiff.difficultyModifier);
+    });
+  });
+
+  describe('Confidence Estimation', () => {
+    it('estimates confidence levels based on parameter support', () => {
+      expect(calculateConfidence(1, 3)).toBe('low');
+      expect(calculateConfidence(4, 4)).toBe('medium');
+      expect(calculateConfidence(7, 6)).toBe('high');
     });
   });
 
