@@ -568,4 +568,283 @@ describe('API Server Suite', () => {
       expect(pollRes.body.evaluation.hiddenTestsPassed).toBe(1);
     });
   });
+
+  describe('Viva Oral Defense & Attempt Lifecycle Endpoints', () => {
+    it('POST /v1/attempts/:id/viva rejects unauthenticated request with 401', async () => {
+      const response = await request(app).post('/v1/attempts/att-1/viva');
+      expect(response.status).toBe(401);
+      expect(response.body.error.code).toBe('UNAUTHORIZED');
+    });
+
+    it('POST /v1/attempts/:id/viva returns 404 when attempt not found', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(null);
+
+      const response = await request(app)
+        .post('/v1/attempts/att-missing/viva')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(404);
+      expect(response.body.error.code).toBe('ATTEMPT_NOT_FOUND');
+    });
+
+    it('POST /v1/attempts/:id/viva returns 409 when attempt is not in evaluated state', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        id: 'att-1',
+        session_id: 'sess-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'working',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 0,
+        created_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-1/viva')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('ATTEMPT_NOT_IN_EVALUATED_STATE');
+    });
+
+    it('POST /v1/attempts/:id/viva creates viva session and returns 201 with first question', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        id: 'att-eval',
+        session_id: 'sess-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'evaluated',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 1,
+        created_at: new Date(),
+      });
+
+      vi.spyOn(database, 'createVivaRecord').mockResolvedValueOnce({
+        id: 'viva-101',
+        attempt_id: 'att-eval',
+        learner_id: 'learner_test-token',
+        questions: [
+          {
+            id: 'viva-q-1',
+            text: 'Can you explain the root cause?',
+            type: 'authored',
+          },
+        ],
+        answers: [],
+        status: 'in-progress',
+        started_at: new Date(),
+      });
+
+      vi.spyOn(database, 'updateAttemptStatus').mockResolvedValueOnce({
+        id: 'att-eval',
+        session_id: 'sess-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'viva',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 1,
+        created_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-eval/viva')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(201);
+      expect(response.body.vivaId).toBe('viva-101');
+      expect(response.body.firstQuestion.id).toBe('viva-q-1');
+      expect(response.body.firstQuestion.text).toBe('Can you explain the root cause?');
+    });
+
+    it('POST /v1/attempts/:id/viva/answers rejects invalid payload format with 400', async () => {
+      const response = await request(app)
+        .post('/v1/attempts/att-eval/viva/answers')
+        .set('Authorization', 'Bearer test-token')
+        .send({ vivaId: 'viva-101' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('POST /v1/attempts/:id/viva/answers returns 409 when attempt not in viva state', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        id: 'att-eval',
+        session_id: 'sess-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'evaluated',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 1,
+        created_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-eval/viva/answers')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          vivaId: 'viva-101',
+          questionId: 'viva-q-1',
+          answer: 'Root cause was missing locks.',
+        });
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('VIVA_NOT_STARTED');
+    });
+
+    it('POST /v1/attempts/:id/viva/answers advances to next question when more remain', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        id: 'att-viva',
+        session_id: 'sess-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'viva',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 1,
+        created_at: new Date(),
+      });
+
+      vi.spyOn(database, 'getVivaRecordById').mockResolvedValueOnce({
+        id: 'viva-101',
+        attempt_id: 'att-viva',
+        learner_id: 'learner_test-token',
+        questions: [
+          { id: 'viva-q-1', text: 'Question 1', type: 'authored' },
+          { id: 'viva-q-2', text: 'Question 2', type: 'authored' },
+        ],
+        answers: [],
+        status: 'in-progress',
+        started_at: new Date(),
+      });
+
+      vi.spyOn(database, 'addVivaAnswer').mockResolvedValueOnce({
+        id: 'viva-101',
+        attempt_id: 'att-viva',
+        learner_id: 'learner_test-token',
+        questions: [
+          { id: 'viva-q-1', text: 'Question 1', type: 'authored' },
+          { id: 'viva-q-2', text: 'Question 2', type: 'authored' },
+        ],
+        answers: [{ questionId: 'viva-q-1', answer: 'Answer 1' }],
+        status: 'in-progress',
+        started_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-viva/viva/answers')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          vivaId: 'viva-101',
+          questionId: 'viva-q-1',
+          answer: 'Because stock checking was not serialized.',
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.vivaComplete).toBe(false);
+      expect(response.body.nextQuestion.id).toBe('viva-q-2');
+    });
+
+    it('POST /v1/attempts/:id/viva/answers marks vivaComplete: true on final question', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        id: 'att-viva',
+        session_id: 'sess-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'viva',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 1,
+        created_at: new Date(),
+      });
+
+      vi.spyOn(database, 'getVivaRecordById').mockResolvedValueOnce({
+        id: 'viva-101',
+        attempt_id: 'att-viva',
+        learner_id: 'learner_test-token',
+        questions: [{ id: 'viva-q-2', text: 'Question 2', type: 'authored' }],
+        answers: [{ questionId: 'viva-q-1', answer: 'Answer 1' }],
+        status: 'in-progress',
+        started_at: new Date(),
+      });
+
+      vi.spyOn(database, 'addVivaAnswer').mockResolvedValueOnce({
+        id: 'viva-101',
+        attempt_id: 'att-viva',
+        learner_id: 'learner_test-token',
+        questions: [{ id: 'viva-q-2', text: 'Question 2', type: 'authored' }],
+        answers: [
+          { questionId: 'viva-q-1', answer: 'Answer 1' },
+          { questionId: 'viva-q-2', answer: 'Answer 2' },
+        ],
+        status: 'complete',
+        started_at: new Date(),
+        completed_at: new Date(),
+      });
+
+      const updateAttemptSpy = vi.spyOn(database, 'updateAttemptStatus').mockResolvedValueOnce({
+        id: 'att-viva',
+        session_id: 'sess-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'completed',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 1,
+        created_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-viva/viva/answers')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          vivaId: 'viva-101',
+          questionId: 'viva-q-2',
+          answer: 'Added row locks to enforce serializability.',
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.vivaComplete).toBe(true);
+      expect(response.body.nextQuestion).toBeNull();
+      expect(updateAttemptSpy).toHaveBeenCalledWith('att-viva', 'completed');
+    });
+
+    it('POST /v1/attempts/:id/abandon marks attempt status as abandoned', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        id: 'att-abandon',
+        session_id: 'sess-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'working',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 0,
+        created_at: new Date(),
+      });
+
+      const updateAttemptSpy = vi.spyOn(database, 'updateAttemptStatus').mockResolvedValueOnce({
+        id: 'att-abandon',
+        session_id: 'sess-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'abandoned',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 0,
+        created_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-abandon/abandon')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(200);
+      expect(response.body.attemptId).toBe('att-abandon');
+      expect(response.body.status).toBe('abandoned');
+      expect(updateAttemptSpy).toHaveBeenCalledWith('att-abandon', 'abandoned');
+    });
+  });
 });

@@ -140,3 +140,15 @@ export interface Evaluation {
   score: number;
   created_at: Date;
 }
+
+export interface VivaRecord {
+  id: string;
+  attempt_id: string;
+  learner_id: string;
+  questions: Array<{ id: string; text: string; type: 'authored' | 'ai-followup' }>;
+  answers: Array<{ questionId: string; answer: string; submittedAt?: string }>;
+  rubric_results?: Record<string, unknown> | null;
+  status: 'in-progress' | 'complete';
+  started_at: Date;
+  completed_at?: Date | null;
+}

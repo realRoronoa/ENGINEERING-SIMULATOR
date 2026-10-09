@@ -36,18 +36,19 @@ Shopverse standalone reference schema and seeds in `reference-systems/shopverse/
 - `packages/contracts/src/index.test.ts` (2 tests passing)
 - `packages/database/src/migrations.test.ts` (7 tests passing)
 - `packages/database/src/learner.test.ts` (5 tests passing - skill state queries, Bayesian upserts, evidence logging)
+- `packages/database/src/viva.test.ts` (5 tests passing - viva session creation, answer logging, and completion)
 - `packages/evaluator/src/evaluator.test.ts` (5 tests passing)
 - `packages/learner-model/src/mastery.test.ts` (8 tests passing - Bayesian mastery, bounds, evidence updates, misconception frequency)
 - `packages/selector/src/selector.test.ts` (16 tests passing - prerequisite filtering, priority ranker, ~70% difficulty targeting, recency exclusion, misconception remediation, fallback)
 - `reference-systems/shopverse/tests/api.test.ts` (5 tests passing)
 - `reference-systems/shopverse/tests/hidden/orderAtomicity.test.ts` (3 tests passing - fault injection & fix validation)
-- `apps/api/src/app.test.ts` (23 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling, E2E pipeline)
+- `apps/api/src/app.test.ts` (32 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling, E2E pipeline, viva start/answers/completion, and attempt abandonment)
 - `apps/cli/src/cli.test.ts` (5 tests passing - config, init workspace, patch submit, commander registry)
 - `apps/worker/src/worker.test.ts` (9 tests passing - patch validation, test evaluation, evidence events, DB persistence & Bayesian skill update, queue batch draining, lifecycle)
 - `apps/web/src/App.test.tsx` (2 tests passing - header and headline renders)
 - `apps/web/src/features/mission-demo/missionDemoMachine.test.ts` (3 tests passing - state machine transitions)
 - `apps/web/src/features/demo/demo.test.tsx` (5 tests passing - demo mode, preloaded dashboard, mission consistency, safe recovery)
-- Total: 98 unit/integration tests passing cleanly in Vitest across 14 test suites.
+- Total: 112 unit/integration tests passing cleanly in Vitest across 15 test suites.
 
 ### Existing deployment state
 
@@ -59,6 +60,4 @@ None.
 
 ### Immediate next milestone
 
-Phase 12 — Viva Oral Verification Scaffold (`POST /v1/attempts/:id/viva`).
-
-Milestone 1 — Database schema setup (`packages/database`) & Reference system integration (`reference-systems/shopverse`).
+Phase 13 — Mentor Guidance & Hint Ladder API (`POST /v1/attempts/:id/hints` & AI policy guardrails).

@@ -1,6 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import { getAttemptById, createSubmission } from '@engineering-simulator/database';
+import {
+  getAttemptById,
+  createSubmission,
+  updateAttemptStatus,
+  createVivaRecord,
+  getVivaRecordById,
+  addVivaAnswer,
+} from '@engineering-simulator/database';
 import { validatePatch } from '@engineering-simulator/evaluator';
 import { enqueueGradingJob } from '@engineering-simulator/worker';
 
@@ -181,6 +188,243 @@ attemptRouter.post('/:id/submissions', async (req: Request, res: Response) => {
       error: {
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Could not create submission',
+        details: {},
+      },
+    });
+  }
+});
+
+const vivaAnswerBodySchema = z.object({
+  vivaId: z.string().min(1, 'vivaId is required'),
+  questionId: z.string().min(1, 'questionId is required'),
+  answer: z.string().min(1, 'answer is required'),
+});
+
+attemptRouter.post('/:id/viva', async (req: Request, res: Response) => {
+  const attemptId = String(req.params.id);
+  const learnerId = req.learnerId;
+
+  if (!learnerId) {
+    return res.status(401).json({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required to start viva oral defense.',
+        details: {},
+      },
+    });
+  }
+
+  try {
+    const attempt = await getAttemptById(attemptId);
+    if (!attempt) {
+      return res.status(404).json({
+        error: {
+          code: 'ATTEMPT_NOT_FOUND',
+          message: 'Attempt not found.',
+          details: {},
+        },
+      });
+    }
+
+    if (attempt.learner_id !== learnerId) {
+      return res.status(403).json({
+        error: {
+          code: 'FORBIDDEN',
+          message: 'You are not authorized to start viva for this attempt.',
+          details: {},
+        },
+      });
+    }
+
+    if (attempt.status !== 'evaluated') {
+      return res.status(409).json({
+        error: {
+          code: 'ATTEMPT_NOT_IN_EVALUATED_STATE',
+          message: `Attempt must be in 'evaluated' state to begin viva oral defense. Current state: '${attempt.status}'.`,
+          details: { currentStatus: attempt.status },
+        },
+      });
+    }
+
+    const authoredQuestions = [
+      {
+        id: 'viva-q-1',
+        text: 'Can you explain the root cause of the fault and how your patch resolves it without breaking invariants?',
+        type: 'authored' as const,
+      },
+      {
+        id: 'viva-q-2',
+        text: 'What error handling or concurrency edge cases did you consider while designing this fix?',
+        type: 'authored' as const,
+      },
+    ];
+
+    const vivaRecord = await createVivaRecord(attemptId, learnerId, authoredQuestions);
+    await updateAttemptStatus(attemptId, 'viva');
+
+    res.status(201).json({
+      vivaId: vivaRecord.id,
+      firstQuestion: vivaRecord.questions[0],
+    });
+  } catch (err: unknown) {
+    console.error('Start viva error:', err);
+    res.status(500).json({
+      error: {
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Could not start viva session',
+        details: {},
+      },
+    });
+  }
+});
+
+attemptRouter.post('/:id/viva/answers', async (req: Request, res: Response) => {
+  const attemptId = String(req.params.id);
+  const learnerId = req.learnerId;
+
+  if (!learnerId) {
+    return res.status(401).json({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required to submit viva answer.',
+        details: {},
+      },
+    });
+  }
+
+  const parseResult = vivaAnswerBodySchema.safeParse(req.body);
+  if (!parseResult.success) {
+    return res.status(400).json({
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid viva answer format.',
+        details: parseResult.error.flatten(),
+      },
+    });
+  }
+
+  const { vivaId, questionId, answer } = parseResult.data;
+
+  try {
+    const attempt = await getAttemptById(attemptId);
+    if (!attempt) {
+      return res.status(404).json({
+        error: {
+          code: 'ATTEMPT_NOT_FOUND',
+          message: 'Attempt not found.',
+          details: {},
+        },
+      });
+    }
+
+    if (attempt.learner_id !== learnerId) {
+      return res.status(403).json({
+        error: {
+          code: 'FORBIDDEN',
+          message: 'You are not authorized to submit viva answers for this attempt.',
+          details: {},
+        },
+      });
+    }
+
+    if (attempt.status !== 'viva') {
+      return res.status(409).json({
+        error: {
+          code: 'VIVA_NOT_STARTED',
+          message: `Viva oral defense is not currently active for this attempt. Current status: '${attempt.status}'.`,
+          details: { currentStatus: attempt.status },
+        },
+      });
+    }
+
+    const viva = await getVivaRecordById(vivaId);
+    if (!viva || viva.attempt_id !== attemptId) {
+      return res.status(404).json({
+        error: {
+          code: 'VIVA_NOT_FOUND',
+          message: 'Viva record not found for this attempt.',
+          details: {},
+        },
+      });
+    }
+
+    const questions = Array.isArray(viva.questions) ? viva.questions : [];
+    const currentIndex = questions.findIndex((q) => q.id === questionId);
+    const nextQuestion =
+      currentIndex >= 0 && currentIndex + 1 < questions.length ? questions[currentIndex + 1] : null;
+
+    const vivaComplete = nextQuestion === null;
+
+    await addVivaAnswer(vivaId, questionId, answer, vivaComplete ? 'complete' : 'in-progress');
+
+    if (vivaComplete) {
+      await updateAttemptStatus(attemptId, 'completed');
+    }
+
+    res.json({
+      nextQuestion,
+      vivaComplete,
+    });
+  } catch (err: unknown) {
+    console.error('Viva answer error:', err);
+    res.status(500).json({
+      error: {
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Could not record viva answer',
+        details: {},
+      },
+    });
+  }
+});
+
+attemptRouter.post('/:id/abandon', async (req: Request, res: Response) => {
+  const attemptId = String(req.params.id);
+  const learnerId = req.learnerId;
+
+  if (!learnerId) {
+    return res.status(401).json({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required to abandon attempt.',
+        details: {},
+      },
+    });
+  }
+
+  try {
+    const attempt = await getAttemptById(attemptId);
+    if (!attempt) {
+      return res.status(404).json({
+        error: {
+          code: 'ATTEMPT_NOT_FOUND',
+          message: 'Attempt not found.',
+          details: {},
+        },
+      });
+    }
+
+    if (attempt.learner_id !== learnerId) {
+      return res.status(403).json({
+        error: {
+          code: 'FORBIDDEN',
+          message: 'You are not authorized to abandon this attempt.',
+          details: {},
+        },
+      });
+    }
+
+    await updateAttemptStatus(attemptId, 'abandoned');
+
+    res.json({
+      attemptId,
+      status: 'abandoned',
+    });
+  } catch (err: unknown) {
+    console.error('Abandon attempt error:', err);
+    res.status(500).json({
+      error: {
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Could not abandon attempt',
         details: {},
       },
     });

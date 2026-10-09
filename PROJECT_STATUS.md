@@ -27,19 +27,19 @@ FOUNDATION, CORE ENGINES, WORKER, & E2E SUBMISSION-TO-EVIDENCE PIPELINE OPERATIO
 **Overall:**
 65%
 
-| Area                      | Owner    |   % | Note                                                                                           |
-| ------------------------- | -------- | --: | ---------------------------------------------------------------------------------------------- |
-| Frontend                  | Lead Dev | 15% | `apps/web/` React/Vite shell with route tests, mission demo machine, demo user flow            |
-| Backend                   | Dev 2    | 90% | `apps/api/` Express API with health, ready probe, sessions, attempts, submissions, E2E worker |
-| Shared Contracts          | Shared   | 70% | `packages/contracts/` exported types & Zod schemas                                             |
+| Area                      | Owner    |   % | Note                                                                                             |
+| ------------------------- | -------- | --: | ------------------------------------------------------------------------------------------------ |
+| Frontend                  | Lead Dev | 15% | `apps/web/` React/Vite shell with route tests, mission demo machine, demo user flow              |
+| Backend                   | Dev 2    | 90% | `apps/api/` Express API with health, ready probe, sessions, attempts, submissions, E2E worker    |
+| Shared Contracts          | Shared   | 70% | `packages/contracts/` exported types & Zod schemas                                               |
 | Database                  | Dev 2    | 98% | `packages/database` 5 migrations, client pool, sessions, attempts, content, submissions, learner |
-| Evaluation                | Dev 2    | 95% | `packages/evaluator` grading engine & `apps/worker` async pipeline with DB & evidence emission |
-| Learning System           | Dev 2    | 95% | `packages/learner-model` Bayesian mastery & `packages/selector` task selector engine           |
-| AI                        | Dev 2    | 60% | `AI_POLICY.md` approved provider & temperature matrix                                          |
-| CLI                       | Dev 2    | 80% | `apps/cli/` `engsim` binary with login, init, submit, status                                   |
-| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                            |
-| Content                   | Lead Dev | 10% | Shopverse sample tasks & hidden fault test                                                     |
-| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                                    |
+| Evaluation                | Dev 2    | 95% | `packages/evaluator` grading engine & `apps/worker` async pipeline with DB & evidence emission   |
+| Learning System           | Dev 2    | 95% | `packages/learner-model` Bayesian mastery & `packages/selector` task selector engine             |
+| AI                        | Dev 2    | 60% | `AI_POLICY.md` approved provider & temperature matrix                                            |
+| CLI                       | Dev 2    | 80% | `apps/cli/` `engsim` binary with login, init, submit, status                                     |
+| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                              |
+| Content                   | Lead Dev | 10% | Shopverse sample tasks & hidden fault test                                                       |
+| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                                      |
 
 **Honest summary:**
 The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection and patch submission endpoints, grading worker pipeline, interactive web demo flow, and end-to-end submission-to-evidence flow are operational with 98 passing tests across 14 test suites. Learner patch submitted over HTTP is queued, processed by the grading worker, persists evaluation results to PostgreSQL, records evidence events, and updates Bayesian skill states with Beta bounds. Next step is Phase 12: Viva Oral Verification Scaffold (`POST /v1/attempts/:id/viva`).

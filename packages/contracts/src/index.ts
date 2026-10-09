@@ -86,3 +86,25 @@ export interface SelectorInput {
   availableSkills: SkillNode[];
   availableVariants: TaskVariant[];
 }
+
+export interface VivaQuestion {
+  id: string;
+  text: string;
+  type: 'authored' | 'ai-followup';
+}
+
+export interface VivaStartResponse {
+  vivaId: string;
+  firstQuestion: VivaQuestion;
+}
+
+export interface VivaAnswerRequest {
+  vivaId: string;
+  questionId: string;
+  answer: string;
+}
+
+export interface VivaAnswerResponse {
+  nextQuestion: VivaQuestion | null;
+  vivaComplete: boolean;
+}
