@@ -18,7 +18,11 @@ const STORAGE_KEY = 'eng_sim_demo_state_v1';
 export const LearnerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<LearnerState>(() => {
     try {
-      if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.getItem === 'function') {
+      if (
+        typeof window !== 'undefined' &&
+        window.localStorage &&
+        typeof window.localStorage.getItem === 'function'
+      ) {
         const stored = window.localStorage.getItem(STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored);
@@ -32,7 +36,11 @@ export const LearnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   });
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.setItem === 'function') {
+    if (
+      typeof window !== 'undefined' &&
+      window.localStorage &&
+      typeof window.localStorage.setItem === 'function'
+    ) {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
   }, [state]);
@@ -42,7 +50,11 @@ export const LearnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const resetDemoData = () => {
-    if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.removeItem === 'function') {
+    if (
+      typeof window !== 'undefined' &&
+      window.localStorage &&
+      typeof window.localStorage.removeItem === 'function'
+    ) {
       window.localStorage.removeItem(STORAGE_KEY);
     }
     setState(INITIAL_DEMO_STATE);
@@ -60,7 +72,7 @@ export const LearnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         name,
         email,
         skills: [],
-      }
+      },
     });
   };
 
@@ -69,7 +81,9 @@ export const LearnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   return (
-    <LearnerContext.Provider value={{ state, updateState, resetDemoData, loadDemoFixture, loginDemo, logout }}>
+    <LearnerContext.Provider
+      value={{ state, updateState, resetDemoData, loadDemoFixture, loginDemo, logout }}
+    >
       {children}
     </LearnerContext.Provider>
   );

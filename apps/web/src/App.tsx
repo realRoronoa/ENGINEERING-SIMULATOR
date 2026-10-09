@@ -46,20 +46,104 @@ export const App: React.FC = () => {
         <Route path="/terms" element={<Terms />} />
 
         {/* Onboarding */}
-        <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-        <Route path="/onboarding/diagnostic" element={<ProtectedRoute><Diagnostic /></ProtectedRoute>} />
-        <Route path="/onboarding/results" element={<ProtectedRoute><DiagnosticResults /></ProtectedRoute>} />
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <Onboarding />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/onboarding/diagnostic"
+          element={
+            <ProtectedRoute>
+              <Diagnostic />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/onboarding/results"
+          element={
+            <ProtectedRoute>
+              <DiagnosticResults />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Learner Workspace */}
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/missions" element={<ProtectedRoute><MissionsLibrary /></ProtectedRoute>} />
-        <Route path="/missions/:missionId" element={<ProtectedRoute><MissionWorkspace /></ProtectedRoute>} />
-        <Route path="/missions/:missionId/evaluation/:attemptId" element={<ProtectedRoute><Evaluation /></ProtectedRoute>} />
-        <Route path="/missions/:missionId/viva/:attemptId" element={<ProtectedRoute><Viva /></ProtectedRoute>} />
-        <Route path="/transfer/:taskId" element={<ProtectedRoute><TransferTask /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/progress" element={<ProtectedRoute><ProgressHistory /></ProtectedRoute>} />
-        <Route path="/reports/weekly" element={<ProtectedRoute><WeeklyReport /></ProtectedRoute>} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/missions"
+          element={
+            <ProtectedRoute>
+              <MissionsLibrary />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/missions/:missionId"
+          element={
+            <ProtectedRoute>
+              <MissionWorkspace />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/missions/:missionId/evaluation/:attemptId"
+          element={
+            <ProtectedRoute>
+              <Evaluation />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/missions/:missionId/viva/:attemptId"
+          element={
+            <ProtectedRoute>
+              <Viva />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/transfer/:taskId"
+          element={
+            <ProtectedRoute>
+              <TransferTask />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/progress"
+          element={
+            <ProtectedRoute>
+              <ProgressHistory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reports/weekly"
+          element={
+            <ProtectedRoute>
+              <WeeklyReport />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

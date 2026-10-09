@@ -12,7 +12,7 @@ const DEMO_MISSIONS = [
     duration: '25m',
     difficulty: 'Medium',
     skills: ['Concurrency & Idempotency', 'Resilience & Retries'],
-    status: 'AVAILABLE'
+    status: 'AVAILABLE',
   },
   {
     id: 'm-4413',
@@ -22,8 +22,8 @@ const DEMO_MISSIONS = [
     difficulty: 'Hard',
     skills: ['Data Consistency', 'Transactions'],
     status: 'LOCKED',
-    prereq: 'Requires Competent in Concurrency'
-  }
+    prereq: 'Requires Competent in Concurrency',
+  },
 ];
 
 export const MissionsLibrary: React.FC = () => {
@@ -34,44 +34,76 @@ export const MissionsLibrary: React.FC = () => {
         <div style={{ marginTop: '48px', marginBottom: '64px' }}>
           <div style={{ marginBottom: '40px' }}>
             <h1 style={{ fontSize: '32px' }}>Mission Library</h1>
-            <p className="lead">Select a verified engineering mission to practice and demonstrate your skills.</p>
+            <p className="lead">
+              Select a verified engineering mission to practice and demonstrate your skills.
+            </p>
           </div>
 
           <div style={{ display: 'grid', gap: '24px' }}>
-            {DEMO_MISSIONS.map(m => (
-              <div key={m.id} style={{ 
-                background: 'var(--s1)', 
-                border: '1px solid var(--border)', 
-                borderRadius: '6px', 
-                padding: '24px',
-                opacity: m.status === 'LOCKED' ? 0.6 : 1
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+            {DEMO_MISSIONS.map((m) => (
+              <div
+                key={m.id}
+                style={{
+                  background: 'var(--s1)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '6px',
+                  padding: '24px',
+                  opacity: m.status === 'LOCKED' ? 0.6 : 1,
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: '16px',
+                  }}
+                >
                   <div>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
-                      <StatusBadge status={m.status === 'LOCKED' ? 'fail' : 'ok'}>{m.status}</StatusBadge>
-                      <span className="tl">{m.difficulty} · {m.duration}</span>
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: '12px',
+                        alignItems: 'center',
+                        marginBottom: '8px',
+                      }}
+                    >
+                      <StatusBadge status={m.status === 'LOCKED' ? 'fail' : 'ok'}>
+                        {m.status}
+                      </StatusBadge>
+                      <span className="tl">
+                        {m.difficulty} · {m.duration}
+                      </span>
                     </div>
                     <h3 style={{ margin: '0 0 8px', fontSize: '20px' }}>{m.title}</h3>
                     <p style={{ color: 'var(--muted)', margin: 0 }}>{m.objective}</p>
                   </div>
                   {m.status !== 'LOCKED' && (
-                    <Button variant="primary" href={`/missions/${m.id}`}>START MISSION</Button>
+                    <Button variant="primary" href={`/missions/${m.id}`}>
+                      START MISSION
+                    </Button>
                   )}
                 </div>
-                
-                {m.prereq && <div style={{ fontSize: '12px', color: 'var(--fail)', marginBottom: '12px' }}>🔒 {m.prereq}</div>}
+
+                {m.prereq && (
+                  <div style={{ fontSize: '12px', color: 'var(--fail)', marginBottom: '12px' }}>
+                    🔒 {m.prereq}
+                  </div>
+                )}
 
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  {m.skills.map(s => (
-                    <span key={s} style={{ 
-                      fontSize: '11px', 
-                      background: 'var(--s2)', 
-                      padding: '4px 8px', 
-                      borderRadius: '4px', 
-                      border: '1px solid var(--border)',
-                      color: 'var(--muted)'
-                    }}>
+                  {m.skills.map((s) => (
+                    <span
+                      key={s}
+                      style={{
+                        fontSize: '11px',
+                        background: 'var(--s2)',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        border: '1px solid var(--border)',
+                        color: 'var(--muted)',
+                      }}
+                    >
                       {s}
                     </span>
                   ))}

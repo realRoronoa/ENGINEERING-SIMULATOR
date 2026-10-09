@@ -33,9 +33,14 @@ export const Signup: React.FC = () => {
 
         {error && <div style={{ color: 'var(--fail)', marginBottom: '16px' }}>{error}</div>}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        >
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>Full Name</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>
+              Full Name
+            </label>
             <input
               type="text"
               value={name}
@@ -51,7 +56,9 @@ export const Signup: React.FC = () => {
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>Email</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>
+              Email
+            </label>
             <input
               type="email"
               value={email}
@@ -67,7 +74,9 @@ export const Signup: React.FC = () => {
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>Password</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>
+              Password
+            </label>
             <input
               type="password"
               value={password}
@@ -89,11 +98,20 @@ export const Signup: React.FC = () => {
           </div>
         </form>
 
-        <div style={{ marginTop: '24px', textAlign: 'center', color: 'var(--muted)', fontSize: '13px' }}>
+        <div
+          style={{
+            marginTop: '24px',
+            textAlign: 'center',
+            color: 'var(--muted)',
+            fontSize: '13px',
+          }}
+        >
           <p>
             Demo mode active. This creates a local session only.
             <br />
-            <a href="/login" style={{ color: 'var(--ok)', textDecoration: 'none' }}>Already have an account?</a>
+            <a href="/login" style={{ color: 'var(--ok)', textDecoration: 'none' }}>
+              Already have an account?
+            </a>
           </p>
         </div>
       </div>

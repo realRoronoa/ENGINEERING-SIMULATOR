@@ -6,15 +6,15 @@ import { Navbar } from '../../components/layout/Navbar.js';
 import { useLearner } from '../../state/LearnerContext.js';
 
 const VIVA_QUESTIONS = [
-  "Can you explain why raising the `maxAttempts` limit in the original code did not fix the 500 error?",
-  "If the payment gateway returned a 429 Too Many Requests instead of 503, would your fix still be appropriate? Why or why not?"
+  'Can you explain why raising the `maxAttempts` limit in the original code did not fix the 500 error?',
+  'If the payment gateway returned a 429 Too Many Requests instead of 503, would your fix still be appropriate? Why or why not?',
 ];
 
 export const Viva: React.FC = () => {
-  const { missionId, attemptId } = useParams<{ missionId: string, attemptId: string }>();
+  const { missionId, attemptId } = useParams<{ missionId: string; attemptId: string }>();
   const navigate = useNavigate();
   const { updateState, state } = useLearner();
-  
+
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answer, setAnswer] = useState('');
   const [answers, setAnswers] = useState<string[]>([]);
@@ -30,7 +30,7 @@ export const Viva: React.FC = () => {
       setAnswer(newAnswers[currentIdx + 1] || '');
     } else {
       setSubmitted(true);
-      const updatedAttempts = state.attempts.map(a => 
+      const updatedAttempts = state.attempts.map((a) =>
         a.id === attemptId ? { ...a, status: 'VIVA_COMPLETED' as const } : a
       );
       updateState({ attempts: updatedAttempts });
@@ -47,7 +47,9 @@ export const Viva: React.FC = () => {
       <Container>
         <div style={{ maxWidth: 700, margin: '64px auto' }}>
           <div style={{ marginBottom: '32px' }}>
-            <div className="tl" style={{ marginBottom: '8px' }}>VIVA INTERVIEW</div>
+            <div className="tl" style={{ marginBottom: '8px' }}>
+              VIVA INTERVIEW
+            </div>
             <h1 style={{ fontSize: '28px', margin: 0 }}>Mission Defense</h1>
             <p className="lead" style={{ marginTop: '8px' }}>
               Explain your reasoning and defend your implementation decisions.
@@ -55,11 +57,18 @@ export const Viva: React.FC = () => {
           </div>
 
           {submitted ? (
-            <div style={{ background: 'var(--s1)', padding: '32px', border: '1px solid var(--ok)', borderRadius: '6px' }}>
+            <div
+              style={{
+                background: 'var(--s1)',
+                padding: '32px',
+                border: '1px solid var(--ok)',
+                borderRadius: '6px',
+              }}
+            >
               <h3 style={{ margin: '0 0 16px' }}>Viva Completed</h3>
               <p style={{ color: 'var(--muted)', marginBottom: '24px' }}>
-                Your reasoning has been recorded as evidence. You demonstrated clear understanding of the 
-                re-entry race condition.
+                Your reasoning has been recorded as evidence. You demonstrated clear understanding
+                of the re-entry race condition.
               </p>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Button variant="primary" onClick={handleFinish}>
@@ -68,10 +77,19 @@ export const Viva: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div style={{ background: 'var(--s1)', padding: '32px', border: '1px solid var(--border)', borderRadius: '6px' }}>
-              <div className="tl" style={{ marginBottom: '16px' }}>QUESTION {currentIdx + 1} OF {VIVA_QUESTIONS.length}</div>
+            <div
+              style={{
+                background: 'var(--s1)',
+                padding: '32px',
+                border: '1px solid var(--border)',
+                borderRadius: '6px',
+              }}
+            >
+              <div className="tl" style={{ marginBottom: '16px' }}>
+                QUESTION {currentIdx + 1} OF {VIVA_QUESTIONS.length}
+              </div>
               <h3 style={{ margin: '0 0 24px', fontSize: '18px' }}>{VIVA_QUESTIONS[currentIdx]}</h3>
-              
+
               <textarea
                 value={answer}
                 onChange={(e) => setAnswer(e.target.value)}
@@ -86,13 +104,13 @@ export const Viva: React.FC = () => {
                   fontFamily: 'var(--sans)',
                   fontSize: '14px',
                   borderRadius: '4px',
-                  resize: 'vertical'
+                  resize: 'vertical',
                 }}
               />
 
               <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between' }}>
-                <Button 
-                  variant="secondary" 
+                <Button
+                  variant="secondary"
                   onClick={() => {
                     setCurrentIdx(currentIdx - 1);
                     setAnswer(answers[currentIdx - 1] || '');
@@ -101,11 +119,7 @@ export const Viva: React.FC = () => {
                 >
                   PREVIOUS
                 </Button>
-                <Button 
-                  variant="primary" 
-                  onClick={handleNext}
-                  disabled={answer.trim().length < 10}
-                >
+                <Button variant="primary" onClick={handleNext} disabled={answer.trim().length < 10}>
                   {currentIdx === VIVA_QUESTIONS.length - 1 ? 'SUBMIT DEFENSE' : 'NEXT QUESTION'}
                 </Button>
               </div>

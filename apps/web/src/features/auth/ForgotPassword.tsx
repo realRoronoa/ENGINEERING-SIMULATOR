@@ -15,21 +15,33 @@ export const ForgotPassword: React.FC = () => {
     <Container>
       <div style={{ maxWidth: 400, margin: '100px auto' }}>
         <h2 style={{ marginBottom: '8px' }}>Reset Password</h2>
-        
+
         {submitted ? (
-          <div style={{ padding: '16px', background: 'rgba(61, 220, 132, 0.1)', border: '1px solid var(--ok)', color: 'var(--text)' }}>
+          <div
+            style={{
+              padding: '16px',
+              background: 'rgba(61, 220, 132, 0.1)',
+              border: '1px solid var(--ok)',
+              color: 'var(--text)',
+            }}
+          >
             If an account exists for {email}, a password reset link has been sent.
             <div style={{ marginTop: '16px' }}>
               <Button href="/login">RETURN TO LOGIN</Button>
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <form
+            onSubmit={handleSubmit}
+            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+          >
             <p className="lead" style={{ marginBottom: '8px' }}>
               Enter your email address and we'll send you a link to reset your password.
             </p>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>Email</label>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>
+                Email
+              </label>
               <input
                 type="email"
                 required
@@ -46,7 +58,11 @@ export const ForgotPassword: React.FC = () => {
               />
             </div>
             <div style={{ marginTop: '16px' }}>
-              <Button variant="primary" type="submit" style={{ width: '100%', textAlign: 'center' }}>
+              <Button
+                variant="primary"
+                type="submit"
+                style={{ width: '100%', textAlign: 'center' }}
+              >
                 SEND RESET LINK
               </Button>
             </div>

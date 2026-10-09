@@ -17,10 +17,10 @@ export const MissionWorkspace: React.FC = () => {
       id: `att-${Date.now()}`,
       missionId: missionId || 'm-unknown',
       status: 'SUBMITTED' as const,
-      startedAt: new Date().toISOString()
+      startedAt: new Date().toISOString(),
     };
     updateState({ attempts: [...state.attempts, newAttempt] });
-    
+
     // In a real app this would call an API, then redirect to evaluation
     navigate(`/missions/${missionId}/evaluation/${newAttempt.id}`);
   };
@@ -29,14 +29,30 @@ export const MissionWorkspace: React.FC = () => {
     <>
       <Navbar />
       <Container>
-        <div style={{ marginTop: '24px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div
+          style={{
+            marginTop: '24px',
+            marginBottom: '16px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+          }}
+        >
           <div>
-            <div className="tl" style={{ marginBottom: '8px' }}>MISSION WORKSPACE</div>
-            <h1 style={{ fontSize: '24px', margin: 0 }}>{missionId === 'm-4412' ? 'TICKET-4412 · Payments Service' : missionId}</h1>
+            <div className="tl" style={{ marginBottom: '8px' }}>
+              MISSION WORKSPACE
+            </div>
+            <h1 style={{ fontSize: '24px', margin: 0 }}>
+              {missionId === 'm-4412' ? 'TICKET-4412 · Payments Service' : missionId}
+            </h1>
           </div>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <Button variant="secondary" href="/missions">CANCEL</Button>
-            <Button variant="primary" onClick={handleSubmit}>SUBMIT ATTEMPT</Button>
+            <Button variant="secondary" href="/missions">
+              CANCEL
+            </Button>
+            <Button variant="primary" onClick={handleSubmit}>
+              SUBMIT ATTEMPT
+            </Button>
           </div>
         </div>
 

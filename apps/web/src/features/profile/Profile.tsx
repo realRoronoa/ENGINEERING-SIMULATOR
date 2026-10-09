@@ -21,28 +21,67 @@ export const Profile: React.FC = () => {
 
           <div style={{ display: 'grid', gap: '24px', marginBottom: '48px' }}>
             {profile?.skills.map((skill) => (
-              <div key={skill.id} style={{ background: 'var(--s1)', padding: '24px', border: '1px solid var(--border)', borderRadius: '6px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <div
+                key={skill.id}
+                style={{
+                  background: 'var(--s1)',
+                  padding: '24px',
+                  border: '1px solid var(--border)',
+                  borderRadius: '6px',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: '16px',
+                  }}
+                >
                   <div>
                     <h3 style={{ margin: '0 0 8px', fontSize: '20px' }}>{skill.name}</h3>
                     <div style={{ color: 'var(--muted)', fontSize: '13px' }}>
                       {skill.evidenceCount} verified event{skill.evidenceCount !== 1 ? 's' : ''}
                     </div>
                   </div>
-                  <StatusBadge status={skill.level === 'NOVICE' ? 'fail' : 'ok'}>{skill.level}</StatusBadge>
+                  <StatusBadge status={skill.level === 'NOVICE' ? 'fail' : 'ok'}>
+                    {skill.level}
+                  </StatusBadge>
                 </div>
-                
-                <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-                  <div className="tl" style={{ marginBottom: '8px' }}>EVIDENCE</div>
+
+                <div
+                  style={{
+                    marginTop: '16px',
+                    paddingTop: '16px',
+                    borderTop: '1px solid var(--border)',
+                  }}
+                >
+                  <div className="tl" style={{ marginBottom: '8px' }}>
+                    EVIDENCE
+                  </div>
                   {skill.evidenceCount > 1 ? (
-                    <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--muted)', fontSize: '13px' }}>
+                    <ul
+                      style={{
+                        margin: 0,
+                        paddingLeft: '20px',
+                        color: 'var(--muted)',
+                        fontSize: '13px',
+                      }}
+                    >
                       <li style={{ marginBottom: '4px' }}>Diagnostic assessment (Simulated)</li>
                       <li style={{ marginBottom: '4px' }}>TICKET-4412 Mission execution</li>
                       <li style={{ marginBottom: '4px' }}>TICKET-4412 Viva defense</li>
                       <li>AI-OFF Independent transfer task</li>
                     </ul>
                   ) : (
-                    <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--muted)', fontSize: '13px' }}>
+                    <ul
+                      style={{
+                        margin: 0,
+                        paddingLeft: '20px',
+                        color: 'var(--muted)',
+                        fontSize: '13px',
+                      }}
+                    >
                       <li>Diagnostic assessment (Simulated)</li>
                     </ul>
                   )}
@@ -52,8 +91,12 @@ export const Profile: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '16px' }}>
-            <Button variant="secondary" href="/dashboard">BACK TO DASHBOARD</Button>
-            <Button variant="secondary" href="/progress">VIEW PROGRESS HISTORY</Button>
+            <Button variant="secondary" href="/dashboard">
+              BACK TO DASHBOARD
+            </Button>
+            <Button variant="secondary" href="/progress">
+              VIEW PROGRESS HISTORY
+            </Button>
           </div>
         </div>
       </Container>

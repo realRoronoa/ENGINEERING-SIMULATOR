@@ -29,7 +29,12 @@ export const LandingPage: React.FC = () => {
             <Button variant="primary" href="#pilot">
               REQUEST PILOT
             </Button>
-            <Button onClick={(e) => { e.preventDefault(); window.location.href = '/login'; }}>
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = '/login';
+              }}
+            >
               EXPLORE DEMO ACCOUNT
             </Button>
           </div>

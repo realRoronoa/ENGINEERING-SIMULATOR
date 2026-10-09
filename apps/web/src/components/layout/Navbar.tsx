@@ -30,7 +30,16 @@ export const Navbar: React.FC = () => {
           ) : (
             <>
               {state.isDemo && (
-                <span style={{ color: 'var(--inv)', border: '1px solid var(--inv)', padding: '2px 6px', fontSize: '11px', borderRadius: '4px', marginRight: '8px' }}>
+                <span
+                  style={{
+                    color: 'var(--inv)',
+                    border: '1px solid var(--inv)',
+                    padding: '2px 6px',
+                    fontSize: '11px',
+                    borderRadius: '4px',
+                    marginRight: '8px',
+                  }}
+                >
                   DEMO MODE
                 </span>
               )}
@@ -38,9 +47,26 @@ export const Navbar: React.FC = () => {
               <a href="/missions">Missions</a>
               <a href="/profile">Profile</a>
               {state.isDemo && (
-                <a href="#" onClick={(e) => { e.preventDefault(); resetDemoData(); navigate('/login'); }}>Reset Demo</a>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    resetDemoData();
+                    navigate('/login');
+                  }}
+                >
+                  Reset Demo
+                </a>
               )}
-              <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }}>Log Out</a>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLogout();
+                }}
+              >
+                Log Out
+              </a>
             </>
           )}
         </div>

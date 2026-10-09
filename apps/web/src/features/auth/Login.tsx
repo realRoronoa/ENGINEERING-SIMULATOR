@@ -32,9 +32,14 @@ export const Login: React.FC = () => {
 
         {error && <div style={{ color: 'var(--fail)', marginBottom: '16px' }}>{error}</div>}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        >
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>Email</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>
+              Email
+            </label>
             <input
               type="email"
               value={email}
@@ -50,7 +55,9 @@ export const Login: React.FC = () => {
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>Password</label>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--muted)' }}>
+              Password
+            </label>
             <input
               type="password"
               value={password}
@@ -72,21 +79,40 @@ export const Login: React.FC = () => {
           </div>
         </form>
 
-        <div style={{ marginTop: '24px', textAlign: 'center', color: 'var(--muted)', fontSize: '13px' }}>
+        <div
+          style={{
+            marginTop: '24px',
+            textAlign: 'center',
+            color: 'var(--muted)',
+            fontSize: '13px',
+          }}
+        >
           <p>
             Demo mode active. Any email/password will work.
             <br />
-            <a href="/signup" style={{ color: 'var(--ok)', textDecoration: 'none' }}>Create an account</a> |{' '}
-            <a href="/forgot-password" style={{ color: 'var(--text)', textDecoration: 'none' }}>Forgot password?</a>
+            <a href="/signup" style={{ color: 'var(--ok)', textDecoration: 'none' }}>
+              Create an account
+            </a>{' '}
+            |{' '}
+            <a href="/forgot-password" style={{ color: 'var(--text)', textDecoration: 'none' }}>
+              Forgot password?
+            </a>
           </p>
         </div>
 
-        <div style={{ marginTop: '24px', textAlign: 'center', borderTop: '1px solid var(--border)', paddingTop: '24px' }}>
+        <div
+          style={{
+            marginTop: '24px',
+            textAlign: 'center',
+            borderTop: '1px solid var(--border)',
+            paddingTop: '24px',
+          }}
+        >
           <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '16px' }}>
             Want to see how it works without signing up?
           </p>
-          <Button 
-            variant="secondary" 
+          <Button
+            variant="secondary"
             onClick={(e) => {
               e.preventDefault();
               loadDemoFixture();
