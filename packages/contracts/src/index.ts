@@ -270,3 +270,44 @@ export interface SkillEvidenceResponse {
   skillId: string;
   evidence: SkillEvidenceItem[];
 }
+
+export type FlagType = 'incorrect-test' | 'unclear-instructions' | 'wrong-answer' | 'other';
+export type FlagStatus = 'open' | 'reviewing' | 'resolved' | 'dismissed';
+
+export interface CreateFlagRequest {
+  attemptId: string;
+  type: FlagType;
+  description: string;
+}
+
+export interface CreateFlagResponse {
+  flagId: string;
+  status: 'open';
+}
+
+export type DisputeStatus = 'open' | 'reviewing' | 'upheld' | 'dismissed';
+
+export interface CreateDisputeRequest {
+  reason: string;
+  evidenceDescription: string;
+}
+
+export interface CreateDisputeResponse {
+  disputeId: string;
+  status: 'open';
+}
+
+export interface MasteryChangeItem {
+  skillId: string;
+  skillName: string;
+  delta: number;
+}
+
+export interface WeeklyProgressResponse {
+  weekOf: string;
+  summary: string;
+  skillsImproved: string[];
+  attemptsCompleted: number;
+  transferTasksPassed: number;
+  masteryChanges: MasteryChangeItem[];
+}

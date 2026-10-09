@@ -1633,4 +1633,262 @@ describe('API Server Suite', () => {
       expect(response.body.evidence[0].score).toBe(1.0);
     });
   });
+
+  describe('/v1/flags Endpoint', () => {
+    it('rejects unauthenticated requests with 401', async () => {
+      const response = await request(app).post('/v1/flags').send({
+        attemptId: 'att-1',
+        type: 'incorrect-test',
+        description: 'Test is wrong',
+      });
+      expect(response.status).toBe(401);
+    });
+
+    it('returns 400 for invalid payload or unknown flag type', async () => {
+      const response = await request(app)
+        .post('/v1/flags')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          attemptId: 'att-1',
+          type: 'invalid-type-xyz',
+          description: '',
+        });
+      expect(response.status).toBe(400);
+      expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('returns 404 if attempt is not found', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(null);
+
+      const response = await request(app)
+        .post('/v1/flags')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          attemptId: 'att-missing',
+          type: 'unclear-instructions',
+          description: 'Instructions are vague',
+        });
+
+      expect(response.status).toBe(404);
+      expect(response.body.error.code).toBe('ATTEMPT_NOT_FOUND');
+    });
+
+    it('returns 403 if attempt belongs to another learner', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        id: 'att-1',
+        session_id: 'ses-1',
+        learner_id: 'learner-other-user',
+        variant_id: 'var-1',
+        status: 'working',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 0,
+        created_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/flags')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          attemptId: 'att-1',
+          type: 'unclear-instructions',
+          description: 'Step 2 unclear',
+        });
+
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('FORBIDDEN');
+    });
+
+    it('creates problem flag and returns 201 with flagId and open status', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        id: 'att-1',
+        session_id: 'ses-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'working',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 0,
+        created_at: new Date(),
+      });
+      vi.spyOn(database, 'createFlag').mockResolvedValueOnce({
+        id: 'flag-999',
+        attempt_id: 'att-1',
+        learner_id: 'learner_test-token',
+        type: 'incorrect-test',
+        description: 'Test assertion fails incorrectly',
+        status: 'open',
+        created_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/flags')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          attemptId: 'att-1',
+          type: 'incorrect-test',
+          description: 'Test assertion fails incorrectly',
+        });
+
+      expect(response.status).toBe(201);
+      expect(response.body.flagId).toBe('flag-999');
+      expect(response.body.status).toBe('open');
+    });
+  });
+
+  describe('/v1/evaluations/:id/disputes Endpoint', () => {
+    it('rejects unauthenticated requests with 401', async () => {
+      const response = await request(app).post('/v1/evaluations/eval-1/disputes').send({
+        reason: 'Network timeout',
+        evidenceDescription: 'Evaluation failed due to container timeout',
+      });
+      expect(response.status).toBe(401);
+    });
+
+    it('returns 400 for empty reason or evidence description', async () => {
+      const response = await request(app)
+        .post('/v1/evaluations/eval-1/disputes')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          reason: '',
+          evidenceDescription: ' ',
+        });
+      expect(response.status).toBe(400);
+      expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('returns 404 if evaluation does not exist', async () => {
+      vi.spyOn(database, 'getEvaluationDetails').mockResolvedValueOnce(null);
+
+      const response = await request(app)
+        .post('/v1/evaluations/eval-missing/disputes')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          reason: 'Timeout error',
+          evidenceDescription: 'Container killed',
+        });
+
+      expect(response.status).toBe(404);
+      expect(response.body.error.code).toBe('EVALUATION_NOT_FOUND');
+    });
+
+    it('returns 403 if evaluation belongs to a different learner', async () => {
+      vi.spyOn(database, 'getEvaluationDetails').mockResolvedValueOnce({
+        id: 'eval-1',
+        attempt_id: 'att-1',
+        learner_id: 'learner-different',
+        passed: false,
+        score: 0.0,
+      });
+
+      const response = await request(app)
+        .post('/v1/evaluations/eval-1/disputes')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          reason: 'Unfair grading',
+          evidenceDescription: 'My solution was correct',
+        });
+
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('FORBIDDEN');
+    });
+
+    it('returns 409 if dispute already exists for this evaluation', async () => {
+      vi.spyOn(database, 'getEvaluationDetails').mockResolvedValueOnce({
+        id: 'eval-1',
+        attempt_id: 'att-1',
+        learner_id: 'learner_test-token',
+        passed: false,
+        score: 0.0,
+      });
+      vi.spyOn(database, 'getDisputeByEvaluationId').mockResolvedValueOnce({
+        id: 'disp-existing',
+        evaluation_id: 'eval-1',
+        learner_id: 'learner_test-token',
+        reason: 'Already filed',
+        evidence_description: 'Previous dispute details',
+        status: 'open',
+        created_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/evaluations/eval-1/disputes')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          reason: 'Double dispute',
+          evidenceDescription: 'Trying again',
+        });
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('DISPUTE_ALREADY_EXISTS');
+    });
+
+    it('creates dispute and returns 201 with disputeId and open status', async () => {
+      vi.spyOn(database, 'getEvaluationDetails').mockResolvedValueOnce({
+        id: 'eval-1',
+        attempt_id: 'att-1',
+        learner_id: 'learner_test-token',
+        passed: false,
+        score: 0.5,
+      });
+      vi.spyOn(database, 'getDisputeByEvaluationId').mockResolvedValueOnce(null);
+      vi.spyOn(database, 'createDispute').mockResolvedValueOnce({
+        id: 'disp-new-1',
+        evaluation_id: 'eval-1',
+        learner_id: 'learner_test-token',
+        reason: 'Hidden test edge case was overly restrictive',
+        evidence_description: 'Passed 4/5 tests with standard transaction isolation',
+        status: 'open',
+        created_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/evaluations/eval-1/disputes')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          reason: 'Hidden test edge case was overly restrictive',
+          evidenceDescription: 'Passed 4/5 tests with standard transaction isolation',
+        });
+
+      expect(response.status).toBe(201);
+      expect(response.body.disputeId).toBe('disp-new-1');
+      expect(response.body.status).toBe('open');
+    });
+  });
+
+  describe('/v1/progress/weekly Endpoint', () => {
+    it('rejects unauthenticated requests with 401', async () => {
+      const response = await request(app).get('/v1/progress/weekly');
+      expect(response.status).toBe(401);
+    });
+
+    it('returns 200 with weekly progress report', async () => {
+      vi.spyOn(database, 'computeWeeklyProgressSnapshot').mockResolvedValueOnce({
+        weekOf: '2026-10-05',
+        summary: 'Completed 5 mission attempt(s) this week with 1 transfer verification(s) passed.',
+        skillsImproved: ['Database Concurrency & Locking'],
+        attemptsCompleted: 5,
+        transferTasksPassed: 1,
+        masteryChanges: [
+          {
+            skillId: '22222222-2222-2222-2222-222222220002',
+            skillName: 'Database Concurrency & Locking',
+            delta: 0.16,
+          },
+        ],
+      });
+
+      const response = await request(app)
+        .get('/v1/progress/weekly')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(200);
+      expect(response.body.weekOf).toBe('2026-10-05');
+      expect(response.body.attemptsCompleted).toBe(5);
+      expect(response.body.transferTasksPassed).toBe(1);
+      expect(response.body.skillsImproved).toContain('Database Concurrency & Locking');
+      expect(response.body.masteryChanges[0].delta).toBe(0.16);
+      expect(response.body.summary).toContain('Completed 5 mission attempt(s)');
+    });
+  });
 });

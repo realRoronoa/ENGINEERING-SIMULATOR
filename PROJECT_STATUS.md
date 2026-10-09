@@ -22,27 +22,27 @@
 **Phase:** Phase 1 — Monorepo Foundation
 
 **Status:**
-FOUNDATION, CORE ENGINES, WORKER, E2E PIPELINE, VIVA VERIFICATION, HINT LADDER, SOCRATIC AI MENTOR, & TRANSFER TASK ASSIGNMENT OPERATIONAL (Monorepo, shared contracts, Express API shell + DB connectivity, task selection route, patch submission and polling routes, E2E grading pipeline, React/Vite shell, PostgreSQL migrations & client, Shopverse reference system with hidden tests, Evaluator engine, Learner Model Bayesian engine with DB upsert, Selector engine, Grading Worker with DB persistence, CLI tool, Viva oral defense lifecycle, Hint Ladder progression, Socratic AI Mentor package with prohibition safeguards, Transfer task assignment & weighted evaluation pipeline, Vitest 151/151 passing across 17 test suites)
+FOUNDATION, CORE ENGINES, WORKER, E2E PIPELINE, VIVA VERIFICATION, HINT LADDER, SOCRATIC AI MENTOR, TRANSFER MISSIONS, CONTENT ENGINE, OPERATIONS (FLAGS, DISPUTES, WEEKLY REPORTS) OPERATIONAL (Monorepo, shared contracts, Express API shell + DB connectivity, task selection route, patch submission and polling routes, E2E grading pipeline, React/Vite shell, PostgreSQL migrations & client, Shopverse reference system with hidden tests, Evaluator engine, Learner Model Bayesian engine with DB upsert, Selector engine, Grading Worker with DB persistence, CLI tool, Viva oral defense lifecycle, Hint Ladder progression, Socratic AI Mentor package with prohibition safeguards, Transfer task assignment & weighted evaluation pipeline, @engineering-simulator/content package with 12 authored skills, templates, variants, rubrics, and validators, problem flags system, evaluation disputes, weekly progress reporting, Vitest 205/205 passing across 19 test suites)
 
 **Overall:**
-80%
+85%
 
-| Area                      | Owner    |   % | Note                                                                                                                 |
-| ------------------------- | -------- | --: | -------------------------------------------------------------------------------------------------------------------- |
-| Frontend                  | Lead Dev | 15% | `apps/web/` React/Vite shell with route tests, mission demo machine, demo user flow                                  |
-| Backend                   | Dev 2    | 99% | `apps/api/` Express API with health, ready, onboarding, diagnostic, profile, sessions, attempts, submissions, viva   |
-| Shared Contracts          | Shared   | 98% | `packages/contracts/` exported types & Zod schemas for onboarding, diagnostic, profiles, submissions, viva, mentor   |
-| Database                  | Dev 2    | 99% | `packages/database` 5 migrations, client pool, sessions, attempts, content, viva, hints, onboarding & skill profiles |
-| Evaluation                | Dev 2    | 98% | `packages/evaluator` grading engine & `apps/worker` async pipeline with transfer evidence & Bayesian Beta updates    |
-| Learning System           | Dev 2    | 99% | `packages/learner-model` Bayesian Beta mastery & confidence, `packages/selector` task selector engine                |
-| AI                        | Dev 2    | 90% | `packages/ai` `@engineering-simulator/ai` Socratic mentor, fact sheet grounding, AI audit logging                    |
-| CLI                       | Dev 2    | 98% | `apps/cli/` `engsim` binary with login, init, test, submit, status, result, workspace state & Express v5 integration |
-| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                                                  |
-| Content                   | Lead Dev | 10% | Shopverse sample tasks & hidden fault test                                                                           |
-| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                                                          |
+| Area                      | Owner    |   % | Note                                                                                                                                          |
+| ------------------------- | -------- | --: | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frontend                  | Lead Dev | 15% | `apps/web/` React/Vite shell with route tests, mission demo machine, demo user flow                                                           |
+| Backend                   | Dev 2    | 99% | `apps/api/` Express API with health, ready, onboarding, diagnostic, profile, sessions, attempts, submissions, viva, flags, disputes, progress |
+| Shared Contracts          | Shared   | 99% | `packages/contracts/` exported types & Zod schemas for onboarding, diagnostic, profiles, flags, disputes, reports                             |
+| Database                  | Dev 2    | 99% | `packages/database` 6 migrations, client pool, sessions, attempts, content, viva, hints, onboarding, flags, disputes, reports                 |
+| Evaluation                | Dev 2    | 98% | `packages/evaluator` grading engine & `apps/worker` async pipeline with transfer evidence & Bayesian Beta updates                             |
+| Learning System           | Dev 2    | 99% | `packages/learner-model` Bayesian Beta mastery & confidence, `packages/selector` task selector engine                                         |
+| AI                        | Dev 2    | 90% | `packages/ai` `@engineering-simulator/ai` Socratic mentor, fact sheet grounding, AI audit logging                                             |
+| CLI                       | Dev 2    | 98% | `apps/cli/` `engsim` binary with login, init, test, submit, status, result, workspace state & Express v5 integration                          |
+| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                                                                           |
+| Content                   | Lead Dev | 60% | `packages/content` 12 skills, task templates, variants, rubrics, misconceptions, fault patterns, and validators                               |
+| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                                                                                   |
 
 **Honest summary:**
-The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection, patch submission endpoints, grading worker pipeline, interactive web demo flow, viva oral defense verification, hint ladder progression, grounded Socratic AI mentor package, transfer task assignment with weighted Bayesian evidence updates, local developer CLI (`engsim`), learner onboarding (`POST /v1/onboarding`), diagnostic skill profiling (`POST /v1/diagnostic`), and learner profile & evidence endpoints (`GET /v1/profile/skills`, `GET /v1/profile/skills/:skillId/evidence`) are operational with 175 passing tests across 17 test suites. The entire onboarding-to-practice loop works end-to-end with Bayesian skill state initialization and confidence estimation. Next step is Phase 17: Content Catalog Seeding & Multi-Skill Variant Expansion per `CONTENT_AUTHORING.md`.
+The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection, patch submission endpoints, grading worker pipeline, interactive web demo flow, viva oral defense verification, hint ladder progression, grounded Socratic AI mentor package, transfer task assignment with weighted Bayesian evidence updates, local developer CLI (`engsim`), learner onboarding (`POST /v1/onboarding`), diagnostic skill profiling (`POST /v1/diagnostic`), learner profile & evidence endpoints (`GET /v1/profile/skills`, `GET /v1/profile/skills/:skillId/evidence`), authored content catalog seed migration (`20261009_000006_seed_catalog.sql`), `@engineering-simulator/content` engine with strict variant validation, learner problem flags (`POST /v1/flags`), evaluation disputes (`POST /v1/evaluations/:id/disputes`), and weekly progress reporting (`GET /v1/progress/weekly`) are operational with 205 passing tests across 19 test suites. The entire learning lifecycle is covered end-to-end. Next step is Phase 19: Production Docker Compose, Sandbox Environment & Full Stack Verification.
 
 ---
 
@@ -261,15 +261,14 @@ This is **not** a backlog — the backlog lives in GitHub issues.
 
 ## 10. TEST STATUS
 
-| Suite               | Owner  | Count | Passing | Coverage | Note                                                              |
-| ------------------- | ------ | ----: | ------: | -------: | ----------------------------------------------------------------- |
-| Unit tests          | Shared |    36 |      36 |      88% | contracts (2), selector (16), learner-model (8), cli (5), db (5)  |
-| Integration tests   | Dev 2  |    15 |      15 |      92% | apps/api routes (15 - health, sessions, task selection, attempts) |
-| Evaluator & Worker  | Dev 2  |    13 |      13 |      95% | evaluator (5), worker (5), shopverse hidden faults (3)            |
-| Reference API tests | Dev 2  |     5 |       5 |      90% | shopverse/tests/api.test.ts (5)                                   |
-| Frontend shell      | Dev 1  |     1 |       1 |      50% | apps/web App.test.tsx (1)                                         |
-| Database migration  | Dev 2  |     2 |       2 |     100% | database migrations verification (2)                              |
-| Total (Vitest)      | Shared |    72 |      72 |      91% | All 11 test files passing green                                   |
+| Suite               | Owner  | Count | Passing | Coverage | Note                                                                                                                           |
+| ------------------- | ------ | ----: | ------: | -------: | ------------------------------------------------------------------------------------------------------------------------------ |
+| Unit tests          | Shared |    78 |      78 |      94% | contracts (2), selector (16), learner-model (9), content (10), db (29), ai (9), cli (3)                                        |
+| Integration tests   | Dev 2  |    94 |      94 |      95% | apps/api routes (82 - sessions, attempts, submissions, viva, onboarding, diagnostic, flags, disputes, progress), apps/cli (12) |
+| Evaluator & Worker  | Dev 2  |    15 |      15 |      96% | evaluator (5), worker (10)                                                                                                     |
+| Reference API tests | Dev 2  |     8 |       8 |      92% | shopverse/tests/api.test.ts (5), shopverse hidden orderAtomicity (3)                                                           |
+| Frontend shell      | Dev 1  |    10 |      10 |      85% | apps/web App.test.tsx (2), missionDemoMachine (3), demo tests (5)                                                              |
+| Total (Vitest)      | Shared |   205 |     205 |      95% | All 19 test files passing green (0 failures)                                                                                   |
 
 Target at V1: 80% line coverage on `packages/evaluator`, `packages/selector`,
 `packages/learner-model`; 100% of API endpoints covered by an integration test.

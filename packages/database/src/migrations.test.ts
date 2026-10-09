@@ -9,14 +9,14 @@ const __dirname = path.dirname(__filename);
 const migrationsDir = path.resolve(__dirname, '../migrations');
 
 describe('Database Migrations & Client Foundation', () => {
-  it('should have all 5 declared migration files present on disk', () => {
+  it('should have all 6 declared migration files present on disk', () => {
     for (const file of MIGRATION_FILES) {
       const fullPath = path.join(migrationsDir, file);
       expect(fs.existsSync(fullPath)).toBe(true);
 
       const content = fs.readFileSync(fullPath, 'utf-8');
       expect(content.length).toBeGreaterThan(100);
-      expect(content).toContain('CREATE TABLE IF NOT EXISTS');
+      expect(content).toMatch(/(CREATE TABLE IF NOT EXISTS|INSERT INTO)/);
     }
   });
 
@@ -66,6 +66,20 @@ describe('Database Migrations & Client Foundation', () => {
     expect(content).toContain('disputes');
     expect(content).toContain('ai_calls');
     expect(content).toContain('weekly_reports');
+  });
+
+  it('migration 06 should seed reference systems, 12 skills, templates, variants, and rubrics', () => {
+    const file = path.join(migrationsDir, '20261009_000006_seed_catalog.sql');
+    const content = fs.readFileSync(file, 'utf-8');
+    expect(content).toContain('shopverse');
+    expect(content).toContain('db-query-design');
+    expect(content).toContain('db-concurrency');
+    expect(content).toContain('api-error-handling');
+    expect(content).toContain('async-queue-processing');
+    expect(content).toContain('n-plus-one-detection');
+    expect(content).toContain('order-concurrency-race');
+    expect(content).toContain('Shopverse: Products endpoint is slow');
+    expect(content).toContain('joins-always-slower');
   });
 
   it('client pool manager should initialize and close gracefully', async () => {

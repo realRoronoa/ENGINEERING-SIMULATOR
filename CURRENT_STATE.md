@@ -21,40 +21,43 @@ Phase 1 — Technical Monorepo Foundation & Core Scaffolding.
 
 ### Existing database and migrations
 
-5 migration scripts authored in `packages/database/migrations/`:
+6 migration scripts authored in `packages/database/migrations/`:
 
 - `20261009_000001_authored_knowledge.sql`
 - `20261009_000002_generated_content.sql`
 - `20261009_000003_learner_state.sql`
 - `20261009_000004_activity.sql`
 - `20261009_000005_operations.sql`
+- `20261009_000006_seed_catalog.sql`
 
 Shopverse standalone reference schema and seeds in `reference-systems/shopverse/src/db/`.
 
 ### Existing tests and their last verified results
 
 - `packages/contracts/src/index.test.ts` (2 tests passing)
-- `packages/database/migrations.test.ts` (7 tests passing)
+- `packages/database/migrations.test.ts` (8 tests passing - all 6 migrations verified)
 - `packages/database/src/learner.test.ts` (5 tests passing - skill state queries, Bayesian upserts, evidence logging)
+- `packages/database/src/operations.test.ts` (6 tests passing - problem flags, evaluation disputes, weekly report snapshots)
 - `packages/database/src/viva.test.ts` (5 tests passing - viva session creation, answer logging, and completion)
 - `packages/database/src/hints.test.ts` (5 tests passing - hint event logging, ladder fetching, AI call audit logging)
+- `packages/content/src/content.test.ts` (10 tests passing - skills loader, graph, templates, variants filtering, rubrics, misconceptions, and variant validation rules)
 - `packages/evaluator/src/evaluator.test.ts` (5 tests passing)
 - `packages/learner-model/src/mastery.test.ts` (9 tests passing - Bayesian mastery, bounds, evidence updates, misconception frequency, confidence estimation)
 - `packages/selector/src/selector.test.ts` (16 tests passing - prerequisite filtering, priority ranker, ~70% difficulty targeting, recency exclusion, misconception remediation, fallback)
 - `packages/ai/src/ai.test.ts` (9 tests passing - fact sheet grounding, Socratic mentor inquiries, prohibition safeguards against hidden tests and solution leaks, simulated fallback)
 - `reference-systems/shopverse/tests/api.test.ts` (5 tests passing)
 - `reference-systems/shopverse/tests/hidden/orderAtomicity.test.ts` (3 tests passing - fault injection & fix validation)
-- `apps/api/src/app.test.ts` (69 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling, E2E pipeline, viva start/answers/completion, attempt abandonment, hint ladder progression with exhaustion bounds, AI mentor grounding with prohibition guards, transfer task assignment & evaluation, onboarding 201/400/409, diagnostic 200/400/404/403/409 with Bayesian skill profiling, and profile skills & evidence inspection)
+- `apps/api/src/app.test.ts` (82 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling, E2E pipeline, viva start/answers/completion, attempt abandonment, hint ladder progression with exhaustion bounds, AI mentor grounding with prohibition guards, transfer task assignment & evaluation, onboarding 201/400/409, diagnostic 200/400/404/403/409 with Bayesian skill profiling, profile skills & evidence inspection, problem flags POST /v1/flags 201/400/404/403, disputes POST /v1/evaluations/:id/disputes 201/400/404/403/409, and weekly progress GET /v1/progress/weekly)
 - `apps/cli/src/cli.test.ts` (15 tests passing - config/device token storage, workspace tracking with `.engsim.json`, init workspace scaffolding, test command local validation, submit command with patch and diff resolution, status inspection, result evaluation polling/formatting, full Commander registry, ApiClient HTTP authorization, and live Express v5 API server integration)
 - `apps/worker/src/worker.test.ts` (10 tests passing - patch validation, test evaluation, evidence events, DB persistence & Bayesian skill update, transfer task grading with completion transition, queue batch draining, lifecycle)
 - `apps/web/src/App.test.tsx` (2 tests passing - header and headline renders)
 - `apps/web/src/features/mission-demo/missionDemoMachine.test.ts` (3 tests passing - state machine transitions)
 - `apps/web/src/features/demo/demo.test.tsx` (5 tests passing - demo mode, preloaded dashboard, mission consistency, safe recovery)
-- Total: 175 unit/integration tests passing cleanly in Vitest across 17 test suites.
+- Total: 205 unit/integration tests passing cleanly in Vitest across 19 test suites.
 
 ### Existing deployment state
 
-Local development mode (`npm run dev:api`, `npm run dev:web`). Production build outputs verified (`dist/` for web, api, cli, contracts, and all packages).
+Local development mode (`npm run dev:api`, `npm run dev:web`). Production build outputs verified (`dist/` for web, api, cli, contracts, content, and all packages).
 
 ### Current blockers
 
@@ -62,4 +65,4 @@ None.
 
 ### Immediate next milestone
 
-Phase 17 — Content Catalog Seeding & Multi-Skill Variant Expansion (authoring active skills, templates, variants in DB migrations / seeds per `CONTENT_AUTHORING.md`).
+Phase 19 — Production Docker Compose, Sandbox Environment & Full Stack Verification.

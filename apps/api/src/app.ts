@@ -10,6 +10,9 @@ import { submissionRouter } from './routes/submissions.js';
 import { onboardingRouter } from './routes/onboarding.js';
 import { diagnosticRouter } from './routes/diagnostic.js';
 import { profileRouter } from './routes/profile.js';
+import { flagRouter } from './routes/flags.js';
+import { disputeRouter } from './routes/disputes.js';
+import { progressRouter } from './routes/progress.js';
 
 export const healthSchema = z.object({
   status: z.enum(['ok', 'error']),
@@ -59,6 +62,9 @@ export function buildApp(): Express {
   app.use('/v1/sessions', authMiddleware, sessionRouter);
   app.use('/v1/attempts', authMiddleware, attemptRouter);
   app.use('/v1/submissions', authMiddleware, submissionRouter);
+  app.use('/v1/flags', authMiddleware, flagRouter);
+  app.use('/v1/evaluations', authMiddleware, disputeRouter);
+  app.use('/v1/progress', authMiddleware, progressRouter);
 
   // Global Error Handler
   app.use(errorHandler);
