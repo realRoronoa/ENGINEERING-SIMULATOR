@@ -85,6 +85,25 @@ AI grading of reasoning **must**:
 
 ---
 
+## Provider Selection & Model Configuration Matrix
+
+### Primary Provider: Anthropic & OpenAI Tiered Architecture
+
+| Purpose                              | Model                                                  | Temperature           | Max Output Tokens | Timeout Budget | Fallback Strategy                         |
+| :----------------------------------- | :----------------------------------------------------- | :-------------------- | :---------------- | :------------- | :---------------------------------------- |
+| **Mentor (Socratic Guidance)**       | `claude-3-5-sonnet-20241022` / `gpt-4o-2024-11-20`     | `0.2`                 | 500 tokens        | 8,000 ms       | Show authored hint ladder fallback        |
+| **Viva (Reasoning Probes)**          | `claude-3-5-sonnet-20241022` / `gpt-4o-2024-11-20`     | `0.3`                 | 400 tokens        | 6,000 ms       | Skip to next pre-authored viva question   |
+| **Rubric Grading (Reasoning Score)** | `gpt-4o-mini-2024-07-18` / `claude-3-5-haiku-20241022` | `0.0` (deterministic) | 600 tokens        | 10,000 ms      | Mark as `ungraded`, flag for human review |
+| **Weekly Reports**                   | `gpt-4o-mini-2024-07-18`                               | `0.3`                 | 1,000 tokens      | 15,000 ms      | Data-only summary without narrative       |
+
+**Invariants:**
+
+1. Zero temperature (`0.0`) enforced on all rubric evaluation calls for deterministic grading compliance.
+2. Hard timeout budgets enforced via AbortController to guarantee API responsiveness.
+3. API credentials supplied strictly via `OPENAI_API_KEY` and `ANTHROPIC_API_KEY` environment variables.
+
+---
+
 ## Model Tracking
 
 Every AI call must log to the `ai_calls` table:
