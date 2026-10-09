@@ -22,27 +22,27 @@
 **Phase:** Phase 1 — Monorepo Foundation
 
 **Status:**
-FOUNDATION, CORE ENGINES & WORKER OPERATIONAL (Monorepo, shared contracts, Express API shell + DB connectivity, task selection route, React/Vite shell, PostgreSQL migrations & client, Shopverse reference system with hidden tests, Evaluator engine, Learner Model engine, Selector engine, Grading Worker, CLI tool, Vitest 72/72 passing)
+FOUNDATION, CORE ENGINES, WORKER & SUBMISSION PIPELINE OPERATIONAL (Monorepo, shared contracts, Express API shell + DB connectivity, task selection route, patch submission and polling routes, React/Vite shell, PostgreSQL migrations & client, Shopverse reference system with hidden tests, Evaluator engine, Learner Model engine, Selector engine, Grading Worker, CLI tool, Vitest 79/79 passing)
 
 **Overall:**
-55%
+60%
 
-| Area                      | Owner    |   % | Note                                                                                  |
-| ------------------------- | -------- | --: | ------------------------------------------------------------------------------------- |
-| Frontend                  | Lead Dev |  5% | `apps/web/` minimal React/Vite shell with route tests                                 |
-| Backend                   | Dev 2    | 75% | `apps/api/` Express API with health, ready probe, sessions (`:id/next`), and attempts |
-| Shared Contracts          | Shared   | 60% | `packages/contracts/` exported types & Zod schemas                                    |
-| Database                  | Dev 2    | 90% | `packages/database` 5 migration scripts, client pool, sessions, attempts, content     |
-| Evaluation                | Dev 2    | 90% | `packages/evaluator` deterministic grading engine & `apps/worker` async pipeline      |
-| Learning System           | Dev 2    | 90% | `packages/learner-model` Bayesian mastery & `packages/selector` task selector engine  |
-| AI                        | Dev 2    | 60% | `AI_POLICY.md` approved provider & temperature matrix                                 |
-| CLI                       | Dev 2    | 80% | `apps/cli/` `engsim` binary with login, init, submit, status                          |
-| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                   |
-| Content                   | Lead Dev | 10% | Shopverse sample tasks & hidden fault test                                            |
-| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                           |
+| Area                      | Owner    |   % | Note                                                                                             |
+| ------------------------- | -------- | --: | ------------------------------------------------------------------------------------------------ |
+| Frontend                  | Lead Dev |  5% | `apps/web/` minimal React/Vite shell with route tests                                            |
+| Backend                   | Dev 2    | 85% | `apps/api/` Express API with health, ready probe, sessions, attempts, submissions (polling/post) |
+| Shared Contracts          | Shared   | 65% | `packages/contracts/` exported types & Zod schemas                                               |
+| Database                  | Dev 2    | 95% | `packages/database` 5 migration scripts, client pool, sessions, attempts, content, submissions   |
+| Evaluation                | Dev 2    | 90% | `packages/evaluator` deterministic grading engine & `apps/worker` async pipeline                 |
+| Learning System           | Dev 2    | 90% | `packages/learner-model` Bayesian mastery & `packages/selector` task selector engine             |
+| AI                        | Dev 2    | 60% | `AI_POLICY.md` approved provider & temperature matrix                                            |
+| CLI                       | Dev 2    | 80% | `apps/cli/` `engsim` binary with login, init, submit, status                                     |
+| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                              |
+| Content                   | Lead Dev | 10% | Shopverse sample tasks & hidden fault test                                                       |
+| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                                      |
 
 **Honest summary:**
-The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection endpoints, and grading worker are operational with 72 passing tests. Database schema & query helpers, Shopverse reference system with fault injection, evaluator engine with unified diff validation, Express API with DB readiness probe, learner model Bayesian tracker, selector engine with prerequisite filtering, and CLI tool are implemented and verified. The end-to-end patch submission endpoint remains to be wired into the worker queue.
+The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection and patch submission endpoints, and grading worker are operational with 79 passing tests. Database schema & query helpers, Shopverse reference system with fault injection, evaluator engine with unified diff validation, Express API with DB readiness probe, learner model Bayesian tracker, selector engine with prerequisite filtering, CLI tool, and submission queue/polling API routes are implemented and verified. Next step is wiring submission HTTP requests directly to the background grading worker with end-to-end evidence emission.
 
 ---
 

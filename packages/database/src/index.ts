@@ -3,6 +3,7 @@ export * from './client.js';
 export * from './sessions.js';
 export * from './attempts.js';
 export * from './content.js';
+export * from './submissions.js';
 
 export const MIGRATION_FILES = [
   '20261009_000001_authored_knowledge.sql',

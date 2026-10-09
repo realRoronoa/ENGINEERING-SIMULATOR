@@ -13,6 +13,7 @@
   "dependencies": {
     "@engineering-simulator/contracts": "*",
     "@engineering-simulator/database": "*",
+    "@engineering-simulator/evaluator": "*",
     "@engineering-simulator/selector": "*",
     "express": "^5.2.1",
     "zod": "^3.22.4"

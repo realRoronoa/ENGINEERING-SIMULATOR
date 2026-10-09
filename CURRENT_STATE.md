@@ -18,11 +18,11 @@ Phase 1 — Technical Monorepo Foundation & Core Scaffolding.
 
 - **Runtime & Language:** Node.js LTS, ESM modules, TypeScript strict (`tsconfig.base.json`).
 - **Monorepo Workspaces:** `apps/*`, `packages/*`.
-- **Backend Shell (`apps/api`):** Express + Zod with `/health`, `/health/ready` (DB ping), `POST /v1/sessions`, `POST /v1/sessions/:id/next` (adaptive task selection via `@engineering-simulator/selector`), `GET /v1/attempts/:id`, Bearer JWT auth middleware, and contract-compliant error handling.
+- **Backend Shell (`apps/api`):** Express + Zod with `/health`, `/health/ready` (DB ping), `POST /v1/sessions`, `POST /v1/sessions/:id/next` (adaptive task selection via `@engineering-simulator/selector`), `GET /v1/attempts/:id`, `POST /v1/attempts/:id/submissions` (asynchronous patch submission), `GET /v1/submissions/:id` (polling status & evaluation), Bearer JWT auth middleware, and contract-compliant error handling.
 - **Worker Service (`apps/worker`):** Asynchronous grading worker pipeline processing execution jobs, patch security validation, test evaluation, and learner model evidence emission.
 - **Frontend Shell (`apps/web`):** React + Vite + React Router shell with production build.
 - **Contracts Package (`packages/contracts`):** Exported TypeScript interfaces (`Submission`, `EvaluationResult`, `EvaluationStatus`, `HealthResponse`, `SelectorDecision`, `SkillNode`, `TaskVariant`).
-- **Database Package (`packages/database`):** PostgreSQL client connection pool, TypeScript models, 5 complete migration sets, and typed CRUD query helpers (`sessions`, `attempts`, `content`).
+- **Database Package (`packages/database`):** PostgreSQL client connection pool, TypeScript models, 5 complete migration sets, and typed CRUD query helpers (`sessions`, `attempts`, `content`, `submissions`).
 - **Evaluator Package (`packages/evaluator`):** Deterministic grading engine with unified diff validation, path security constraints, and test execution result summarization.
 - **Learner Model Package (`packages/learner-model`):** Evidence-weighted Bayesian updates, beta-distribution confidence bounds, streak tracking, and misconception hit frequency analysis.
 - **Selector Engine Package (`packages/selector`):** Rule-based task selection (ADR-005) with prerequisite DAG validation, priority ranker, ~70% predicted success rate difficulty targeting, recency filtering, and graceful fallback.
@@ -30,7 +30,7 @@ Phase 1 — Technical Monorepo Foundation & Core Scaffolding.
 
 ### Existing executable applications
 
-- `apps/api` (Express HTTP server with session, attempt, and task selection routes)
+- `apps/api` (Express HTTP server with session, attempt, task selection, and submission routes)
 - `apps/worker` (Grading worker execution pipeline and queue processor)
 - `apps/web` (React/Vite frontend shell)
 - `apps/cli` (Learner CLI tool `engsim` with login, init, submit, and status commands)
@@ -57,11 +57,11 @@ Shopverse standalone reference schema and seeds in `reference-systems/shopverse/
 - `packages/selector/src/selector.test.ts` (16 tests passing - prerequisite filtering, priority ranker, ~70% difficulty targeting, recency exclusion, misconception remediation, fallback)
 - `reference-systems/shopverse/tests/api.test.ts` (5 tests passing)
 - `reference-systems/shopverse/tests/hidden/orderAtomicity.test.ts` (3 tests passing - fault injection & fix validation)
-- `apps/api/src/app.test.ts` (15 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval)
+- `apps/api/src/app.test.ts` (22 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling)
 - `apps/cli/src/cli.test.ts` (5 tests passing - config, init workspace, patch submit, commander registry)
 - `apps/worker/src/worker.test.ts` (5 tests passing - patch validation, test evaluation, evidence events, worker lifecycle)
 - `apps/web/src/App.test.tsx` (1 test passing - React component shell render)
-- Total: 72 unit/integration tests passing cleanly in Vitest across 11 test suites.
+- Total: 79 unit/integration tests passing cleanly in Vitest across 11 test suites.
 
 ### Existing deployment state
 

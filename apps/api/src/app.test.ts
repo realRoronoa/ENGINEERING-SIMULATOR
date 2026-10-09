@@ -272,5 +272,145 @@ describe('API Server Suite', () => {
       expect(response.body.attempt.hintsUsed).toBe(1);
       expect(response.body.attempt.submissionsCount).toBe(2);
     });
+
+    it('POST /v1/attempts/:id/submissions rejects unauthenticated request with 401', async () => {
+      const response = await request(app)
+        .post('/v1/attempts/att-123/submissions')
+        .send({ patch: 'valid patch' });
+      expect(response.status).toBe(401);
+      expect(response.body.error.code).toBe('UNAUTHORIZED');
+    });
+
+    it('POST /v1/attempts/:id/submissions validates patch syntax with 400', async () => {
+      const response = await request(app)
+        .post('/v1/attempts/att-123/submissions')
+        .set('Authorization', 'Bearer test-token')
+        .send({ patch: 'not a unified diff' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error.code).toBe('INVALID_PATCH');
+    });
+
+    it('POST /v1/attempts/:id/submissions rejects attempt in completed state with 409', async () => {
+      const validPatch = '--- a/src/index.ts\n+++ b/src/index.ts\n@@ -1,1 +1,1 @@\n-old\n+new\n';
+
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        id: 'att-123',
+        session_id: 'sess-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'completed',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 1,
+        created_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-123/submissions')
+        .set('Authorization', 'Bearer test-token')
+        .send({ patch: validPatch });
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('ATTEMPT_NOT_IN_WORKING_STATE');
+    });
+
+    it('POST /v1/attempts/:id/submissions accepts valid patch and returns 202 queued', async () => {
+      const validPatch = '--- a/src/index.ts\n+++ b/src/index.ts\n@@ -1,1 +1,1 @@\n-old\n+new\n';
+
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        id: 'att-123',
+        session_id: 'sess-1',
+        learner_id: 'learner_test-token',
+        variant_id: 'var-1',
+        status: 'working',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 0,
+        created_at: new Date(),
+      });
+
+      vi.spyOn(database, 'createSubmission').mockResolvedValueOnce({
+        id: 'sub-new-456',
+        attempt_id: 'att-123',
+        learner_id: 'learner_test-token',
+        patch: validPatch,
+        structured_answers: {},
+        client_checksum: 'abc',
+        status: 'queued',
+        submitted_at: new Date(),
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-123/submissions')
+        .set('Authorization', 'Bearer test-token')
+        .send({ patch: validPatch, clientChecksum: 'abc' });
+
+      expect(response.status).toBe(202);
+      expect(response.body.submissionId).toBe('sub-new-456');
+      expect(response.body.status).toBe('queued');
+      expect(response.body.pollingUrl).toBe('/v1/submissions/sub-new-456');
+    });
+  });
+
+  describe('/v1/submissions Endpoint', () => {
+    it('GET /v1/submissions/:id rejects unauthenticated request with 401', async () => {
+      const response = await request(app).get('/v1/submissions/sub-123');
+      expect(response.status).toBe(401);
+      expect(response.body.error.code).toBe('UNAUTHORIZED');
+    });
+
+    it('GET /v1/submissions/:id returns 404 when submission not found', async () => {
+      vi.spyOn(database, 'getSubmissionWithEvaluation').mockResolvedValueOnce(null);
+
+      const response = await request(app)
+        .get('/v1/submissions/sub-nonexistent')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(404);
+      expect(response.body.error.code).toBe('SUBMISSION_NOT_FOUND');
+    });
+
+    it('GET /v1/submissions/:id returns 200 and evaluation result for owner', async () => {
+      vi.spyOn(database, 'getSubmissionWithEvaluation').mockResolvedValueOnce({
+        submission: {
+          id: 'sub-123',
+          attempt_id: 'att-1',
+          learner_id: 'learner_test-token',
+          patch: 'diff',
+          structured_answers: {},
+          client_checksum: 'checksum',
+          status: 'complete',
+          submitted_at: new Date('2026-10-09T12:00:00Z'),
+        },
+        evaluation: {
+          id: 'eval-1',
+          submission_id: 'sub-123',
+          attempt_id: 'att-1',
+          patch_valid: true,
+          public_tests_passed: 5,
+          public_tests_total: 5,
+          hidden_tests_passed: 3,
+          hidden_tests_total: 3,
+          benchmarks_passed: null,
+          structured_answers_result: {},
+          rubric_results: null,
+          passed: true,
+          score: 1.0,
+          created_at: new Date(),
+        },
+      });
+
+      const response = await request(app)
+        .get('/v1/submissions/sub-123')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(200);
+      expect(response.body.submissionId).toBe('sub-123');
+      expect(response.body.status).toBe('complete');
+      expect(response.body.evaluation.passed).toBe(true);
+      expect(response.body.evaluation.publicTestsPassed).toBe(5);
+      expect(response.body.evaluation.hiddenTestsPassed).toBe(3);
+    });
   });
 });
