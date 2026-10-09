@@ -19,14 +19,7 @@ Phase 1 — Technical Monorepo Foundation & Core Scaffolding.
 - **Runtime & Language:** Node.js LTS, ESM modules, TypeScript strict (`tsconfig.base.json`).
 - **Monorepo Workspaces:** `apps/*`, `packages/*`.
 - **Backend Shell (`apps/api`):** Fastify + Zod with `/health` endpoint returning typed `HealthResponse`.
-- **Frontend Shell (`apps/web`):** React + Vite + React Router shell with production build.
-- **Contracts Package (`packages/contracts`):** Exported TypeScript interfaces (`Submission`, `EvaluationResult`, `EvaluationStatus`, `HealthResponse`).
-- **Quality Tooling:** Vitest, ESLint (TypeScript flat config), Prettier (`.prettierrc.json`), `.editorconfig`, `.env.example`.
-
-### Existing executable applications
-
-- `apps/api` (Fastify HTTP server shell)
-- `apps/web` (React/Vite frontend shell)
+- **Frontend Shell (`apps/web`):** React + Vite + React Router shell with production build. Currently implementing a complete **Demo Mode** experience populated with a deterministic fixture ("Alex Morgan"), navigable without a backend.
 
 ### Existing database and migrations
 

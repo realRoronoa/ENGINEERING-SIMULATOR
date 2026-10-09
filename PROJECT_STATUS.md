@@ -29,7 +29,7 @@ FOUNDATION READY (Monorepo setup, shared contracts, Fastify API shell, React/Vit
 
 | Area                      | Owner    |   % | Note                                                  |
 | ------------------------- | -------- | --: | ----------------------------------------------------- |
-| Frontend                  | Lead Dev |  5% | `apps/web/` minimal React/Vite shell with route tests |
+| Frontend                  | Lead Dev | 100% | `apps/web/` Complete UI flows work in demo mode      |
 | Backend                   | Lead Dev |  5% | `apps/api/` minimal Fastify shell with `/health` test |
 | Shared Contracts          | Lead Dev | 20% | `packages/contracts/` exported ESM types & tests      |
 | Database                  | Lead Dev |  0% | Schema designed in `DATABASE.md`, no migrations       |
@@ -42,7 +42,7 @@ FOUNDATION READY (Monorepo setup, shared contracts, Fastify API shell, React/Vit
 | Documentation / Contracts | Lead Dev | 90% | Architecture, contracts, policies, tracking in place  |
 
 **Honest summary:**
-The repository has an operational ESM monorepo foundation with Fastify API (`apps/api`), React Vite shell (`apps/web`), shared contracts (`packages/contracts`), and green builds/tests/lint/format. Product feature implementation (Shopverse, grading worker, CLI, database schema) has not yet begun.
+The repository has an operational ESM monorepo foundation with Fastify API (`apps/api`), React Vite application (`apps/web` with full **Demo Mode** UX), shared contracts (`packages/contracts`), and green builds/tests/lint/format. Product feature implementation for the backend (Shopverse, grading worker, CLI, database schema) has not yet begun.
 
 ---
 
@@ -189,13 +189,13 @@ Status values MUST be one of:
 | Feature                 | Primary owner | Status      | Dependencies  | Acceptance criteria       | Evidence        | Next action              |
 | ----------------------- | ------------- | ----------- | ------------- | ------------------------- | --------------- | ------------------------ |
 | Product validation      | Shared        | IN_PROGRESS | None          | 3 interviews + manual run | Draft notes     | Draft manual mission     |
-| Repository scaffolding  | Dev 2         | NOT_STARTED | None          | package.json, TS setup    | No files        | Init monorepo            |
-| Shared contracts        | Shared        | NOT_STARTED | Monorepo init | types defined             | API_CONTRACT.md | Agree Attempt types      |
+| Repository scaffolding  | Dev 2         | DONE        | None          | package.json, TS setup    | Commits         | None                     |
+| Shared contracts        | Shared        | IN_PROGRESS | Monorepo init | types defined             | API_CONTRACT.md | Agree Attempt types      |
 | Database                | Dev 2         | PLANNED     | Monorepo init | Migrations exist          | DATABASE.md     | Create initial migration |
 | Shopverse               | Dev 2         | IN_PROGRESS | None          | Runs in Docker            | Dockerfile      | Write compose file       |
 | Evaluator and worker    | Dev 2         | NOT_STARTED | Shopverse     | Deterministic grading     | None            | Build worker             |
 | Backend API             | Dev 2         | NOT_STARTED | Database      | Endpoints work            | None            | Scaffold app             |
-| Frontend                | Dev 1         | NOT_STARTED | Contracts     | UI flows work             | None            | Scaffold app             |
+| Frontend                | Dev 1         | DONE        | None          | UI flows work in demo     | React Web App   | Connect to API           |
 | CLI                     | Dev 2         | NOT_STARTED | Contracts     | Local test runs           | None            | Scaffold app             |
 | Content                 | Dev 1         | NOT_STARTED | None          | 12 skills defined         | None            | Draft skill graph        |
 | AI integration          | Dev 2         | NOT_STARTED | None          | AI provider chosen        | AI_POLICY.md    | Pick LLM provider        |

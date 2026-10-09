@@ -98,6 +98,8 @@ npm run dev:api
 npm run dev:web
 ```
 
+The frontend currently operates in **Demo Mode**. It uses `localStorage` for state persistence and does not require a backend connection to explore the full learner journey (signup, onboarding, dashboard, missions, evaluations, viva, and skill profile).
+
 ---
 
 ## Team
