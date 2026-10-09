@@ -1,0 +1,19 @@
+:root {
+  --bg: #0a0a0a;
+  --s1: #111111;
+  --s2: #1a1a1a;
+  --s3: #222222;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f7f8f8;
+  --muted: #a3a3a3;
+  --human: #f7f8f8;
+  --ai: #6ea8ff;
+  --inv: #f5a524;
+  --fail: #ff5d5d;
+  --ok: #3ddc84;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --sans: Inter, system-ui, sans-serif;
+  color-scheme: dark;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0);
+}

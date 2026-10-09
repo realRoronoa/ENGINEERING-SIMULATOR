@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial TypeScript ESM monorepo foundation with npm workspaces (`apps/*`, `packages/*`)
 - Minimal Fastify API shell (`apps/api`) with Zod-validated `/health` endpoint and Vitest suite
-- Minimal React + Vite + React Router frontend shell (`apps/web`) with production build setup and Vitest component render test
+- **Frontend Complete Learner Journey (Demo Mode)**: End-to-end user experience encompassing Auth (Login, Signup), Onboarding, Dashboard, Missions, Evaluations, Viva, Transfer tasks, and Skill profiles.
 - Shared contracts package (`packages/contracts`) exporting TypeScript interfaces (`Submission`, `EvaluationResult`, `EvaluationStatus`, `HealthResponse`)
 - Unified root tooling: Vitest, ESLint (TypeScript flat config), Prettier (`.prettierrc.json`), `.editorconfig`, `.env.example`
 - Root workspace scripts: `npm run build`, `npm test`, `npm run typecheck`, `npm run lint`, `npm run format:check`

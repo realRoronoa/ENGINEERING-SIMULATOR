@@ -18,23 +18,6 @@ Phase 1 — Technical Monorepo Foundation & Core Scaffolding.
 
 - **Runtime & Language:** Node.js LTS, ESM modules, TypeScript strict (`tsconfig.base.json`).
 - **Monorepo Workspaces:** `apps/*`, `packages/*`.
-- **Backend Shell (`apps/api`):** Express + Zod with `/health`, `/health/ready` (DB ping), `POST /v1/sessions`, `POST /v1/sessions/:id/next` (adaptive task selection via `@engineering-simulator/selector`), `GET /v1/attempts/:id`, `POST /v1/attempts/:id/submissions` (asynchronous patch submission), `GET /v1/submissions/:id` (polling status & evaluation), Bearer JWT auth middleware, and contract-compliant error handling.
-- **Worker Service (`apps/worker`):** Asynchronous grading worker pipeline processing execution jobs, patch security validation, test evaluation, and learner model evidence emission.
-- **Frontend Shell (`apps/web`):** React + Vite + React Router shell with production build.
-- **Contracts Package (`packages/contracts`):** Exported TypeScript interfaces (`Submission`, `EvaluationResult`, `EvaluationStatus`, `HealthResponse`, `SelectorDecision`, `SkillNode`, `TaskVariant`).
-- **Database Package (`packages/database`):** PostgreSQL client connection pool, TypeScript models, 5 complete migration sets, and typed CRUD query helpers (`sessions`, `attempts`, `content`, `submissions`).
-- **Evaluator Package (`packages/evaluator`):** Deterministic grading engine with unified diff validation, path security constraints, and test execution result summarization.
-- **Learner Model Package (`packages/learner-model`):** Evidence-weighted Bayesian updates, beta-distribution confidence bounds, streak tracking, and misconception hit frequency analysis.
-- **Selector Engine Package (`packages/selector`):** Rule-based task selection (ADR-005) with prerequisite DAG validation, priority ranker, ~70% predicted success rate difficulty targeting, recency filtering, and graceful fallback.
-- **Quality Tooling:** Vitest, ESLint (TypeScript flat config), Prettier (`.prettierrc.json`), `.editorconfig`, `.env.example`.
-
-### Existing executable applications
-
-- `apps/api` (Express HTTP server with session, attempt, task selection, and submission routes)
-- `apps/worker` (Grading worker execution pipeline and queue processor)
-- `apps/web` (React/Vite frontend shell)
-- `apps/cli` (Learner CLI tool `engsim` with login, init, submit, and status commands)
-- `reference-systems/shopverse` (Reference e-commerce backend API, schema, Dockerfile & docker-compose)
 
 ### Existing database and migrations
 

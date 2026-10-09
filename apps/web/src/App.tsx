@@ -1,72 +1,68 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { LandingPage } from './pages/LandingPage.js';
+import { Privacy } from './pages/Privacy.js';
+import { Terms } from './pages/Terms.js';
 
-function HomePage() {
-  return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <header
-        style={{ borderBottom: '1px solid #334155', paddingBottom: '1rem', marginBottom: '2rem' }}
-      >
-        <h1 style={{ fontSize: '2rem', margin: 0, color: '#38bdf8' }}>Engineering Simulator</h1>
-        <p style={{ color: '#94a3b8' }}>
-          Real-world software engineering debugging and system simulation platform
-        </p>
-      </header>
+import { Login } from './features/auth/Login.js';
+import { Signup } from './features/auth/Signup.js';
+import { ForgotPassword } from './features/auth/ForgotPassword.js';
 
-      <main>
-        <section
-          style={{
-            backgroundColor: '#1e293b',
-            padding: '1.5rem',
-            borderRadius: '8px',
-            marginBottom: '1.5rem',
-          }}
-        >
-          <h2 style={{ marginTop: 0 }}>System Status</h2>
-          <p>
-            <strong>Foundation Status:</strong> Active (Minimal Shell)
-          </p>
-          <p>
-            <strong>Planned Reference System:</strong> Shopverse
-          </p>
-        </section>
+import { Onboarding } from './features/onboarding/Onboarding.js';
+import { Diagnostic } from './features/diagnostic/Diagnostic.js';
+import { DiagnosticResults } from './features/diagnostic/DiagnosticResults.js';
 
-        <nav>
-          <Link to="/" style={{ color: '#38bdf8', marginRight: '1rem' }}>
-            Home
-          </Link>
-          <Link to="/about" style={{ color: '#38bdf8' }}>
-            About
-          </Link>
-        </nav>
-      </main>
-    </div>
-  );
-}
+import { Dashboard } from './features/dashboard/Dashboard.js';
+import { MissionsLibrary } from './features/missions/MissionsLibrary.js';
+import { MissionWorkspace } from './features/missions/MissionWorkspace.js';
+import { Evaluation } from './features/evaluation/Evaluation.js';
+import { Viva } from './features/viva/Viva.js';
+import { TransferTask } from './features/transfer/TransferTask.js';
 
-function AboutPage() {
-  return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>About Engineering Simulator</h1>
-      <p style={{ color: '#94a3b8' }}>
-        Engineering Simulator trains software engineers by putting them in realistic codebases with
-        real failure modes.
-      </p>
-      <Link to="/" style={{ color: '#38bdf8' }}>
-        Back to Home
-      </Link>
-    </div>
-  );
-}
+import { Profile } from './features/profile/Profile.js';
+import { ProgressHistory } from './features/profile/ProgressHistory.js';
+import { WeeklyReport } from './features/reports/WeeklyReport.js';
 
-export function App() {
+import { useLearner } from './state/LearnerContext.js';
+import './styles/global.css';
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { state } = useLearner();
+  if (!state.isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+  return <>{children}</>;
+};
+
+export const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+
+        {/* Onboarding */}
+        <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+        <Route path="/onboarding/diagnostic" element={<ProtectedRoute><Diagnostic /></ProtectedRoute>} />
+        <Route path="/onboarding/results" element={<ProtectedRoute><DiagnosticResults /></ProtectedRoute>} />
+
+        {/* Learner Workspace */}
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/missions" element={<ProtectedRoute><MissionsLibrary /></ProtectedRoute>} />
+        <Route path="/missions/:missionId" element={<ProtectedRoute><MissionWorkspace /></ProtectedRoute>} />
+        <Route path="/missions/:missionId/evaluation/:attemptId" element={<ProtectedRoute><Evaluation /></ProtectedRoute>} />
+        <Route path="/missions/:missionId/viva/:attemptId" element={<ProtectedRoute><Viva /></ProtectedRoute>} />
+        <Route path="/transfer/:taskId" element={<ProtectedRoute><TransferTask /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/progress" element={<ProtectedRoute><ProgressHistory /></ProtectedRoute>} />
+        <Route path="/reports/weekly" element={<ProtectedRoute><WeeklyReport /></ProtectedRoute>} />
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;
