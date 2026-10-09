@@ -45,10 +45,34 @@ export async function updateAttemptStatus(
 ): Promise<Attempt | null> {
   const sql = `
     UPDATE attempts
-    SET status = $2
+    SET status = $2,
+        completed_at = CASE WHEN $2 IN ('completed', 'abandoned') AND completed_at IS NULL THEN NOW() ELSE completed_at END
     WHERE id = $1
     RETURNING *
   `;
   const res = await query<Attempt>(sql, [id, status]);
+  return res.rows[0] || null;
+}
+
+export async function transitionAttemptToTransfer(
+  id: string,
+  transferVariantId?: string
+): Promise<Attempt | null> {
+  const sql = transferVariantId
+    ? `
+      UPDATE attempts
+      SET status = 'transfer',
+          variant_id = $2
+      WHERE id = $1
+      RETURNING *
+    `
+    : `
+      UPDATE attempts
+      SET status = 'transfer'
+      WHERE id = $1
+      RETURNING *
+    `;
+  const params = transferVariantId ? [id, transferVariantId] : [id];
+  const res = await query<Attempt>(sql, params);
   return res.rows[0] || null;
 }

@@ -44,13 +44,13 @@ Shopverse standalone reference schema and seeds in `reference-systems/shopverse/
 - `packages/ai/src/ai.test.ts` (9 tests passing - fact sheet grounding, Socratic mentor inquiries, prohibition safeguards against hidden tests and solution leaks, simulated fallback)
 - `reference-systems/shopverse/tests/api.test.ts` (5 tests passing)
 - `reference-systems/shopverse/tests/hidden/orderAtomicity.test.ts` (3 tests passing - fault injection & fix validation)
-- `apps/api/src/app.test.ts` (48 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling, E2E pipeline, viva start/answers/completion, attempt abandonment, hint ladder progression with exhaustion bounds, and AI mentor grounding with prohibition guards)
+- `apps/api/src/app.test.ts` (56 tests passing - health, ready probe, auth, session creation, next task selection, attempt retrieval, patch submission 202, submission polling, E2E pipeline, viva start/answers/completion, attempt abandonment, hint ladder progression with exhaustion bounds, AI mentor grounding with prohibition guards, and transfer task assignment & evaluation)
 - `apps/cli/src/cli.test.ts` (5 tests passing - config, init workspace, patch submit, commander registry)
-- `apps/worker/src/worker.test.ts` (9 tests passing - patch validation, test evaluation, evidence events, DB persistence & Bayesian skill update, queue batch draining, lifecycle)
+- `apps/worker/src/worker.test.ts` (10 tests passing - patch validation, test evaluation, evidence events, DB persistence & Bayesian skill update, transfer task grading with completion transition, queue batch draining, lifecycle)
 - `apps/web/src/App.test.tsx` (2 tests passing - header and headline renders)
 - `apps/web/src/features/mission-demo/missionDemoMachine.test.ts` (3 tests passing - state machine transitions)
 - `apps/web/src/features/demo/demo.test.tsx` (5 tests passing - demo mode, preloaded dashboard, mission consistency, safe recovery)
-- Total: 142 unit/integration tests passing cleanly in Vitest across 17 test suites.
+- Total: 151 unit/integration tests passing cleanly in Vitest across 17 test suites.
 
 ### Existing deployment state
 
@@ -62,4 +62,4 @@ None.
 
 ### Immediate next milestone
 
-Phase 14 — Transfer Task Assignment & Evaluation (`Phase 6 — Transfer`).
+Phase 15 — CLI Integration Verification (`engsim init`, `engsim submit`, `engsim status` against live Express API).

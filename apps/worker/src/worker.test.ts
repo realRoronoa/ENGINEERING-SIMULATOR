@@ -172,6 +172,102 @@ malformed patch content
       expect(recordEvidenceSpy).toHaveBeenCalled();
       expect(upsertSkillSpy).toHaveBeenCalled();
     });
+
+    it('processes transfer task submission, emits transfer evidence, and marks attempt as completed', async () => {
+      const updateSubSpy = vi.spyOn(database, 'updateSubmissionStatus').mockResolvedValueOnce({
+        id: 'sub-transfer-1',
+        attempt_id: 'att-transfer-1',
+        learner_id: 'learner-transfer',
+        patch: validPatch,
+        structured_answers: {},
+        client_checksum: '',
+        status: 'complete',
+        submitted_at: new Date(),
+      });
+
+      const createEvalSpy = vi.spyOn(database, 'createEvaluation').mockResolvedValueOnce({
+        id: 'eval-transfer-1',
+        submission_id: 'sub-transfer-1',
+        attempt_id: 'att-transfer-1',
+        patch_valid: true,
+        public_tests_passed: 1,
+        public_tests_total: 1,
+        hidden_tests_passed: 1,
+        hidden_tests_total: 1,
+        benchmarks_passed: null,
+        structured_answers_result: {},
+        rubric_results: null,
+        passed: true,
+        score: 1.0,
+        created_at: new Date(),
+      });
+
+      const updateAttemptSpy = vi.spyOn(database, 'updateAttemptStatus').mockResolvedValueOnce({
+        id: 'att-transfer-1',
+        session_id: 'sess-1',
+        learner_id: 'learner-transfer',
+        variant_id: 'var-transfer-1',
+        status: 'completed',
+        selector_decision: {},
+        hints_used: 0,
+        submissions_count: 1,
+        created_at: new Date(),
+      });
+
+      const recordEvidenceSpy = vi.spyOn(database, 'recordEvidenceEvent').mockResolvedValueOnce({
+        id: 'ev-transfer-1',
+        learner_id: 'learner-transfer',
+        attempt_id: 'att-transfer-1',
+        skill_id: 'skill-1',
+        evidence_type: 'transfer',
+        passed: true,
+        score: 1.0,
+        difficulty: 3,
+        task_mode: 'transfer',
+        occurred_at: new Date(),
+      });
+
+      vi.spyOn(database, 'getSkillState').mockResolvedValueOnce(null);
+
+      const upsertSkillSpy = vi.spyOn(database, 'upsertSkillState').mockResolvedValueOnce({
+        id: 'state-transfer-1',
+        learner_id: 'learner-transfer',
+        skill_id: 'skill-1',
+        alpha: 3.0,
+        beta: 3.0,
+        mastery: 0.5,
+        evidence_count: 1,
+        updated_at: new Date(),
+      });
+
+      const result = await processGradingJob({
+        submissionId: 'sub-transfer-1',
+        attemptId: 'att-transfer-1',
+        learnerId: 'learner-transfer',
+        variantId: 'var-transfer-1',
+        skillId: 'skill-1',
+        taskMode: 'transfer',
+        evidenceType: 'transfer',
+        difficulty: 3,
+        patch: validPatch,
+        publicTests: [{ suiteName: 'Suite', testName: 'T1', passed: true }],
+        hiddenTests: [{ suiteName: 'Suite', testName: 'T2', passed: true }],
+        persistToDb: true,
+      });
+
+      expect(result.status).toBe('complete');
+      expect(result.evidenceEvent?.evidenceType).toBe('transfer');
+      expect(updateSubSpy).toHaveBeenCalledWith('sub-transfer-1', 'complete');
+      expect(createEvalSpy).toHaveBeenCalled();
+      expect(updateAttemptSpy).toHaveBeenCalledWith('att-transfer-1', 'completed');
+      expect(recordEvidenceSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          evidenceType: 'transfer',
+          taskMode: 'transfer',
+        })
+      );
+      expect(upsertSkillSpy).toHaveBeenCalled();
+    });
   });
 
   describe('GradingWorker Queue Management', () => {

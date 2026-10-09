@@ -46,7 +46,7 @@ export interface SkillStatePayload {
   updatedAt: Date;
 }
 
-export type TaskMode = 'debug' | 'build' | 'fix' | 'investigate';
+export type TaskMode = 'debug' | 'build' | 'fix' | 'investigate' | 'transfer';
 
 export interface SkillNode {
   id: string;
@@ -133,4 +133,22 @@ export interface MentorResponse {
   reply: string;
   conversationId: string;
   groundedOn: string[];
+}
+
+export interface TransferTaskDetails {
+  id: string;
+  variantId: string;
+  title: string;
+  instructions: string;
+  factSheet: string;
+  mode: 'transfer';
+  difficulty: number;
+  aiMentorAvailable: false;
+  hintsAvailable: false;
+}
+
+export interface TransferStartResponse {
+  attemptId: string;
+  status: 'transfer';
+  transferTask: TransferTaskDetails;
 }

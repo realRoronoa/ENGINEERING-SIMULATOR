@@ -12,6 +12,7 @@ export interface GradingJobPayload {
   skillId?: string;
   taskMode?: string;
   difficulty?: number;
+  evidenceType?: 'practice' | 'transfer' | 'diagnostic';
   patch: string;
   publicTests?: TestExecutionResult[];
   hiddenTests?: TestExecutionResult[];

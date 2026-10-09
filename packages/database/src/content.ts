@@ -185,3 +185,81 @@ export async function fetchSelectionContext(learnerId: string): Promise<Selectio
     availableVariants,
   };
 }
+
+export async function findTransferVariantForVariant(
+  variantId: string
+): Promise<VariantDetails | null> {
+  const currentVariant = await getVariantWithDetails(variantId);
+  if (!currentVariant) return null;
+
+  const targetSkillId = currentVariant.skillIds[0];
+
+  const sql = `
+    SELECT 
+      v.id,
+      v.id AS "variantId",
+      v.template_id AS "templateId",
+      v.title,
+      v.narrative,
+      v.instructions,
+      tt.mode,
+      v.difficulty,
+      ARRAY[tt.skill_id]::text[] || tt.supporting_skill_ids AS "skillIds",
+      v.estimated_minutes AS "estimatedMinutes",
+      v.fact_sheet AS "factSheet",
+      rs.name AS "rsName",
+      rs.docker_image AS "rsImage"
+    FROM variants v
+    JOIN task_templates tt ON v.template_id = tt.id
+    JOIN reference_systems rs ON v.reference_system_id = rs.id
+    WHERE (tt.mode = 'transfer' OR v.title ILIKE '%transfer%')
+      AND (tt.skill_id = $1 OR $1 = ANY(tt.supporting_skill_ids))
+      AND v.status = 'published'
+    LIMIT 1
+  `;
+  const res = await query<{
+    id: string;
+    variantId: string;
+    templateId: string;
+    title: string;
+    narrative: string;
+    instructions: string;
+    mode: TaskMode;
+    difficulty: number;
+    skillIds: string[];
+    estimatedMinutes: number;
+    factSheet: string;
+    rsName: string;
+    rsImage: string;
+  }>(sql, [targetSkillId]);
+
+  const row = res.rows[0];
+  if (row) {
+    return {
+      id: row.id,
+      variantId: row.variantId,
+      templateId: row.templateId,
+      title: row.title,
+      narrative: row.narrative,
+      instructions: row.instructions,
+      mode: 'transfer',
+      difficulty: row.difficulty,
+      skillIds: row.skillIds ?? [],
+      estimatedMinutes: row.estimatedMinutes,
+      factSheet: row.factSheet,
+      referenceSystem: {
+        name: row.rsName,
+        dockerImage: row.rsImage,
+      },
+    };
+  }
+
+  // Synthesize an AI-off transfer mission derived from the existing variant if no separate transfer row exists in database
+  return {
+    ...currentVariant,
+    variantId: `transfer-${currentVariant.variantId}`,
+    title: `${currentVariant.title} (Transfer Verification)`,
+    mode: 'transfer',
+    instructions: `[TRANSFER TASK — INDEPENDENT VERIFICATION]\n${currentVariant.instructions}\nNote: AI Mentor and hints are disabled for this task.`,
+  };
+}

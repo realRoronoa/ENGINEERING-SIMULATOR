@@ -1129,4 +1129,189 @@ describe('API Server Suite', () => {
       });
     });
   });
+
+  describe('Transfer Verification Mission Endpoints', () => {
+    const mockAttempt = {
+      id: 'att-transfer-test',
+      session_id: 'sess-transfer-1',
+      learner_id: 'learner_test-token',
+      variant_id: 'var-practice-1',
+      status: 'evaluated' as const,
+      selector_decision: {},
+      hints_used: 1,
+      submissions_count: 1,
+      created_at: new Date(),
+    };
+
+    const mockTransferVariantDetails = {
+      id: 'var-transfer-101',
+      variantId: 'var-transfer-101',
+      templateId: 'tpl-concurrency-1',
+      title: 'Transfer: Payment Gateway Concurrency Defense',
+      narrative: 'A high-throughput payment webhook is experiencing double-processing bugs.',
+      instructions:
+        'Fix the webhook handler to guarantee idempotency and avoid duplicate transactions.',
+      mode: 'transfer' as const,
+      difficulty: 3,
+      skillIds: ['skill-concurrency'],
+      estimatedMinutes: 20,
+      factSheet: 'Webhooks can be re-delivered. Database idempotency keys prevent double charge.',
+      referenceSystem: {
+        name: 'Shopverse',
+        dockerImage: 'shopverse:latest',
+      },
+    };
+
+    it('POST /v1/attempts/:id/transfer rejects unauthenticated requests with 401', async () => {
+      const response = await request(app).post('/v1/attempts/att-transfer-test/transfer');
+
+      expect(response.status).toBe(401);
+      expect(response.body.error.code).toBe('UNAUTHORIZED');
+    });
+
+    it('POST /v1/attempts/:id/transfer returns 404 when attempt not found', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(null);
+
+      const response = await request(app)
+        .post('/v1/attempts/att-nonexistent/transfer')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(404);
+      expect(response.body.error.code).toBe('ATTEMPT_NOT_FOUND');
+    });
+
+    it('POST /v1/attempts/:id/transfer returns 403 when attempt belongs to another learner', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        ...mockAttempt,
+        learner_id: 'other-learner',
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-transfer-test/transfer')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('FORBIDDEN');
+    });
+
+    it('POST /v1/attempts/:id/transfer returns 409 when attempt is in working state', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        ...mockAttempt,
+        status: 'working',
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-transfer-test/transfer')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('INVALID_STATE_FOR_TRANSFER');
+    });
+
+    it('POST /v1/attempts/:id/transfer returns 409 when attempt is completed', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        ...mockAttempt,
+        status: 'completed',
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-transfer-test/transfer')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('INVALID_STATE_FOR_TRANSFER');
+    });
+
+    it('POST /v1/attempts/:id/transfer transitions evaluated attempt to transfer and returns task details', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(mockAttempt);
+      vi.spyOn(database, 'findTransferVariantForVariant').mockResolvedValueOnce(
+        mockTransferVariantDetails
+      );
+      const transitionSpy = vi
+        .spyOn(database, 'transitionAttemptToTransfer')
+        .mockResolvedValueOnce({
+          ...mockAttempt,
+          status: 'transfer',
+          variant_id: mockTransferVariantDetails.id,
+        });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-transfer-test/transfer')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(200);
+      expect(response.body.status).toBe('transfer');
+      expect(response.body.transferTask).toEqual({
+        id: 'var-transfer-101',
+        variantId: 'var-transfer-101',
+        title: 'Transfer: Payment Gateway Concurrency Defense',
+        instructions:
+          'Fix the webhook handler to guarantee idempotency and avoid duplicate transactions.',
+        factSheet: 'Webhooks can be re-delivered. Database idempotency keys prevent double charge.',
+        mode: 'transfer',
+        difficulty: 3,
+        aiMentorAvailable: false,
+        hintsAvailable: false,
+      });
+      expect(transitionSpy).toHaveBeenCalledWith('att-transfer-test', 'var-transfer-101');
+    });
+
+    it('POST /v1/attempts/:id/transfer allows transitions from viva status', async () => {
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce({
+        ...mockAttempt,
+        status: 'viva',
+      });
+      vi.spyOn(database, 'findTransferVariantForVariant').mockResolvedValueOnce(
+        mockTransferVariantDetails
+      );
+      vi.spyOn(database, 'transitionAttemptToTransfer').mockResolvedValueOnce({
+        ...mockAttempt,
+        status: 'transfer',
+        variant_id: mockTransferVariantDetails.id,
+      });
+
+      const response = await request(app)
+        .post('/v1/attempts/att-transfer-test/transfer')
+        .set('Authorization', 'Bearer test-token');
+
+      expect(response.status).toBe(200);
+      expect(response.body.status).toBe('transfer');
+    });
+
+    it('POST /v1/attempts/:id/submissions accepts patch when attempt is in transfer state', async () => {
+      const transferAttempt = {
+        ...mockAttempt,
+        id: 'att-transfer-sub',
+        status: 'transfer' as const,
+        variant_id: 'var-transfer-101',
+      };
+
+      vi.spyOn(database, 'getAttemptById').mockResolvedValueOnce(transferAttempt);
+      vi.spyOn(database, 'createSubmission').mockResolvedValueOnce({
+        id: 'sub-transfer-99',
+        attempt_id: transferAttempt.id,
+        learner_id: transferAttempt.learner_id,
+        patch: `--- a/service.ts\n+++ b/service.ts\n@@ -1,2 +1,3 @@\n+const idempotent = true;\n`,
+        structured_answers: {},
+        client_checksum: 'chk-1',
+        status: 'queued',
+        submitted_at: new Date(),
+      });
+
+      const validPatch = `--- a/service.ts\n+++ b/service.ts\n@@ -1,2 +1,3 @@\n+const idempotent = true;\n`;
+
+      const response = await request(app)
+        .post(`/v1/attempts/${transferAttempt.id}/submissions`)
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          patch: validPatch,
+          clientChecksum: 'chk-1',
+        });
+
+      expect(response.status).toBe(202);
+      expect(response.body.status).toBe('queued');
+      expect(response.body.submissionId).toBe('sub-transfer-99');
+      expect(response.body.pollingUrl).toBe('/v1/submissions/sub-transfer-99');
+    });
+  });
 });

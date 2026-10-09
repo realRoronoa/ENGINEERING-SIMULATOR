@@ -129,15 +129,20 @@ export async function processGradingJob(payload: GradingJobPayload): Promise<Gra
   const targetSkillId = payload.skillId ?? variantId;
 
   // 4. Construct EvidenceEvent for Learner Model Bayesian update
+  const effectiveEvidenceType: 'practice' | 'transfer' | 'diagnostic' =
+    payload.evidenceType ?? (payload.taskMode === 'transfer' ? 'transfer' : 'practice');
+  const effectiveTaskMode =
+    payload.taskMode ?? (effectiveEvidenceType === 'transfer' ? 'transfer' : 'debug');
+
   const evidenceEvent: EvidenceEventPayload = {
     learnerId,
     attemptId,
     skillId: targetSkillId,
-    evidenceType: 'practice',
+    evidenceType: effectiveEvidenceType,
     passed: isPassing,
     score,
     difficulty: payload.difficulty ?? 2,
-    taskMode: payload.taskMode ?? 'debug',
+    taskMode: effectiveTaskMode,
     occurredAt: new Date(),
   };
 
@@ -167,17 +172,22 @@ export async function processGradingJob(payload: GradingJobPayload): Promise<Gra
         passed: isPassing,
         score,
       });
-      await updateAttemptStatus(attemptId, 'evaluated');
+
+      const nextAttemptStatus =
+        (effectiveEvidenceType === 'transfer' || payload.taskMode === 'transfer') && isPassing
+          ? 'completed'
+          : 'evaluated';
+      await updateAttemptStatus(attemptId, nextAttemptStatus);
 
       await recordEvidenceEvent({
         learnerId,
         attemptId,
         skillId: targetSkillId,
-        evidenceType: 'practice',
+        evidenceType: effectiveEvidenceType,
         passed: isPassing,
         score,
         difficulty: payload.difficulty ?? 2,
-        taskMode: payload.taskMode ?? 'debug',
+        taskMode: effectiveTaskMode,
         occurredAt: evidenceEvent.occurredAt,
       });
 

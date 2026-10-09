@@ -9,7 +9,10 @@ import {
   addVivaAnswer,
   getVariantHintData,
   recordHintEvent,
+  transitionAttemptToTransfer,
+  findTransferVariantForVariant,
 } from '@engineering-simulator/database';
+
 import { validatePatch } from '@engineering-simulator/evaluator';
 import { enqueueGradingJob } from '@engineering-simulator/worker';
 import { sendMentorMessage } from '@engineering-simulator/ai';
@@ -178,12 +181,16 @@ attemptRouter.post('/:id/submissions', async (req: Request, res: Response) => {
       clientChecksum
     );
 
+    const isTransfer = attempt.status === 'transfer';
+
     // Enqueue grading job to async worker pipeline
     enqueueGradingJob({
       submissionId: submission.id,
       attemptId,
       learnerId,
       variantId: attempt.variant_id,
+      taskMode: isTransfer ? 'transfer' : 'fix',
+      evidenceType: isTransfer ? 'transfer' : 'practice',
       patch,
       structuredAnswers: answersMap,
       persistToDb: true,
@@ -661,6 +668,97 @@ attemptRouter.post('/:id/abandon', async (req: Request, res: Response) => {
       error: {
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Could not abandon attempt',
+        details: {},
+      },
+    });
+  }
+});
+
+attemptRouter.post('/:id/transfer', async (req: Request, res: Response) => {
+  const attemptId = String(req.params.id);
+  const learnerId = req.learnerId;
+
+  if (!learnerId) {
+    return res.status(401).json({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required to start transfer task.',
+        details: {},
+      },
+    });
+  }
+
+  try {
+    const attempt = await getAttemptById(attemptId);
+    if (!attempt) {
+      return res.status(404).json({
+        error: {
+          code: 'ATTEMPT_NOT_FOUND',
+          message: 'Attempt not found.',
+          details: {},
+        },
+      });
+    }
+
+    if (attempt.learner_id !== learnerId) {
+      return res.status(403).json({
+        error: {
+          code: 'FORBIDDEN',
+          message: 'You are not authorized to start transfer task for this attempt.',
+          details: {},
+        },
+      });
+    }
+
+    // Valid preceding statuses: 'evaluated', 'viva', or already in 'transfer'
+    if (
+      attempt.status !== 'evaluated' &&
+      attempt.status !== 'viva' &&
+      attempt.status !== 'transfer'
+    ) {
+      return res.status(409).json({
+        error: {
+          code: 'INVALID_STATE_FOR_TRANSFER',
+          message: `Transfer task can only be initiated after evaluation or viva defense. Current status: '${attempt.status}'.`,
+          details: { currentStatus: attempt.status },
+        },
+      });
+    }
+
+    const transferTask = await findTransferVariantForVariant(attempt.variant_id);
+    if (!transferTask) {
+      return res.status(404).json({
+        error: {
+          code: 'TRANSFER_TASK_NOT_FOUND',
+          message: 'No suitable transfer variant found for this attempt.',
+          details: {},
+        },
+      });
+    }
+
+    await transitionAttemptToTransfer(attempt.id, transferTask.id);
+
+    res.status(200).json({
+      attemptId: attempt.id,
+      status: 'transfer',
+      transferTask: {
+        id: transferTask.id,
+        variantId: transferTask.variantId,
+        title: transferTask.title,
+        instructions: transferTask.instructions,
+        factSheet: transferTask.factSheet,
+        mode: 'transfer' as const,
+        difficulty: transferTask.difficulty,
+        aiMentorAvailable: false as const,
+        hintsAvailable: false as const,
+      },
+    });
+  } catch (err: unknown) {
+    console.error('Start transfer task error:', err);
+    res.status(500).json({
+      error: {
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Could not start transfer task',
         details: {},
       },
     });
