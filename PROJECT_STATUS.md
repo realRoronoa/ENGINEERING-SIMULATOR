@@ -22,27 +22,27 @@
 **Phase:** Phase 1 — Monorepo Foundation
 
 **Status:**
-FOUNDATION & CORE ENGINES OPERATIONAL (Monorepo, shared contracts, Express API shell + DB connectivity, React/Vite shell, PostgreSQL migrations & client, Shopverse reference system with hidden tests, Evaluator engine, Learner Model engine, Selector engine, CLI tool, Vitest 62/62 passing)
+FOUNDATION, CORE ENGINES & WORKER OPERATIONAL (Monorepo, shared contracts, Express API shell + DB connectivity, task selection route, React/Vite shell, PostgreSQL migrations & client, Shopverse reference system with hidden tests, Evaluator engine, Learner Model engine, Selector engine, Grading Worker, CLI tool, Vitest 72/72 passing)
 
 **Overall:**
-48%
+55%
 
-| Area                      | Owner    |   % | Note                                                                                 |
-| ------------------------- | -------- | --: | ------------------------------------------------------------------------------------ |
-| Frontend                  | Lead Dev |  5% | `apps/web/` minimal React/Vite shell with route tests                                |
-| Backend                   | Dev 2    | 65% | `apps/api/` Express API with `/health`, `/health/ready`, sessions & attempts routes  |
-| Shared Contracts          | Shared   | 60% | `packages/contracts/` exported types & Zod schemas                                   |
-| Database                  | Dev 2    | 85% | `packages/database` 5 migration scripts, client pool, query layer                    |
-| Evaluation                | Dev 2    | 80% | `packages/evaluator` deterministic grading engine & tests                            |
-| Learning System           | Dev 2    | 90% | `packages/learner-model` Bayesian mastery & `packages/selector` task selector engine |
-| AI                        | Dev 2    | 60% | `AI_POLICY.md` approved provider & temperature matrix                                |
-| CLI                       | Dev 2    | 80% | `apps/cli/` `engsim` binary with login, init, submit, status                         |
-| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                  |
-| Content                   | Lead Dev | 10% | Shopverse sample tasks & hidden fault test                                           |
-| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                          |
+| Area                      | Owner    |   % | Note                                                                                  |
+| ------------------------- | -------- | --: | ------------------------------------------------------------------------------------- |
+| Frontend                  | Lead Dev |  5% | `apps/web/` minimal React/Vite shell with route tests                                 |
+| Backend                   | Dev 2    | 75% | `apps/api/` Express API with health, ready probe, sessions (`:id/next`), and attempts |
+| Shared Contracts          | Shared   | 60% | `packages/contracts/` exported types & Zod schemas                                    |
+| Database                  | Dev 2    | 90% | `packages/database` 5 migration scripts, client pool, sessions, attempts, content     |
+| Evaluation                | Dev 2    | 90% | `packages/evaluator` deterministic grading engine & `apps/worker` async pipeline      |
+| Learning System           | Dev 2    | 90% | `packages/learner-model` Bayesian mastery & `packages/selector` task selector engine  |
+| AI                        | Dev 2    | 60% | `AI_POLICY.md` approved provider & temperature matrix                                 |
+| CLI                       | Dev 2    | 80% | `apps/cli/` `engsim` binary with login, init, submit, status                          |
+| Infrastructure            | Dev 2    | 40% | Shopverse Dockerfile & compose, native runner setup                                   |
+| Content                   | Lead Dev | 10% | Shopverse sample tasks & hidden fault test                                            |
+| Documentation / Contracts | Shared   | 95% | Architecture, contracts, policies, living tracking in place                           |
 
 **Honest summary:**
-The platform infrastructure, evaluation, adaptive learner modeling, and rule-based task selector engine are operational with 62 passing tests. Database schema & query helpers, Shopverse reference system with fault injection, evaluator engine with unified diff validation, Express API with DB readiness probe, learner model Bayesian tracker, selector engine with prerequisite filtering, and CLI tool are implemented and verified. The worker execution queue remains to be connected.
+The platform infrastructure, evaluation, adaptive learner modeling, rule-based task selector engine, API task selection endpoints, and grading worker are operational with 72 passing tests. Database schema & query helpers, Shopverse reference system with fault injection, evaluator engine with unified diff validation, Express API with DB readiness probe, learner model Bayesian tracker, selector engine with prerequisite filtering, and CLI tool are implemented and verified. The end-to-end patch submission endpoint remains to be wired into the worker queue.
 
 ---
 
@@ -193,7 +193,7 @@ Status values MUST be one of:
 | Shared contracts        | Shared        | IN_PROGRESS | Monorepo init | types defined             | API_CONTRACT.md  | Extend viva/mentor types |
 | Database                | Dev 2         | DONE        | Monorepo init | Migrations exist          | migrations/      | Phase completed          |
 | Shopverse               | Dev 2         | DONE        | None          | Runs in Docker / Native   | Dockerfile       | Additional fault cases   |
-| Evaluator and worker    | Dev 2         | IN_PROGRESS | Shopverse     | Deterministic grading     | evaluator.test   | Build worker queue loop  |
+| Evaluator and worker    | Dev 2         | DONE        | Shopverse     | Deterministic grading     | worker.test.ts   | Phase completed          |
 | Backend API             | Dev 2         | IN_PROGRESS | Database      | Endpoints work            | app.test.ts      | Add submission endpoint  |
 | Frontend                | Dev 1         | NOT_STARTED | Contracts     | UI flows work             | None             | Scaffold app             |
 | CLI                     | Dev 2         | DONE        | Contracts     | Local test runs           | cli.test.ts      | Phase completed          |
@@ -201,7 +201,7 @@ Status values MUST be one of:
 | AI integration          | Dev 2         | DONE        | None          | AI provider chosen        | AI_POLICY.md     | Mentor prompt runner     |
 | Learner model           | Dev 2         | DONE        | DB, Content   | Mastery calculated        | mastery.test.ts  | Phase completed          |
 | Selector                | Dev 2         | DONE        | Learner Model | Rules executed            | selector.test.ts | Phase completed          |
-| Integration and testing | Shared        | IN_PROGRESS | API, UI, Eval | Tests pass                | 62 tests green   | E2E attempt flow test    |
+| Integration and testing | Shared        | IN_PROGRESS | API, UI, Eval | Tests pass                | 72 tests green   | E2E attempt flow test    |
 | Deployment              | Dev 2         | NOT_STARTED | Infra         | CI/CD pipeline            | None             | Setup Github Actions     |
 
 ---
@@ -279,15 +279,15 @@ This is **not** a backlog — the backlog lives in GitHub issues.
 
 ## 10. TEST STATUS
 
-| Suite               | Owner  | Count | Passing | Coverage | Note                                                             |
-| ------------------- | ------ | ----: | ------: | -------: | ---------------------------------------------------------------- |
-| Unit tests          | Shared |    36 |      36 |      88% | contracts (2), selector (16), learner-model (8), cli (5), db (5) |
-| Integration tests   | Dev 2  |    10 |      10 |      90% | apps/api routes (10)                                             |
-| Evaluator tests     | Dev 2  |     8 |       8 |      95% | evaluator (5), shopverse hidden faults (3)                       |
-| Reference API tests | Dev 2  |     5 |       5 |      90% | shopverse/tests/api.test.ts (5)                                  |
-| Frontend shell      | Dev 1  |     1 |       1 |      50% | apps/web App.test.tsx (1)                                        |
-| Database migration  | Dev 2  |     2 |       2 |     100% | database migrations verification (2)                             |
-| Total (Vitest)      | Shared |    62 |      62 |      90% | All 10 test files passing green                                  |
+| Suite               | Owner  | Count | Passing | Coverage | Note                                                              |
+| ------------------- | ------ | ----: | ------: | -------: | ----------------------------------------------------------------- |
+| Unit tests          | Shared |    36 |      36 |      88% | contracts (2), selector (16), learner-model (8), cli (5), db (5)  |
+| Integration tests   | Dev 2  |    15 |      15 |      92% | apps/api routes (15 - health, sessions, task selection, attempts) |
+| Evaluator & Worker  | Dev 2  |    13 |      13 |      95% | evaluator (5), worker (5), shopverse hidden faults (3)            |
+| Reference API tests | Dev 2  |     5 |       5 |      90% | shopverse/tests/api.test.ts (5)                                   |
+| Frontend shell      | Dev 1  |     1 |       1 |      50% | apps/web App.test.tsx (1)                                         |
+| Database migration  | Dev 2  |     2 |       2 |     100% | database migrations verification (2)                              |
+| Total (Vitest)      | Shared |    72 |      72 |      91% | All 11 test files passing green                                   |
 
 Target at V1: 80% line coverage on `packages/evaluator`, `packages/selector`,
 `packages/learner-model`; 100% of API endpoints covered by an integration test.
